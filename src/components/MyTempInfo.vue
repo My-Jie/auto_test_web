@@ -41,7 +41,7 @@
                     <el-button type="success" plain :loading="scope.row.runLoading"
                         @click="setDialogVisible(scope.row)">运行</el-button>
                     <el-button type="primary" plain @click="getTempData(scope.row)"
-                        :loading="scope.row.dataLoading">查看详情</el-button>
+                        :loading="scope.row.dataLoading">详情</el-button>
                     
                 </template>
             </el-table-column>
@@ -119,7 +119,7 @@ export default {
             row.dataLoading = true
             var temp_ = []
             var dialog_ = false
-            await this.$http.get('template/data/list?temp_id=' + row.id).then(
+            await this.$http.get('/template/data/list?temp_id=' + row.id).then(
                 function (response) {
                     row.dataLoading = false
                     temp_ = response.data
