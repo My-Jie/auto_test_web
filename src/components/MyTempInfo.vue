@@ -38,10 +38,11 @@
             <el-table-column label="修改时间" prop="updated_at"></el-table-column>
             <el-table-column label="操作">
                 <template #default="scope">
-                    <el-button type="primary" plain @click="getTempData(scope.row)"
-                        :loading="scope.row.dataLoading">查看详情</el-button>
                     <el-button type="success" plain :loading="scope.row.runLoading"
                         @click="setDialogVisible(scope.row)">运行</el-button>
+                    <el-button type="primary" plain @click="getTempData(scope.row)"
+                        :loading="scope.row.dataLoading">查看详情</el-button>
+                    
                 </template>
             </el-table-column>
         </el-table>
@@ -145,10 +146,17 @@ export default {
                 function (response) {
                     row.runLoading = false
                     if (response.data.code == 0) {
-                        ElNotification.success({
-                            title: 'Success',
-                            message: '模板\n[ ' + row.id + '-' + row.temp_name + ' ]\n执行完成',
-                            offset: 200,
+                        var msg = ''
+                        for (var x in response.data.data.allure_report){
+                            msg += '<a href="' + response.data.data.allure_report[x] + '/index.html" target="_blank">查看用例[' + x + ']的报告</a><br>'
+                        }
+                        ElNotification({
+                            title: '测试报告',
+                            message: msg,
+                            duration: 0,
+                            type: 'success',
+                            position: 'bottom-right',
+                            dangerouslyUseHTMLString: true,
                         })
                     } else {
                         ElNotification.warning({

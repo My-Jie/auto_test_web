@@ -33,7 +33,7 @@ app.mixin({
 })
 
 import axios from 'axios'
-axios.defaults.baseURL = '/api'
+// axios.defaults.baseURL = '/api'
 app.config.globalProperties.$http = axios
 
 app.mount('#app')

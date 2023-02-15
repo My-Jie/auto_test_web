@@ -69,6 +69,7 @@ export default {
       for (var x in this.caseInfo) {
         this.caseInfo[x].runLoading = false
         this.caseInfo[x].dataLoading = false
+        // this.caseInfo[x].repLoading = false
       }
       // 所有的状态都改为false
       for (var x in this.clickStatus) {
