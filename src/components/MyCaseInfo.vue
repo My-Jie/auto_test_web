@@ -35,7 +35,7 @@
             </template>
         </el-dialog>
         <!-- 替换数据弹窗 -->
-        <el-dialog v-model='repData' width="70%" :close-on-click-modal=false :close-on-press-escape=false 
+        <el-dialog v-model='repData' width="70%" :close-on-click-modal=false :close-on-press-escape=false
             :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='closeDialog'>
 
             <!-- 原始数据查询 -->
@@ -68,6 +68,7 @@
                     </template>
                 </el-input>
             </el-form-item>
+            <!-- 复选框的按钮 -->
             <el-radio-group v-model="tableLayout">
                 <el-radio-button label="url" v-show="urlJsonpath.length > 0 ? true : false" />
                 <el-radio-button label="params" v-show="parmaJsonpath.length > 0 ? true : false" />
@@ -76,9 +77,9 @@
             <!-- url的表格 -->
             <el-table v-show="tableLayout == 'url'" :data="urlJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="使用数据" prop="old_data"></el-table-column>
+                <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式" prop="jsonpath"></el-table-column>
-                <el-table-column label="用例序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="过滤序号" prop="number" width="100%"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -92,9 +93,9 @@
             <!-- params的表格 -->
             <el-table v-show="tableLayout == 'params'" :data="parmaJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="使用数据" prop="old_data"></el-table-column>
+                <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式从params取值" prop="jsonpath"></el-table-column>
-                <el-table-column label="用例序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="过滤序号" prop="number" width="100%"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -108,9 +109,9 @@
             <!-- data的表格 -->
             <el-table v-show="tableLayout == 'data'" :data="dataJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="使用数据" prop="old_data"></el-table-column>
+                <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式从data取值" prop="jsonpath"></el-table-column>
-                <el-table-column label="用例序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="过滤序号" prop="number" width="100%"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -204,7 +205,7 @@ export default {
             }
         },
         // 替换测试数据
-        repCaseData(row, rep) {
+        async repCaseData(row, rep) {
             console.log(row);
             if (rep == 'url') {
                 row.urlLoading = true
@@ -213,6 +214,41 @@ export default {
             } else if (rep == 'data') {
                 row.caseDataLoading = true
             }
+            var case_id = this.caseId
+            await this.$http({
+                url: '/caseService/replace/one/casedata',
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                params: {
+                    case_id: case_id,
+                    number: row.number,
+                    old_data: row.old_data,
+                    new_data: row.new_data,
+                    rep: row.rep,
+                    data_type: rep,
+                }
+            }).then(
+                function () {
+                    if (row.rep) {
+                        ElNotification.success({
+                            title: 'Success',
+                            message: '用例[ ' + case_id + '-' + row.number + '-' + rep + ' ] 替换成功',
+                            offset: 200,
+                        })
+                    } else {
+                        ElNotification.warning({
+                            title: 'Warning',
+                            message: '用例[ ' + case_id + '-' + row.number + '-' + rep + ' ] 取消替换',
+                            offset: 200,
+                        })
+                    }
+
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
 
             if (rep == 'url') {
                 row.urlLoading = false
