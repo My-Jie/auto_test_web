@@ -37,11 +37,7 @@ export default {
       for (var x in this.tempInfo) {
         this.tempInfo[x].runLoading = false
         this.tempInfo[x].dataLoading = false
-      }
-      // 给每个模板加loading属性
-      for (var x in this.tempInfo) {
-        this.tempInfo[x].runLoading = false
-        this.tempInfo[x].dataLoading = false
+        this.tempInfo[x].tempToCaseLoading = false
       }
       // 所有的状态都改为false
       for (var x in this.clickStatus) {

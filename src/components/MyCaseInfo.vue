@@ -68,18 +68,44 @@
                     </template>
                 </el-input>
             </el-form-item>
+            <div class="demo-collapse">
+                <el-collapse v-model="activeName" accordion>
+                    <el-collapse-item title="JsonPath表达式实例(*双花括号)" name="1">
+                        <p>1.直接提取: {number.$.jsonPath表达式}</p>
+                        <p>2.索引切片: {number.$.jsonPath表达式}|index:index</p>
+                        <p>3.同级邻居确认: {number.$.jsonPath表达式},string in key,string == key</p>
+                    </el-collapse-item>
+                    <el-collapse-item title="假数据表达式(*单花括号)" name="2">
+                        <p>1.身份证: {ssn}</p>
+                        <p>2.电话: {phone_number}</p>
+                        <p>3.银行卡: {credit_card_number}</p>
+                        <p>4.城市: {city}</p>
+                        <p>5.地址: {address}</p>
+                        <p>6.随机数字: {random_int.1} number为长度</p>
+                        <p>7.随机小写字母: {random_lower.1} number为长度</p>
+                        <p>8.随机大写字母: {random_upper.1} number为长度</p>
+                        <p>9.随机大小写字母: {random_letter.1} number为长度</p>
+                        <p>10.随机汉字: {random_cn.1} number为长度</p>
+                        <p>11.数字计算: {compute}</p>
+                        <p>12.时间戳: {time_int.0} 0:当前时间, -1:当前时间前一天, 1:当前时间后一天,-2:前一天00:00:00, 2:后一天23:59:59</p>
+                        <p>13.时间字符串: {time_str.1} 同上</p>
+                    </el-collapse-item>
+                </el-collapse>
+            </div>
+
             <!-- 复选框的按钮 -->
             <el-radio-group v-model="tableLayout">
                 <el-radio-button label="url" v-show="urlJsonpath.length > 0 ? true : false" />
                 <el-radio-button label="params" v-show="parmaJsonpath.length > 0 ? true : false" />
                 <el-radio-button label="data" v-show="dataJsonpath.length > 0 ? true : false" />
             </el-radio-group>
+
             <!-- url的表格 -->
             <el-table v-show="tableLayout == 'url'" :data="urlJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式" prop="jsonpath"></el-table-column>
-                <el-table-column label="过滤序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="查询序号" prop="number" width="100%"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -95,7 +121,7 @@
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式从params取值" prop="jsonpath"></el-table-column>
-                <el-table-column label="过滤序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="查询序号" prop="number" width="100%"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -111,7 +137,7 @@
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式从data取值" prop="jsonpath"></el-table-column>
-                <el-table-column label="过滤序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="查询序号" prop="number" width="100%"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -161,6 +187,7 @@ export default {
             parmaJsonpath: [],
             dataJsonpath: [],
             tableLayout: '',
+            activeName: null
         }
     },
 
@@ -242,7 +269,6 @@ export default {
                             offset: 200,
                         })
                     }
-
                 }
             ).catch(
                 function (error) {

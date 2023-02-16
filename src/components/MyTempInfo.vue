@@ -42,7 +42,9 @@
                         @click="setDialogVisible(scope.row)">运行</el-button>
                     <el-button type="primary" plain @click="getTempData(scope.row)"
                         :loading="scope.row.dataLoading">详情</el-button>
-                    
+                    <el-button type="primary" plain @click="tempToCase(scope.row)"
+                        :loading="scope.row.tempToCaseLoading">转化</el-button>
+
                 </template>
             </el-table-column>
         </el-table>
@@ -62,6 +64,45 @@
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
                     <el-button type="primary" @click="runCase(tempRow)">确认</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <!-- 转化为用例的弹窗 -->
+        <el-dialog v-model='dialogTempToCase' width="50%" :title="tempToCaseTitle" @close='closeDialog'>
+            <el-radio-group v-model="radioTempToCase">
+                <el-radio-button :label='true'>新增</el-radio-button>
+                <el-radio-button :label='false'>覆盖</el-radio-button>
+            </el-radio-group>
+            <br>
+            <br>
+            <!-- 新增 -->
+            <el-input v-model="addCaseInput" placeholder="请输入用例名称" v-if="radioTempToCase">
+                <template #prepend>用例名称</template>
+            </el-input>
+
+            <!-- 覆盖 -->
+            <el-table :data="thisCaseInfo" v-if="radioTempToCase == false">
+                <el-table-column label="CaseId" prop="case_id" width="100%"></el-table-column>
+                <el-table-column label="CaseName" prop="case_name"></el-table-column>
+                <el-table-column label="选择">
+                    <template #default="scope">
+                        <el-checkbox v-model=scope.row.checkbox @click.stop="checkboxClick(scope.row)" label="" />
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <!-- 主动停止 -->
+            <br>
+            <br>
+            <el-radio-group v-model="activeStop">
+                <el-radio-button :label='true'>失败停止</el-radio-button>
+                <el-radio-button :label='false'>失败不停止</el-radio-button>
+            </el-radio-group>
+
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogTempToCase = false">取消</el-button>
+                    <el-button type="primary" @click="postTempToCase" :loading="tempToCaseLoading">确认</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -91,16 +132,75 @@ export default {
             thisTempData: [],
             tempTitle: null,
             dialogVisible: false,
+            dialogTempToCase: false,
+            tempToCaseTitle: null,
             tempName: null,
             tempId: null,
             tempRow: null,
-            thisCaseInfo: []
+            thisCaseInfo: [],
+            radioTempToCase: true,
+            activeStop: true,
+            addCaseInput: '',
+            affTempToCaseId: 99999,
+            tempToCaseLoading: false
         }
     },
 
     methods: {
         indexMethod(index) {
             return this.tempInfo[index]['id']
+        },
+
+        checkboxClick(row) {
+            // console.log(row);
+            for (var x in this.thisCaseInfo) {
+                if (this.thisCaseInfo[x]['checkbox'] != row.checkbox) {
+                    this.thisCaseInfo[x]['checkbox'] = false
+                }
+            }
+            this.affTempToCaseId = row.case_id
+        },
+        // 模板转用例
+        async postTempToCase() {
+            this.tempToCaseLoading = true
+            var tempId = this.tempId
+            await this.$http({
+                url: '/caseService/temp/to/case',
+                method: 'GET',
+                params: {
+                    temp_id: tempId,
+                    case_id: this.affTempToCaseId,
+                    case_name: this.addCaseInput,
+                    cover: this.radioTempToCase,
+                    fail_stop: this.activeStop
+                }
+            }).then(function (response) {
+                if (response.data.message == '新增成功') {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '模板[ ' + tempId + '] 新增用例' + response.data.data.case_id + ' ] 成功',
+                        offset: 200,
+                    })
+                } else {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '模板[ ' + tempId + '] 覆盖用例' + response.data.data.case_id + ' ] 成功',
+                        offset: 200,
+                    })
+                }
+            }).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+            this.tempToCaseLoading = false
+            this.dialogTempToCase = false
+        },
+
+        // 清理替换窗口的数据
+        closeDialog() {
+            this.thisCaseInfo = []
+            this.addCaseInput = ''
+            this.radioTempToCase = true
+            this.activeStop = true
         },
 
         setDialogVisible(row) {
@@ -110,7 +210,7 @@ export default {
             this.tempRow = row
             this.thisCaseInfo = []
             for (var x in row.case_info) {
-                this.thisCaseInfo.push({ 'case_id': row.case_info[x]['id'], 'case_name': row.case_info[x]['name'] })
+                this.thisCaseInfo.push({ 'case_id': row.case_info[x]['id'], 'case_name': row.case_info[x]['name'], 'checkbox': false })
             }
         },
         // 模板详情数据
@@ -133,6 +233,17 @@ export default {
             this.thisTempData = temp_
         },
 
+        // 模板转用例
+        tempToCase(row) {
+            this.dialogTempToCase = true
+            this.tempToCaseTitle = '模板 [' + row.id + '-' + row.temp_name + '] 转换用例'
+            this.thisCaseInfo = []
+            for (var x in row.case_info) {
+                this.thisCaseInfo.push({ 'case_id': row.case_info[x]['id'], 'case_name': row.case_info[x]['name'] })
+            }
+            this.tempId = row.id
+        },
+
         // 按模板运行数据
         async runCase(row) {
             this.dialogVisible = false
@@ -147,7 +258,7 @@ export default {
                     row.runLoading = false
                     if (response.data.code == 0) {
                         var msg = ''
-                        for (var x in response.data.data.allure_report){
+                        for (var x in response.data.data.allure_report) {
                             msg += '<a href="' + response.data.data.allure_report[x] + '/index.html" target="_blank">查看用例[' + x + ']的报告</a><br>'
                         }
                         ElNotification({
