@@ -23,20 +23,22 @@
             width="60"></el-table-column>
         <el-table-column label="path" prop="path" width="300"></el-table-column>
         <el-table-column label="description" prop="description" width="300">
-            <template #default="scope">
+            <template #default="scope" >
                 <el-button :icon="Edit" v-if="scope.row.edit" @click="editStatus(scope.row)"></el-button>
-                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false">
-                    <template #append>
-                        <el-button :icon="Check" @click="checkDescription(scope.row)"
-                            :loading="scope.row.descriptionLoading" />
-                    </template>
-                </el-input>
+                <el-col :span="18">
+                    <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false">
+                        <template #append>
+                            <el-button :icon="Check" @click="checkDescription(scope.row)"
+                                :loading="scope.row.descriptionLoading" />
+                        </template>
+                    </el-input>
+                </el-col>
             </template>
         </el-table-column>
         <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="200">
             <template #default="scope">
                 <json-viewer :value="scope.row.check" />
-                <!-- <el-button :icon="Edit" size="small"></el-button> -->
+                <el-button :icon="Edit" size="small"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="400">
