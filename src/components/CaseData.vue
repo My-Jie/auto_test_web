@@ -22,7 +22,23 @@
         <el-table-column fixed="left" label="number" prop="number" type="index" :index="indexMethod"
             width="60"></el-table-column>
         <el-table-column label="path" prop="path" width="300"></el-table-column>
-
+        <el-table-column label="description" prop="description" width="300">
+            <template #default="scope">
+                <el-button :icon="Edit" v-if="scope.row.edit" @click="editStatus(scope.row)"></el-button>
+                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false">
+                    <template #append>
+                        <el-button :icon="Check" @click="checkDescription(scope.row)"
+                            :loading="scope.row.descriptionLoading" />
+                    </template>
+                </el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="200">
+            <template #default="scope">
+                <json-viewer :value="scope.row.check" />
+                <!-- <el-button :icon="Edit" size="small"></el-button> -->
+            </template>
+        </el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="400">
             <template #default="scope">
                 <json-viewer :value="scope.row.params" />
@@ -33,27 +49,19 @@
                 <json-viewer :value="scope.row.data" />
             </template>
         </el-table-column>
-        <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="200">
-            <template #default="scope">
-                <json-viewer :value="scope.row.check" />
-            </template>
-        </el-table-column>
         <el-table-column label="headers" prop="headers" show-overflow-tooltip='true' width="400">
             <template #default="scope">
                 <json-viewer :value="scope.row.headers" />
             </template>
         </el-table-column>
-        <el-table-column label="description" prop="description" width="150"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="100%">
-            <template #default="scope">
-                <el-button plain @click="getCaseApiData(scope.row)">编辑</el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+
+</el-table>
 </template>
 
 <script>
 import { ElNotification } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { Edit, Check } from '@element-plus/icons-vue'
 export default {
     name: 'CaseData',
     props: {
@@ -61,12 +69,38 @@ export default {
         'caseId': Number
     },
 
+    data() {
+        return {
+            Edit,
+            Check
+        }
+    },
+
     methods: {
         indexMethod(index) {
             return this.caseData[index]['number']
         },
-        getCaseApiData(row) {
-            console.log(row)
+        editStatus(row) {
+            row.edit = false
+        },
+
+        // 修改描述的接口
+        async checkDescription(row) {
+            row.descriptionLoading = true
+            await this.$http.put('/caseService/set/api/description?case_id=' + this.caseId + '&number=' + row.number + '&description=' + row.description).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '修改成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            row.descriptionLoading = false
         },
 
         // 配置项设置方法
@@ -86,7 +120,7 @@ export default {
                 row.isLoginLoading = true
             }
             await this.$http.put('/caseService/set/api/config?case_id=' + this.caseId + '&number=' + row.number, newConfig).then(
-                function (response) {
+                function () {
                     if (config == 'stop') {
                         row.stopLoading = false
                         ElNotification.success({

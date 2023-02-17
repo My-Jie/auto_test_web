@@ -16,14 +16,10 @@
                         <el-button type="primary" plain @click="replaceData(scope.row)">替换</el-button>
                         <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
                             :loading="scope.row.copyLoading">复制</el-button>
-
-
                     </el-button-group>&nbsp;
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
                     </el-button>
-
-
                 </template>
             </el-table-column>
         </el-table>
@@ -434,6 +430,11 @@ export default {
                         case_[x].stopLoading = false
                         case_[x].failStopLoading = false
                         case_[x].isLoginLoading = false
+                        if (case_[x].description) {
+                            case_[x].edit = false
+                        } else {
+                            case_[x].edit = true
+                        }
                     }
                     dialog_ = true
                 }
