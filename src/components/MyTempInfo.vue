@@ -1,10 +1,10 @@
 <template>
     <div>
         <!-- <el-button round @click="uploadDialog">
-            上传Charles.har文件&nbsp;<el-icon>
-                <DocumentAdd />
-            </el-icon>
-        </el-button> -->
+                    上传Charles.har文件&nbsp;<el-icon>
+                        <DocumentAdd />
+                    </el-icon>
+                </el-button> -->
 
         <el-dialog v-model="uploadDialogBl" title="上传Charles.har文件">
             <el-form>
@@ -39,12 +39,13 @@
             <el-table-column label="操作">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading"
-                        @click="setDialogVisible(scope.row)">运行</el-button>
-                    <el-button type="primary" plain @click="getTempData(scope.row)"
-                        :loading="scope.row.dataLoading">详情</el-button>
-                    <el-button type="primary" plain @click="tempToCase(scope.row)"
-                        :loading="scope.row.tempToCaseLoading">转化</el-button>
-
+                        @click="setDialogVisible(scope.row)">运行</el-button>&nbsp;
+                    <el-button-group class="ml-4">
+                        <el-button type="primary" plain @click="getTempData(scope.row)"
+                            :loading="scope.row.dataLoading">详情</el-button>
+                        <el-button type="primary" plain @click="tempToCase(scope.row)"
+                            :loading="scope.row.tempToCaseLoading">转化</el-button>
+                    </el-button-group>
                 </template>
             </el-table-column>
         </el-table>
@@ -106,10 +107,12 @@
                 </span>
             </template>
         </el-dialog>
-    </div>
+</div>
 </template>
 
 <script>
+
+
 import TempData from './TempData.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'

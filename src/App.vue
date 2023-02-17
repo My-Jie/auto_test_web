@@ -65,6 +65,8 @@ export default {
       for (var x in this.caseInfo) {
         this.caseInfo[x].runLoading = false
         this.caseInfo[x].dataLoading = false
+        // 测试报告地址
+        this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
         // this.caseInfo[x].repLoading = false
       }
       // 所有的状态都改为false
@@ -94,18 +96,18 @@ export default {
   </el-container>
   <el-backtop :bottom="100">
     <div style="
-        height: 100%;
-        width: 100%;
-        background-color: var(--el-bg-color-overlay);
-        box-shadow: var(--el-box-shadow-lighter);
-        text-align: center;
-        line-height: 40px;
-        color: #1989fa;
-        visibility-height: 50px;
-      ">
+          height: 100%;
+          width: 100%;
+          background-color: var(--el-bg-color-overlay);
+          box-shadow: var(--el-box-shadow-lighter);
+          text-align: center;
+          line-height: 40px;
+          color: #1989fa;
+          visibility-height: 50px;
+        ">
       UP
     </div>
-  </el-backtop>
+</el-backtop>
 </template>
 
 

@@ -1,21 +1,29 @@
 <template>
     <div>
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
-            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod"
-                width="100%"></el-table-column>
+            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"></el-table-column>
             <el-table-column label="用例名称" prop="name"></el-table-column>
             <el-table-column label="API数量" prop="api_count"></el-table-column>
             <el-table-column label="运行次数" prop="run_order"></el-table-column>
             <el-table-column label="创建时间" prop="created_at"></el-table-column>
             <el-table-column label="操作">
                 <template #default="scope">
-                    <el-button type="success" plain :loading="scope.row.runLoading"
-                        @click="setDialogVisible(scope.row)">运行
+                    <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
+                    </el-button>&nbsp;
+                    <el-button-group class="ml-4">
+                        <el-button type="primary" plain @click="getCaseData(scope.row)"
+                            :loading="scope.row.dataLoading">详情</el-button>
+                        <el-button type="primary" plain @click="replaceData(scope.row)">替换</el-button>
+                        <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
+                            :loading="scope.row.copyLoading">复制</el-button>
+
+
+                    </el-button-group>&nbsp;
+                    <el-button type="Info" plain>
+                        <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
                     </el-button>
-                    <el-button type="primary" plain @click="getCaseData(scope.row)" :loading="scope.row.dataLoading">详情
-                    </el-button>
-                    <el-button type="primary" plain @click="replaceData(scope.row)">替换
-                    </el-button>
+
+
                 </template>
             </el-table-column>
         </el-table>
@@ -34,6 +42,17 @@
                 </span>
             </template>
         </el-dialog>
+        <!-- 复制用例弹窗 -->
+        <el-dialog v-model="setCopyDialogVisible" title="Tips" width="30%">
+            <span>复制用例 [ {{ caseId }} - {{ caseName }} ]</span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="setCopyDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="copyCase(caseRow)">确认</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
         <!-- 替换数据弹窗 -->
         <el-dialog v-model='repData' width="70%" :close-on-click-modal=false :close-on-press-escape=false
             :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='closeDialog'>
@@ -147,15 +166,13 @@
                     </template>
                 </el-table-column>
             </el-table>
-
-
-
         </el-dialog>
 
-    </div>
+</div>
 </template>
 
 <script>
+
 import CaseData from './CaseData.vue';
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
@@ -177,6 +194,7 @@ export default {
             caseId: null,
             dataTitle: null,
             dialogVisible: false,
+            setCopyDialogVisible: false,
             caseName: null,
             caseRow: null,
             repData: false,
@@ -199,6 +217,13 @@ export default {
         // 运行窗口
         setDialogVisible(row) {
             this.dialogVisible = true
+            this.caseName = row.name
+            this.caseId = row.case_id
+            this.caseRow = row
+        },
+        // 复制窗口
+        copyDialogVisible(row) {
+            this.setCopyDialogVisible = true
             this.caseName = row.name
             this.caseId = row.case_id
             this.caseRow = row
@@ -231,9 +256,35 @@ export default {
                 }
             }
         },
+
+        // 复制测试用例
+        async copyCase(row) {
+            this.setCopyDialogVisible = false
+            row.copyLoading = true
+            console.log(row);
+            await this.$http({
+                url: '/caseService/copy/case',
+                method: 'GET',
+                params: {
+                    case_id: row.case_id
+                }
+            }).then(
+                function (response) {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '用例[ ' + row.name + ' ] 复制成功 新用例名称 [ ' + response.data.case_name + ' ]',
+                        offset: 200,
+                    })
+                    row.copyLoading = false
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+                row.copyLoading = false
+            })
+        },
+
         // 替换测试数据
         async repCaseData(row, rep) {
-            console.log(row);
             if (rep == 'url') {
                 row.urlLoading = true
             } else if (rep == 'params') {
