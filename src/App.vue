@@ -38,6 +38,7 @@ export default {
         this.tempInfo[x].runLoading = false
         this.tempInfo[x].dataLoading = false
         this.tempInfo[x].tempToCaseLoading = false
+        // this.tempInfo[x].paramsChangeLoading = false
       }
       // 所有的状态都改为false
       for (var x in this.clickStatus) {
@@ -65,6 +66,7 @@ export default {
       for (var x in this.caseInfo) {
         this.caseInfo[x].runLoading = false
         this.caseInfo[x].dataLoading = false
+        this.caseInfo[x].copyLoading = false
         // 测试报告地址
         this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
         // this.caseInfo[x].repLoading = false

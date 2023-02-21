@@ -55,8 +55,20 @@
 
             <!-- 原始数据查询 -->
             <el-form-item :inline="true">
-                <el-input v-model="responseValueInput" placeholder="请输入需要替换的原始数据" clearable minlength="3">
-                    <template #prepend>从Response中的value字段</template>
+                <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3">
+                    <template #prepend>
+                        <el-select v-model="selectResponse" placeholder="请选择数据源">
+                            <el-option label="从Response中的value字段" value="value" />
+                            <el-option label="从Response中的key字段" value="key" />
+                        </el-select>
+                        <div v-show="selectResponse == 'value'">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <el-select v-model="select" placeholder="==" style="width: 80px">
+                                <el-option label="==" value="==" />
+                                <el-option label="in" value="in" />
+                            </el-select>
+                        </div>
+                    </template>
                     <template #append>
                         <el-button plain @click="getResponseJsonPath">查询</el-button>
                     </template>
@@ -79,7 +91,8 @@
                     <template #prepend>预选表达式</template>
                     <template #append>
                         <el-button @click="getTestDataJsonpath">
-                            使用[ {{ responseValueInput }} ]从测试数据的 url.params.data 预览查询</el-button>
+                            使用[ {{ selectResponse }} ]->[ {{ responseValueInput }} ]从测试数据的 url.params.data 预览查询
+                        </el-button>
                     </template>
                 </el-input>
             </el-form-item>
@@ -164,7 +177,7 @@
             </el-table>
         </el-dialog>
 
-</div>
+    </div>
 </template>
 
 <script>
@@ -201,7 +214,9 @@ export default {
             parmaJsonpath: [],
             dataJsonpath: [],
             tableLayout: '',
-            activeName: null
+            activeName: null,
+            select: '==',
+            selectResponse: ''
         }
     },
 
@@ -240,6 +255,8 @@ export default {
             this.parmaJsonpath = []
             this.dataJsonpath = []
             this.tableLayout = ''
+            this.selectResponse = ''
+            this.select = '=='
         },
 
         // jsonpath多选框
@@ -251,7 +268,7 @@ export default {
                     this.responseValueJsonpath[x]['checkbox'] = false
                 }
             }
-        },
+        },  
 
         // 复制测试用例
         async copyCase(row) {
@@ -345,7 +362,17 @@ export default {
             var urlStr = []
             var paramStr = []
             var dataStr = []
-            await this.$http.get('/caseService/casedata/jsonpath/list?case_id=' + this.caseId + '&extract_contents=' + this.responseValueInput + '&new_str=' + this.fixedResponseValueJsonpath).then(
+            await this.$http({
+                url: '/caseService/casedata/jsonpath/list',
+                method: "GET",
+                params: {
+                    case_id: this.caseId,
+                    extract_contents: this.responseValueInput,
+                    new_str: this.fixedResponseValueJsonpath,
+                    key_value: this.selectResponse,
+                    ext_type: this.select
+                }
+            }).then(
                 function (response) {
                     urlStr = response.data['data']['url_list']['extract_contents']
                     for (var x in urlStr) {
@@ -392,7 +419,16 @@ export default {
             this.responseValueJsonpath = []
             var responseValueJsonpath = []
             var fixedResponseValueJsonpath = ''
-            await this.$http.get('/caseService/response/jsonpath/list?case_id=' + this.caseId + '&extract_contents=' + this.responseValueInput).then(
+            await this.$http({
+                url: '/caseService/response/jsonpath/list',
+                method: 'GET',
+                params: {
+                    case_id: this.caseId,
+                    extract_contents: this.responseValueInput,
+                    key_value: this.selectResponse,
+                    ext_type: this.select
+                }
+            }).then(
                 function (response) {
                     for (var x in response.data.data) {
                         responseValueJsonpath = response.data.data[x]
@@ -430,6 +466,7 @@ export default {
                         case_[x].stopLoading = false
                         case_[x].failStopLoading = false
                         case_[x].isLoginLoading = false
+                        case_[x].descriptionLoading = false
                         if (case_[x].description) {
                             case_[x].edit = false
                         } else {

@@ -1,10 +1,10 @@
 <template>
     <div>
         <!-- <el-button round @click="uploadDialog">
-                    上传Charles.har文件&nbsp;<el-icon>
-                        <DocumentAdd />
-                    </el-icon>
-                </el-button> -->
+                                                            上传Charles.har文件&nbsp;<el-icon>
+                                                                <DocumentAdd />
+                                                            </el-icon>
+                                                        </el-button> -->
 
         <el-dialog v-model="uploadDialogBl" title="上传Charles.har文件">
             <el-form>
@@ -27,6 +27,8 @@
 
             </el-form>
         </el-dialog>
+        <!-- 参数变更 -->
+        <el-button type="primary" @click="paramsChange">变更</el-button>
 
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
             <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"></el-table-column>
@@ -45,6 +47,7 @@
                             :loading="scope.row.dataLoading">详情</el-button>
                         <el-button type="primary" plain @click="tempToCase(scope.row)"
                             :loading="scope.row.tempToCaseLoading">转化</el-button>
+
                     </el-button-group>
                 </template>
             </el-table-column>
@@ -107,7 +110,61 @@
                 </span>
             </template>
         </el-dialog>
-</div>
+        <!-- 字段变更的弹窗 -->
+        <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
+            :close-on-press-escape=false>
+            <el-form-item :inline="true">
+                <el-input v-model="urlMethodInput" placeholder="请输入需要查找的URL" clearable minlength="3">
+                    <template #prepend>
+                        <el-select v-model="select" placeholder="Method" style="width: 115px">
+                            <el-option label="GET" value="GET" />
+                            <el-option label="POST" value="POST" />
+                            <el-option label="PUT" value="PUT" />
+                            <el-option label="DELETE" value="DELETE" />
+                        </el-select>
+                    </template>
+                    <template #append>
+                        <el-button plain @click="getAllInfo()">全局查询</el-button>
+                    </template>
+                </el-input>
+            </el-form-item>
+            <!-- 字段变更查询数据列表 -->
+            <el-table :data="changeTempData" stripe fit v-show="changeTempData.length > 0">
+                <el-table-column type="index"></el-table-column>
+                <el-table-column label="TempName" prop="temp_name"></el-table-column>
+                <el-table-column label="TempId" prop="temp_id" width="100px"></el-table-column>
+                <el-table-column label="Number" prop="number" width="100px"></el-table-column>
+                <el-table-column label="多选" width="200px">
+                    <template #default="scope">
+                        <el-checkbox v-model=scope.row.checkbox @click.stop="changeBoxClick(scope.row)" />
+                    </template>
+                </el-table-column>
+                <!-- <el-table-column label="Path" prop="path"></el-table-column>
+                <el-table-column label="Params" prop="params">
+                    <template #default="scope">
+                        <json-viewer :value="scope.row.params" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="Data" prop="data">
+                    <template #default="scope">
+                        <json-viewer :value="scope.row.data" />
+                    </template>
+                </el-table-column> -->
+            </el-table>
+            <!-- 复选框的按钮 -->
+            <el-radio-group v-model="tableLayout">
+                <el-radio-button label="url" />
+                <el-radio-button label="params" />
+                <el-radio-button label="data" />
+            </el-radio-group>
+            <div v-show="tableLayout == 'url'">
+                <el-input v-model="repUrl" placeholder="请输入需要变更的内容">
+                    <template #prepend>变更URL内容</template>
+                </el-input>
+            </div>
+
+        </el-dialog>
+    </div>
 </template>
 
 <script>
@@ -145,7 +202,13 @@ export default {
             activeStop: true,
             addCaseInput: '',
             affTempToCaseId: 99999,
-            tempToCaseLoading: false
+            tempToCaseLoading: false,
+            dialogParamsCharge: false,
+            select: null,
+            urlMethodInput: null,
+            changeTempData: [],
+            tableLayout: '',
+            repUrl: ''
         }
     },
 
@@ -155,7 +218,6 @@ export default {
         },
 
         checkboxClick(row) {
-            // console.log(row);
             for (var x in this.thisCaseInfo) {
                 if (this.thisCaseInfo[x]['checkbox'] != row.checkbox) {
                     this.thisCaseInfo[x]['checkbox'] = false
@@ -163,6 +225,38 @@ export default {
             }
             this.affTempToCaseId = row.case_id
         },
+        // 全局搜索url+method
+        async getAllInfo() {
+            var changeData = []
+            await this.$http({
+                url: '/template/url/for/data',
+                method: 'GET',
+                params: {
+                    method: this.select,
+                    path: this.urlMethodInput
+                }
+            }).then(
+                function (response) {
+                    changeData = response.data
+                    for (var x in changeData) {
+                        changeData[x].checkbox = false
+                    }
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+            this.changeTempData = changeData
+        },
+        // 全局替换参数的复选框
+        changeBoxClick(row) {
+            // for (var x in this.changeTempData) {
+            //     if (this.changeTempData[x]['checkbox'] != row.checkbox) {
+            //         this.changeTempData[x]['checkbox'] = false
+            //     }
+            // }
+            console.log(row);
+        },
+
         // 模板转用例
         async postTempToCase() {
             this.tempToCaseLoading = true
@@ -234,6 +328,11 @@ export default {
             })
             this.myDialog = dialog_
             this.thisTempData = temp_
+        },
+        // 全局参数字段变更
+        paramsChange(row) {
+            this.dialogParamsCharge = true
+            console.log(row);
         },
 
         // 模板转用例
