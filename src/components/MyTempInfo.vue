@@ -31,14 +31,14 @@
         <el-button type="primary" @click="paramsChange">变更</el-button>
 
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
-            <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"></el-table-column>
-            <el-table-column label="模板名称" prop="temp_name"></el-table-column>
-            <el-table-column label="项目名称" prop="project_name"></el-table-column>
-            <el-table-column label="API数量" prop="api_count"></el-table-column>
-            <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData"></el-table-column>
-            <el-table-column label="创建时间" prop="created_at"></el-table-column>
-            <el-table-column label="修改时间" prop="updated_at"></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%" align="center"></el-table-column>
+            <el-table-column label="模板名称" prop="temp_name" width="400px"></el-table-column>
+            <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>
+            <el-table-column label="API数量" prop="api_count" align="center"></el-table-column>
+            <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
+            <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
+            <el-table-column label="修改时间" prop="updated_at" align="center"></el-table-column>
+            <el-table-column label="操作" align="center">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading"
                         @click="setDialogVisible(scope.row)">运行</el-button>&nbsp;
@@ -60,9 +60,10 @@
         <!-- 运行用例弹窗 -->
         <el-dialog v-model="dialogVisible" title="Tips" width="30%">
             <span>模板 [ {{ tempId }} - {{ tempName }} ] 包含以下用例</span>
+            <br>
             <el-table :data="thisCaseInfo">
-                <el-table-column label="CaseId" prop="case_id" width="100%"></el-table-column>
-                <el-table-column label="CaseName" prop="case_name"></el-table-column>
+                <el-table-column label="CaseId" prop="case_id" width="100%" align="center"></el-table-column>
+                <el-table-column label="CaseName" prop="case_name" align="center"></el-table-column>
             </el-table>
             <template #footer>
                 <span class="dialog-footer">
@@ -86,9 +87,9 @@
 
             <!-- 覆盖 -->
             <el-table :data="thisCaseInfo" v-if="radioTempToCase == false">
-                <el-table-column label="CaseId" prop="case_id" width="100%"></el-table-column>
-                <el-table-column label="CaseName" prop="case_name"></el-table-column>
-                <el-table-column label="选择">
+                <el-table-column label="CaseId" prop="case_id" width="100%" align="center"></el-table-column>
+                <el-table-column label="CaseName" prop="case_name" align="center"></el-table-column>
+                <el-table-column label="选择" align="center">
                     <template #default="scope">
                         <el-checkbox v-model=scope.row.checkbox @click.stop="checkboxClick(scope.row)" label="" />
                     </template>
@@ -112,7 +113,7 @@
         </el-dialog>
         <!-- 字段变更的弹窗 -->
         <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
-            :close-on-press-escape=false>
+            :close-on-press-escape=false @close='closeChargeDialog'>
             <el-form-item :inline="true">
                 <el-input v-model="urlMethodInput" placeholder="请输入需要查找的URL" clearable minlength="3">
                     <template #prepend>
@@ -132,35 +133,205 @@
             <el-table :data="changeTempData" stripe fit v-show="changeTempData.length > 0">
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="TempName" prop="temp_name"></el-table-column>
-                <el-table-column label="TempId" prop="temp_id" width="100px"></el-table-column>
-                <el-table-column label="Number" prop="number" width="100px"></el-table-column>
-                <el-table-column label="多选" width="200px">
+                <el-table-column label="Url" prop="path"></el-table-column>
+                <el-table-column label="TempId" prop="temp_id" width="100px" align="center"></el-table-column>
+                <el-table-column label="Number" prop="number" width="100px" align="center"></el-table-column>
+                <el-table-column label="多选" width="70px">
                     <template #default="scope">
-                        <el-checkbox v-model=scope.row.checkbox @click.stop="changeBoxClick(scope.row)" />
+                        <el-checkbox v-model=scope.row.checkbox @click.native.prevent="changeBoxClick(scope.row)" />
                     </template>
                 </el-table-column>
-                <!-- <el-table-column label="Path" prop="path"></el-table-column>
-                <el-table-column label="Params" prop="params">
-                    <template #default="scope">
-                        <json-viewer :value="scope.row.params" />
-                    </template>
-                </el-table-column>
-                <el-table-column label="Data" prop="data">
-                    <template #default="scope">
-                        <json-viewer :value="scope.row.data" />
-                    </template>
-                </el-table-column> -->
             </el-table>
+            <br>
             <!-- 复选框的按钮 -->
-            <el-radio-group v-model="tableLayout">
+            <el-radio-group v-model="tableLayout" v-show="primaryUrl.length > 0">
                 <el-radio-button label="url" />
                 <el-radio-button label="params" />
                 <el-radio-button label="data" />
             </el-radio-group>
-            <div v-show="tableLayout == 'url'">
-                <el-input v-model="repUrl" placeholder="请输入需要变更的内容">
-                    <template #prepend>变更URL内容</template>
+            <br>
+            <br>
+            <!-- URL的替换操作 -->
+            <div v-show="tableLayout == 'url' && primaryUrl.length > 0">
+                <el-input v-model="changeUrlInput" placeholder="" >
+                    <template #prepend>变更的URL</template>
                 </el-input>
+                <el-table :data="primaryUrl" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="把这个url" prop="path"></el-table-column>
+                    <el-table-column label="改成这样"  >
+                        <el-input v-model="changeUrlInput" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id"  width="100px" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" width="100px" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" width="100px" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="变更" inactive-text="未变更"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'url')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!-- params的替换操作 -->
+            <div v-show="tableLayout == 'params' && primaryUrl.length > 0">
+                <el-radio-group v-model="paramsTableLayout" style="display:block">
+                    <el-radio-button label="add" />
+                    <el-radio-button label="edit"  />
+                    <el-radio-button label="del"  />
+                </el-radio-group>
+                <br>
+                <el-input v-model="changeParamsAddInput" placeholder="$.result.0.test.id 会插入id" v-if="paramsTableLayout == 'add'" style="display:inline" >
+                    <template #prepend>表达式</template>
+                </el-input>&nbsp;
+                <el-input v-model="changeParamsAddInputValue" placeholder="默认Null" v-if="paramsTableLayout == 'add'" style="display:inline" >
+                    <template #prepend>值</template>
+                </el-input>
+
+                <el-input v-model="changeParamsDelInput" placeholder="key字段" v-if="paramsTableLayout == 'del'" style="display:inline">
+                    <template #prepend>需要删除的key</template>
+                </el-input>
+                <el-input v-model="changeParamsEditInputA" placeholder="testOne" v-if="paramsTableLayout == 'edit'" style="display:inline">
+                    <template #prepend>把这个key</template>
+                </el-input>&nbsp;
+                <el-input v-model="changeParamsEditInputB" placeholder="testTwo" v-if="paramsTableLayout == 'edit'" style="display:inline">
+                    <template #prepend>改为</template>
+                </el-input>
+                
+                <el-table :data="primaryParams" v-show="paramsTableLayout == 'add'" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="key"  >
+                        <el-input v-model="changeParamsAddInput" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="value"  >
+                        <el-input v-model="changeParamsAddInputValue" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="插入" inactive-text="未插入"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-table :data="primaryParams" v-show="paramsTableLayout == 'edit'" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="把这个key"  >
+                        <el-input v-model="changeParamsEditInputA" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="改为这个key"  >
+                        <el-input v-model="changeParamsEditInputB" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="修改" inactive-text="未修改"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-table :data="primaryParams" v-show="paramsTableLayout == 'del'" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="将这个key删除掉"  >
+                        <el-input v-model="changeParamsDelInput" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="删除" inactive-text="未删除"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!-- data的替换操作 -->
+            <div v-show="tableLayout == 'data' && primaryUrl.length > 0">
+                <el-radio-group v-model="dataTableLayout" style="display:block">
+                    <el-radio-button label="add" />
+                    <el-radio-button label="edit"  />
+                    <el-radio-button label="del"  />
+                </el-radio-group>
+                <br>
+                <el-input v-model="changeDataAddInput" placeholder="$.result.0.test.id 会插入id" v-if="dataTableLayout == 'add'" style="display:inline" >
+                    <template #prepend>表达式</template>
+                </el-input>&nbsp;
+                <el-input v-model="changeDataAddInputValue" placeholder="默认Null" v-if="dataTableLayout == 'add'" style="display:inline" >
+                    <template #prepend>值</template>
+                </el-input>
+                <el-input v-model="changeDataDelInput" placeholder="key字段" v-if="dataTableLayout == 'del'" style="display:inline">
+                    <template #prepend>需要删除的key</template>
+                </el-input>
+                <el-input v-model="changeDataEditInputA" placeholder="testOne" v-if="dataTableLayout == 'edit'" style="display:inline">
+                    <template #prepend>把这个key</template>
+                </el-input>&nbsp;
+                <el-input v-model="changeDataEditInputB" placeholder="testTwo" v-if="dataTableLayout == 'edit'" style="display:inline">
+                    <template #prepend>改为</template>
+                </el-input>
+
+                <el-table :data="primaryData" v-show="dataTableLayout == 'add'" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="key"  >
+                        <el-input v-model="changeDataAddInput" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="value"  >
+                        <el-input v-model="changeDataAddInputValue" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="插入" inactive-text="未插入"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-table :data="primaryData" v-show="dataTableLayout == 'edit'" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="把这个key"  >
+                        <el-input v-model="changeDataEditInputA" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="改为这个key"  >
+                        <el-input v-model="changeDataEditInputB" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="修改" inactive-text="未修改"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-table :data="primaryData" v-show="dataTableLayout == 'del'" :row-class-name="tableRowClassName">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="将这个Key删除掉"  >
+                        <el-input v-model="changeDataDelInput" placeholder="" disabled ></el-input>
+                    </el-table-column>
+                    <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
+                    <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
+                    <el-table-column label="number" prop="number" align="center"></el-table-column>
+                    <el-table-column label="操作" width="65px">
+                        <template #default="scope">
+                            <el-switch v-model="scope.row.rep" active-text="删除" inactive-text="未删除"
+                                :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                                @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
 
         </el-dialog>
@@ -207,8 +378,24 @@ export default {
             select: null,
             urlMethodInput: null,
             changeTempData: [],
-            tableLayout: '',
-            repUrl: ''
+            tableLayout: 'url',
+            paramsTableLayout: 'add',
+            dataTableLayout: 'add',
+            primaryUrl: [],
+            primaryParams: [],
+            primaryData: [],
+            changeUrlInput: '',
+            changeParamsAddInput: '',
+            changeParamsAddInputValue: null,
+            changeParamsEditInputA: '',
+            changeParamsEditInputB: '',
+            changeParamsDelInput: '',
+            changeDataAddInput: '',
+            changeDataAddInputValue: null,
+            changeDataEditInputA: '',
+            changeDataEditInputB: '',
+            changeDataDelInput: ''
+            
         }
     },
 
@@ -225,6 +412,11 @@ export default {
             }
             this.affTempToCaseId = row.case_id
         },
+        // 变更数据操作
+        repCaseData(row) {
+
+        },
+
         // 全局搜索url+method
         async getAllInfo() {
             var changeData = []
@@ -246,15 +438,67 @@ export default {
                 ElMessage.error(error.message)
             })
             this.changeTempData = changeData
+            this.primaryUrl = []
+            this.primaryParams = []
+            this.primaryData = []
+        },
+
+        // 搜索单个数据
+        getCaseDataInfo () {
+
+        },
+
+        // 关闭参数变更窗口
+        closeChargeDialog() {
+            this.primaryUrl = []
+            this.primaryParams = []
+            this.primaryData = []
+            this.changeTempData = []
         },
         // 全局替换参数的复选框
         changeBoxClick(row) {
-            // for (var x in this.changeTempData) {
-            //     if (this.changeTempData[x]['checkbox'] != row.checkbox) {
-            //         this.changeTempData[x]['checkbox'] = false
-            //     }
+            row.checkbox = row.checkbox == true ? false : true
+
+            // 给复选框绑定上值
+            // if (this.primaryUrl.length > 0) {
+            //     this.tableLayout = 'url'
+            // } else if (this.primaryParams.length > 0) {
+            //     this.tableLayout = 'params'
+            // } else if (this.primaryData.length > 0) {
+            //     this.tableLayout = 'data'
             // }
-            console.log(row);
+
+            if (row.checkbox == true) {
+                this.primaryUrl.push(row)
+                this.primaryParams.push(row)
+                this.primaryData.push(row)
+            } else {
+                for (var x in this.primaryUrl) {
+                    if (this.primaryUrl[x].temp_id == row.temp_id && this.primaryUrl[x].number == row.number) {
+                        this.primaryUrl.splice(x, 1)
+                    }
+                    if (this.primaryParams[x].temp_id == row.temp_id && this.primaryParams[x].number == row.number) {
+                        this.primaryParams.splice(x, 1)
+                    }
+                    if (this.primaryData[x].temp_id == row.temp_id && this.primaryData[x].number == row.number) {
+                        this.primaryData.splice(x, 1)
+                    }
+                }
+            }
+            
+            // console.log(row)
+            
+            // console.log(this.primaryUrl);
+        },
+        // 表格颜色
+        tableRowClassName (row) {
+            console.log(row)
+            console.log('temp_id' in row['row'])
+            if ('temp_id' in row['row']) {
+                return 'success-row'
+            } else {
+                return 'warning-row'
+            }
         },
 
         // 模板转用例

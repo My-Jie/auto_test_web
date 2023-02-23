@@ -1,12 +1,12 @@
 <template>
     <div>
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
-            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"></el-table-column>
-            <el-table-column label="用例名称" prop="name"></el-table-column>
-            <el-table-column label="API数量" prop="api_count"></el-table-column>
-            <el-table-column label="运行次数" prop="run_order"></el-table-column>
-            <el-table-column label="创建时间" prop="created_at"></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%" align="center"></el-table-column>
+            <el-table-column label="用例名称" prop="name" width="500px"></el-table-column>
+            <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
+            <el-table-column label="运行次数" prop="run_order"  align="center"></el-table-column>
+            <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
+            <el-table-column label="操作" align="center">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
                     </el-button>&nbsp;
@@ -78,7 +78,7 @@
             <el-table :data="responseValueJsonpath" stripe fit v-show="responseValueJsonpath.length > 0">
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="用例序号.$.取值表达式" prop="jsonpath"></el-table-column>
-                <el-table-column label="选择[建议第一条]" width="200px">
+                <el-table-column label="选择[建议第一条]" width="200px" align="center">
                     <template #default="scope">
                         <el-checkbox v-model=scope.row.checkbox @click.stop="checkboxClick(scope.row)" label="" />
                     </template>
@@ -133,7 +133,7 @@
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式" prop="jsonpath"></el-table-column>
-                <el-table-column label="查询序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -149,7 +149,7 @@
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式从params取值" prop="jsonpath"></el-table-column>
-                <el-table-column label="查询序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -165,7 +165,7 @@
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="把这个数据" prop="old_data"></el-table-column>
                 <el-table-column label="通过这个表达式从data取值" prop="jsonpath"></el-table-column>
-                <el-table-column label="查询序号" prop="number" width="100%"></el-table-column>
+                <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
                 <el-table-column label="操作" width="65px">
                     <template #default="scope">
@@ -216,7 +216,7 @@ export default {
             tableLayout: '',
             activeName: null,
             select: '==',
-            selectResponse: ''
+            selectResponse: 'value'
         }
     },
 
@@ -255,7 +255,7 @@ export default {
             this.parmaJsonpath = []
             this.dataJsonpath = []
             this.tableLayout = ''
-            this.selectResponse = ''
+            this.selectResponse = 'value'
             this.select = '=='
         },
 
