@@ -2,11 +2,13 @@
 <script>
 import MyTempInfo from "./components/MyTempInfo.vue"
 import MyCaseInfo from "./components/MyCaseInfo.vue"
+import MyChange from './components/MyChange.vue'
 import { ElMessage } from 'element-plus'
 export default {
   components: {
     MyTempInfo,
-    MyCaseInfo
+    MyCaseInfo,
+    MyChange
   },
   data() {
     return {
@@ -17,7 +19,9 @@ export default {
       },
       // 存获取的数据
       tempInfo: [],
-      caseInfo: []
+      caseInfo: [],
+      // 全局参数变更弹窗
+      dialogParamsCharge: false
     }
   },
 
@@ -88,13 +92,29 @@ export default {
 <template>
   <el-container>
     <el-header>
+      <!-- 模板信息 -->
       <el-button type="primary" @click="getTempInfo">获取模板信息</el-button>
+      <!-- 用例信息 -->
       <el-button type="primary" @click="getCaseInfo">获取用例信息</el-button>
+      <!-- 参数变更 -->
+      <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
       <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo"></my-case-info>
+      <!-- 字段变更的弹窗 -->
+      <el-dialog v-model='dialogParamsCharge' 
+          width="70%" title="全局参数变更" 
+          :close-on-click-modal=false 
+          :close-on-press-escape=false
+          @close='dialogParamsCharge = false'>
+          <my-change v-if="dialogParamsCharge"></my-change>
+      </el-dialog>
     </el-main>
+
+    
+    
+
   </el-container>
   <el-backtop :bottom="100">
     <div style="

@@ -1,16 +1,5 @@
 <template>
     <div>
-        <!-- 参数变更 -->
-        <el-button type="primary" @click="dialogParamsCharge = true">变更</el-button>
-        <!-- 字段变更的弹窗 -->
-        <el-dialog v-model='dialogParamsCharge' 
-        width="70%" title="全局参数变更" 
-        :close-on-click-modal=false 
-        :close-on-press-escape=false
-        @close='dialogParamsCharge = false'>
-            <my-change v-if="dialogParamsCharge"></my-change>
-        </el-dialog>
-
         <!-- 模板列表 -->
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
             <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%" align="center"></el-table-column>
@@ -99,7 +88,6 @@
 
 <script>
 import TempData from './TempData.vue'
-import MyChange from './MyChange.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
 export default {
@@ -107,7 +95,6 @@ export default {
 
     components: {
         TempData,
-        MyChange
     },
 
     props: {
@@ -133,7 +120,6 @@ export default {
             addCaseInput: '',
             affTempToCaseId: 99999,
             tempToCaseLoading: false,
-            dialogParamsCharge: false,
         }
     },
 
