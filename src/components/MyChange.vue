@@ -52,9 +52,9 @@
             <el-table-column label="number" prop="number" width="100px" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="变更" inactive-text="未变更" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'url')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repUrl" active-text="变更" inactive-text="未变更"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'url')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -106,9 +106,9 @@
             <el-table-column label="number" prop="number" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="插入" inactive-text="未插入" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repParamsAdd" active-text="插入" inactive-text="未插入"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -128,9 +128,9 @@
             <el-table-column label="number" prop="number" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="修改" inactive-text="未修改" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repParamsEdit" active-text="修改" inactive-text="未修改"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -144,9 +144,9 @@
             <el-table-column label="number" prop="number" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="删除" inactive-text="未删除" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repParamsDel" active-text="删除" inactive-text="未删除"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -195,9 +195,9 @@
             <el-table-column label="number" prop="number" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="插入" inactive-text="未插入" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repDataAdd" active-text="插入" inactive-text="未插入"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -217,9 +217,9 @@
             <el-table-column label="number" prop="number" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="修改" inactive-text="未修改" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repDataEdit" active-text="修改" inactive-text="未修改"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -233,9 +233,9 @@
             <el-table-column label="number" prop="number" align="center"></el-table-column>
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
-                    <el-switch v-model="scope.row.rep" active-text="删除" inactive-text="未删除" :loading="scope.row.urlLoading"
-                        style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
-                        inline-prompt></el-switch>
+                    <el-switch v-model="scope.row.repDataDel" active-text="删除" inactive-text="未删除"
+                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -279,6 +279,7 @@ export default {
     methods: {
         // 变更数据操作
         repCaseData(row) {
+            console.log(row);
 
         },
 
@@ -297,6 +298,7 @@ export default {
                     changeData = response.data
                     for (var x in changeData) {
                         changeData[x].checkbox = false
+                        changeData[x].caseNum = {}
                     }
                 }
             ).catch(function (error) {
@@ -313,29 +315,52 @@ export default {
 
         },
         // 全局替换参数的复选框
-        changeBoxClick(row) {
+        async changeBoxClick(row) {
             row.checkbox = row.checkbox == true ? false : true
             if (row.checkbox == true) {
                 this.primaryUrl.push(row)
                 this.primaryParams.push(row)
                 this.primaryData.push(row)
+                // 请求用例接口
+                var responseData = []
+                await this.$http({
+                    url: '/template/temp/for/casedata',
+                    method: 'GET',
+                    params: {
+                        temp_id: row.temp_id,
+                        number: row.number
+                    }
+                }).then(
+                    function (response) {
+                        responseData = response.data
+                    }
+                ).catch(
+                    function (error) {
+                        ElMessage.error(error.message)
+                    }
+                )
+                var num = 1
+                for (var x in responseData) {
+                    this.primaryUrl.push(responseData[x])
+                    this.primaryParams.push(responseData[x])
+                    this.primaryData.push(responseData[x])
+                    num++
+                }
+                row.caseNum[row.temp_id + '_' + row.number] = num
             } else {
+                console.log(row.caseNum);
                 for (var x in this.primaryUrl) {
                     if (this.primaryUrl[x].temp_id == row.temp_id && this.primaryUrl[x].number == row.number) {
-                        this.primaryUrl.splice(x, 1)
+                        this.primaryUrl.splice(x, row.caseNum[row.temp_id + '_' + row.number])
                     }
                     if (this.primaryParams[x].temp_id == row.temp_id && this.primaryParams[x].number == row.number) {
-                        this.primaryParams.splice(x, 1)
+                        this.primaryParams.splice(x, row.caseNum[row.temp_id + '_' + row.number])
                     }
                     if (this.primaryData[x].temp_id == row.temp_id && this.primaryData[x].number == row.number) {
-                        this.primaryData.splice(x, 1)
+                        this.primaryData.splice(x, row.caseNum[row.temp_id + '_' + row.number])
                     }
                 }
             }
-
-            // console.log(row)
-
-            // console.log(this.primaryUrl);
         },
         // 表格颜色
         urlColumnColor({ row, column, rowIndex, columnIndex }) {
@@ -395,5 +420,6 @@ export default {
 
 /* :deep(.el-input__inner){
         	text-align: center;
-        } */</style>
+        } */
+</style>
 
