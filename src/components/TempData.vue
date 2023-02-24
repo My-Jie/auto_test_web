@@ -1,12 +1,13 @@
 <template>
     <el-table v-loading='loading' :data="tempData" stripe fit>
-        <el-table-column label="number" prop="number" type="index" :index="indexMethod" width="100%" align="center"></el-table-column>
+        <el-table-column label="number" prop="number" type="index" :index="indexMethod" width="100%"
+            align="center"></el-table-column>
         <el-table-column label="host" prop="host" width="300px"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <el-table-column label="method" prop="method" width="100%" align="center"></el-table-column>
         <el-table-column label="code" prop="code" width="100%" align="center"></el-table-column>
         <el-table-column label="json_body" prop="json_body" width="100%" align="center"></el-table-column>
-        <el-table-column label="params" prop="params" show-overflow-tooltip='true' >
+        <el-table-column label="params" prop="params" show-overflow-tooltip='true'>
             <template #default="scope">
                 <json-viewer :value="scope.row.params" />
                 <!-- <p>{{ JSON.stringify(scope.row.params, null, 1) }}</p> -->

@@ -1,6 +1,6 @@
 <template>
     <el-table v-loading='loading' :data="caseData" stripe fit>
-        <el-table-column fixed="left" label="config" prop="config" width="250%" >
+        <el-table-column fixed="left" label="config" prop="config" width="250%">
             <template #default="scope">
                 <el-switch v-model="scope.row.config.stop" active-text="主动结束" inactive-text="主动结束"
                     :loading="scope.row.stopLoading" class="ml-2" style="--el-switch-on-color: #E6A23C;"
@@ -20,10 +20,10 @@
             </template>
         </el-table-column>
         <el-table-column fixed="left" label="number" prop="number" type="index" :index="indexMethod"
-            width="60" ></el-table-column>
+            width="60"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <el-table-column label="description" prop="description" width="300px" align="center">
-            <template #default="scope" >
+            <template #default="scope">
                 <el-button :icon="Edit" v-if="scope.row.edit" @click="editStatus(scope.row)"></el-button>
                 <el-col :span="18">
                     <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false">
@@ -56,8 +56,7 @@
                 <json-viewer :value="scope.row.headers" />
             </template>
         </el-table-column>
-
-</el-table>
+    </el-table>
 </template>
 
 <script>

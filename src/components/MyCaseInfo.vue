@@ -1,10 +1,11 @@
 <template>
     <div>
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
-            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%" align="center"></el-table-column>
+            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"
+                align="center"></el-table-column>
             <el-table-column label="用例名称" prop="name" width="500px"></el-table-column>
             <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
-            <el-table-column label="运行次数" prop="run_order"  align="center"></el-table-column>
+            <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="操作" align="center">
                 <template #default="scope">
@@ -268,7 +269,7 @@ export default {
                     this.responseValueJsonpath[x]['checkbox'] = false
                 }
             }
-        },  
+        },
 
         // 复制测试用例
         async copyCase(row) {

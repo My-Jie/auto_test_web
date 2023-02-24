@@ -2,7 +2,8 @@
     <div>
         <!-- 模板列表 -->
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
-            <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%" align="center"></el-table-column>
+            <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"
+                align="center"></el-table-column>
             <el-table-column label="模板名称" prop="temp_name" width="400px"></el-table-column>
             <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>
             <el-table-column label="API数量" prop="api_count" align="center"></el-table-column>
@@ -209,7 +210,7 @@ export default {
             this.myDialog = dialog_
             this.thisTempData = temp_
         },
-        
+
         // 模板转用例
         tempToCase(row) {
             this.dialogTempToCase = true

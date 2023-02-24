@@ -103,33 +103,30 @@ export default {
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
       <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo"></my-case-info>
       <!-- 字段变更的弹窗 -->
-      <el-dialog v-model='dialogParamsCharge' 
-          width="70%" title="全局参数变更" 
-          :close-on-click-modal=false 
-          :close-on-press-escape=false
-          @close='dialogParamsCharge = false'>
-          <my-change v-if="dialogParamsCharge"></my-change>
+      <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
+        :close-on-press-escape=false @close='dialogParamsCharge = false'>
+        <my-change v-if="dialogParamsCharge"></my-change>
       </el-dialog>
     </el-main>
 
-    
-    
+
+
 
   </el-container>
   <el-backtop :bottom="100">
     <div style="
-          height: 100%;
-          width: 100%;
-          background-color: var(--el-bg-color-overlay);
-          box-shadow: var(--el-box-shadow-lighter);
-          text-align: center;
-          line-height: 40px;
-          color: #1989fa;
-          visibility-height: 50px;
-        ">
+            height: 100%;
+            width: 100%;
+            background-color: var(--el-bg-color-overlay);
+            box-shadow: var(--el-box-shadow-lighter);
+            text-align: center;
+            line-height: 40px;
+            color: #1989fa;
+            visibility-height: 50px;
+          ">
       UP
     </div>
-</el-backtop>
+  </el-backtop>
 </template>
 
 
