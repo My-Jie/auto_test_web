@@ -82,6 +82,9 @@
         </el-input>&nbsp;
         <el-input v-model="changeParamsEditInputB" placeholder="testTwo" v-if="paramsTableLayout == 'edit'" style="display:inline">
             <template #prepend>改为</template>
+        </el-input>&nbsp;
+        <el-input v-model="changeParamsEditInputC" placeholder="默认不变" v-if="paramsTableLayout == 'edit'" style="display:inline">
+            <template #prepend>value</template>
         </el-input>
         
         <el-table :data="primaryParams" v-show="paramsTableLayout == 'add'" :cell-style="urlColumnColor">
@@ -103,13 +106,16 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-table :data="primaryParams" v-show="paramsTableLayout == 'edit'" :cell-style="urlColumnColor">
+        <el-table :data="primaryParams" v-show="paramsTableLayout == 'edit'" :cell-style="editColumnColor">
             <el-table-column type="index"></el-table-column>
             <el-table-column label="把这个key"  >
                 <el-input v-model="changeParamsEditInputA" placeholder="" disabled ></el-input>
             </el-table-column>
             <el-table-column label="改为这个key"  >
                 <el-input v-model="changeParamsEditInputB" placeholder="" disabled ></el-input>
+            </el-table-column>
+            <el-table-column label="value"  >
+                <el-input v-model="changeParamsEditInputC" placeholder="" disabled ></el-input>
             </el-table-column>
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
@@ -161,6 +167,9 @@
         </el-input>&nbsp;
         <el-input v-model="changeDataEditInputB" placeholder="testTwo" v-if="dataTableLayout == 'edit'" style="display:inline">
             <template #prepend>改为</template>
+        </el-input>&nbsp;
+        <el-input v-model="changeDataEditInputC" placeholder="默认不变" v-if="dataTableLayout == 'edit'" style="display:inline">
+            <template #prepend>value</template>
         </el-input>
 
         <el-table :data="primaryData" v-show="dataTableLayout == 'add'" :cell-style="urlColumnColor">
@@ -182,13 +191,16 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-table :data="primaryData" v-show="dataTableLayout == 'edit'" :cell-style="urlColumnColor">
+        <el-table :data="primaryData" v-show="dataTableLayout == 'edit'" :cell-style="editColumnColor">
             <el-table-column type="index"></el-table-column>
             <el-table-column label="把这个key"  >
                 <el-input v-model="changeDataEditInputA" placeholder="" disabled ></el-input>
             </el-table-column>
             <el-table-column label="改为这个key"  >
                 <el-input v-model="changeDataEditInputB" placeholder="" disabled ></el-input>
+            </el-table-column>
+            <el-table-column label="value"  >
+                <el-input v-model="changeDataEditInputC" placeholder="" disabled ></el-input>
             </el-table-column>
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
@@ -243,11 +255,13 @@ export default {
             changeParamsAddInputValue: null,
             changeParamsEditInputA: '',
             changeParamsEditInputB: '',
+            changeParamsEditInputC: '',
             changeParamsDelInput: '',
             changeDataAddInput: '',
             changeDataAddInputValue: null,
             changeDataEditInputA: '',
             changeDataEditInputB: '',
+            changeDataEditInputC: '',
             changeDataDelInput: ''
         }
     },
@@ -321,6 +335,18 @@ export default {
                 }
             }
             if (row.case_id > 0 && columnIndex === 4) {
+                return {
+                    background: '#4a7538'
+                }
+            }
+        },
+        editColumnColor ({row, column, rowIndex, columnIndex}) {
+            if (row.temp_id > 0 && columnIndex === 4) {
+                return {
+                    background: '#77693b'
+                }
+            }
+            if (row.case_id > 0 && columnIndex === 5) {
                 return {
                     background: '#4a7538'
                 }
