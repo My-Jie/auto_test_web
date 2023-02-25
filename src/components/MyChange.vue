@@ -285,15 +285,18 @@ export default {
             // 模板数据变更
             if (repType == 'url') {
                 await this.$http({
-                    url: 'rep/url/edit',
+                    url: '/ownRep/url/edit',
                     method: 'PUT',
-                    data: {
+                    data: JSON.stringify({
                         temp_id: row.temp_id,
                         case_id: row.case_id,
                         number: row.number,
                         rep_url: row.repUrl,
                         old_url: row.path,
                         new_url: this.changeUrlInput
+                    }),
+                    headers: {
+                        'content-type': "application/json"
                     }
                 })
 
@@ -302,20 +305,23 @@ export default {
                     await this.$http({
                         url: 'rep/params/add',
                         method: 'PUT',
-                        data: {
+                        data: JSON.stringify({
                             temp_id: row.temp_id,
                             case_id: row.case_id,
                             number: row.number,
                             rep_params_add: row.repParamsAdd,
                             key: this.changeParamsAddInput,
                             value: this.changeParamsAddInputValue
+                        }),
+                        headers: {
+                            'content-type': "application/json"
                         }
                     })
                 } else if (operate == 'edit') {
                     await this.$http({
                         url: 'rep/params/edit',
                         method: 'PUT',
-                        data: {
+                        data: JSON.stringify({
                             temp_id: row.temp_id,
                             case_id: row.case_id,
                             number: row.number,
@@ -323,18 +329,24 @@ export default {
                             old_key: this.changeParamsEditInputA,
                             new_key: this.changeParamsEditInputB,
                             value: this.changeParamsEditInputC
+                        }),
+                        headers: {
+                            'content-type': "application/json"
                         }
                     })
                 } else if (operate == 'del') {
                     await this.$http({
                         url: 'rep/params/del',
                         method: 'PUT',
-                        data: {
+                        data: JSON.stringify({
                             temp_id: row.temp_id,
                             case_id: row.case_id,
                             number: row.number,
                             rep_params_del: row.repParamsDel,
                             key: this.changeParamsDelInput,
+                        }),
+                        headers: {
+                            'content-type': "application/json"
                         }
                     })
                 }
@@ -343,20 +355,23 @@ export default {
                     await this.$http({
                         url: 'rep/data/add',
                         method: 'PUT',
-                        data: {
+                        data: JSON.stringify({
                             temp_id: row.temp_id,
                             case_id: row.case_id,
                             number: row.number,
                             rep_data_add: row.repDataAdd,
                             key: this.changeDataAddInput,
                             value: this.changeDataAddInputValue
+                        }),
+                        headers: {
+                            'content-type': "application/json"
                         }
                     })
                 } else if (operate == 'edit') {
                     await this.$http({
                         url: 'rep/data/edit',
                         method: 'PUT',
-                        data: {
+                        data: JSON.stringify({
                             temp_id: row.temp_id,
                             case_id: row.case_id,
                             number: row.number,
@@ -364,18 +379,24 @@ export default {
                             old_key: this.changeDataEditInputA,
                             new_key: this.changeDataEditInputB,
                             value: this.changeDataEditInputC
+                        }),
+                        headers: {
+                            'content-type': "application/json"
                         }
                     })
                 } else if (operate == 'del') {
                     await this.$http({
                         url: 'rep/data/del',
                         method: 'PUT',
-                        data: {
+                        data: JSON.stringify({
                             temp_id: row.temp_id,
-                            case_id: row.case_id, 
+                            case_id: row.case_id,
                             number: row.number,
                             rep_data_del: row.repDataDel,
                             key: this.changeDataDelInput,
+                        }),
+                        headers: {
+                            'content-type': "application/json"
                         }
                     })
                 }
@@ -386,7 +407,7 @@ export default {
         async getAllInfo() {
             var changeData = []
             await this.$http({
-                url: '/template/url/for/data',
+                url: '/ownRep/url/for/data',
                 method: 'GET',
                 params: {
                     method: this.select,
@@ -423,7 +444,7 @@ export default {
                 // 请求用例接口
                 var responseData = []
                 await this.$http({
-                    url: '/template/temp/for/casedata',
+                    url: '/ownRep/temp/for/casedata',
                     method: 'GET',
                     params: {
                         temp_id: row.temp_id,
