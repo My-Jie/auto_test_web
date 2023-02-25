@@ -54,7 +54,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repUrl" active-text="变更" inactive-text="未变更"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'url')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'url', 'edit')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -108,7 +108,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsAdd" active-text="插入" inactive-text="未插入"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'params', 'add')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -130,7 +130,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsEdit" active-text="修改" inactive-text="未修改"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'params', 'edit')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -146,7 +146,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsDel" active-text="删除" inactive-text="未删除"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'params', 'del')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -197,7 +197,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataAdd" active-text="插入" inactive-text="未插入"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'data', 'add')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -219,7 +219,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataEdit" active-text="修改" inactive-text="未修改"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'data', 'edit')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -235,7 +235,7 @@
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataDel" active-text="删除" inactive-text="未删除"
                         :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
-                        @click="repCaseData(scope.row, 'params')" inline-prompt></el-switch>
+                        @click="repCaseData(scope.row, 'data', 'del')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
@@ -278,9 +278,108 @@ export default {
 
     methods: {
         // 变更数据操作
-        repCaseData(row) {
+        async repCaseData(row, repType, operate) {
             console.log(row);
+            console.log(repType);
+            console.log(operate)
+            // 模板数据变更
+            if (repType == 'url') {
+                await this.$http({
+                    url: 'rep/url/edit',
+                    method: 'PUT',
+                    data: {
+                        temp_id: row.temp_id,
+                        case_id: row.case_id,
+                        number: row.number,
+                        rep_url: row.repUrl,
+                        old_url: row.path,
+                        new_url: this.changeUrlInput
+                    }
+                })
 
+            } else if (repType == 'params') {
+                if (operate == 'add') {
+                    await this.$http({
+                        url: 'rep/params/add',
+                        method: 'PUT',
+                        data: {
+                            temp_id: row.temp_id,
+                            case_id: row.case_id,
+                            number: row.number,
+                            rep_params_add: row.repParamsAdd,
+                            key: this.changeParamsAddInput,
+                            value: this.changeParamsAddInputValue
+                        }
+                    })
+                } else if (operate == 'edit') {
+                    await this.$http({
+                        url: 'rep/params/edit',
+                        method: 'PUT',
+                        data: {
+                            temp_id: row.temp_id,
+                            case_id: row.case_id,
+                            number: row.number,
+                            rep_params_edit: row.repParamsEdit,
+                            old_key: this.changeParamsEditInputA,
+                            new_key: this.changeParamsEditInputB,
+                            value: this.changeParamsEditInputC
+                        }
+                    })
+                } else if (operate == 'del') {
+                    await this.$http({
+                        url: 'rep/params/del',
+                        method: 'PUT',
+                        data: {
+                            temp_id: row.temp_id,
+                            case_id: row.case_id,
+                            number: row.number,
+                            rep_params_del: row.repParamsDel,
+                            key: this.changeParamsDelInput,
+                        }
+                    })
+                }
+            } else if (repType == 'data') {
+                if (operate == 'add') {
+                    await this.$http({
+                        url: 'rep/data/add',
+                        method: 'PUT',
+                        data: {
+                            temp_id: row.temp_id,
+                            case_id: row.case_id,
+                            number: row.number,
+                            rep_data_add: row.repDataAdd,
+                            key: this.changeDataAddInput,
+                            value: this.changeDataAddInputValue
+                        }
+                    })
+                } else if (operate == 'edit') {
+                    await this.$http({
+                        url: 'rep/data/edit',
+                        method: 'PUT',
+                        data: {
+                            temp_id: row.temp_id,
+                            case_id: row.case_id,
+                            number: row.number,
+                            rep_data_edit: row.repDataEdit,
+                            old_key: this.changeDataEditInputA,
+                            new_key: this.changeDataEditInputB,
+                            value: this.changeDataEditInputC
+                        }
+                    })
+                } else if (operate == 'del') {
+                    await this.$http({
+                        url: 'rep/data/del',
+                        method: 'PUT',
+                        data: {
+                            temp_id: row.temp_id,
+                            case_id: row.case_id, 
+                            number: row.number,
+                            rep_data_del: row.repDataDel,
+                            key: this.changeDataDelInput,
+                        }
+                    })
+                }
+            }
         },
 
         // 全局搜索url+method
