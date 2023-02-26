@@ -53,21 +53,21 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repUrl" active-text="变更" inactive-text="未变更"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingUrlEdit" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'url', 'edit')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
     </div>
     <!-- params的替换操作 -->
-    <div v-show="tableLayout == 'params' && primaryUrl.length > 0">
+    <div v-show="tableLayout == 'params' && primaryParams.length > 0">
         <el-radio-group v-model="paramsTableLayout" style="display:block">
             <el-radio-button label="add" />
             <el-radio-button label="edit" />
             <el-radio-button label="del" />
         </el-radio-group>
         <br>
-        <el-input v-model="changeParamsAddInput" placeholder="$.result.0.test.id 会插入id" v-if="paramsTableLayout == 'add'"
+        <el-input v-model="changeParamsAddInput" placeholder="查找的key.插入的key" v-if="paramsTableLayout == 'add'"
             style="display:inline">
             <template #prepend>表达式</template>
         </el-input>&nbsp;
@@ -88,13 +88,18 @@
             style="display:inline">
             <template #prepend>改为</template>
         </el-input>&nbsp;
-        <el-input v-model="changeParamsEditInputC" placeholder="默认不变" v-if="paramsTableLayout == 'edit'"
+        <el-input v-model="changeParamsEditInputC" placeholder="默认Null" v-if="paramsTableLayout == 'edit'"
             style="display:inline">
             <template #prepend>value</template>
         </el-input>
 
-        <el-table :data="primaryParams" v-show="paramsTableLayout == 'add'" :cell-style="urlColumnColor">
+        <el-table :data="primaryParams" v-show="paramsTableLayout == 'add'" :cell-style="addColumnColor">
             <el-table-column type="index"></el-table-column>
+            <el-table-column label="预览" width="80px" :show-overflow-tooltip="true">
+                <template #default="scope">
+                    <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="key">
                 <el-input v-model="changeParamsAddInput" placeholder="" disabled></el-input>
             </el-table-column>
@@ -107,13 +112,18 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsAdd" active-text="插入" inactive-text="未插入"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingParamsAdd" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'params', 'add')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
         <el-table :data="primaryParams" v-show="paramsTableLayout == 'edit'" :cell-style="editColumnColor">
             <el-table-column type="index"></el-table-column>
+            <el-table-column label="预览" width="80px" :show-overflow-tooltip="true">
+                <template #default="scope">
+                    <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="把这个key">
                 <el-input v-model="changeParamsEditInputA" placeholder="" disabled></el-input>
             </el-table-column>
@@ -129,13 +139,18 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsEdit" active-text="修改" inactive-text="未修改"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingParamsEdit" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'params', 'edit')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
         <el-table :data="primaryParams" v-show="paramsTableLayout == 'del'" :cell-style="delColumnColor">
             <el-table-column type="index"></el-table-column>
+            <el-table-column label="预览" width="80px" :show-overflow-tooltip="true">
+                <template #default="scope">
+                    <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="将这个key删除掉">
                 <el-input v-model="changeParamsDelInput" placeholder="" disabled></el-input>
             </el-table-column>
@@ -145,21 +160,21 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsDel" active-text="删除" inactive-text="未删除"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingParamsDel" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'params', 'del')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
     </div>
     <!-- data的替换操作 -->
-    <div v-show="tableLayout == 'data' && primaryUrl.length > 0">
+    <div v-show="tableLayout == 'data' && primaryData.length > 0">
         <el-radio-group v-model="dataTableLayout" style="display:block">
             <el-radio-button label="add" />
             <el-radio-button label="edit" />
             <el-radio-button label="del" />
         </el-radio-group>
         <br>
-        <el-input v-model="changeDataAddInput" placeholder="$.result.0.test.id 会插入id" v-if="dataTableLayout == 'add'"
+        <el-input v-model="changeDataAddInput" placeholder="查找的key.插入的key" v-if="dataTableLayout == 'add'"
             style="display:inline">
             <template #prepend>表达式</template>
         </el-input>&nbsp;
@@ -178,12 +193,18 @@
             style="display:inline">
             <template #prepend>改为</template>
         </el-input>&nbsp;
-        <el-input v-model="changeDataEditInputC" placeholder="默认不变" v-if="dataTableLayout == 'edit'" style="display:inline">
+        <el-input v-model="changeDataEditInputC" placeholder="默认Null" v-if="dataTableLayout == 'edit'"
+            style="display:inline">
             <template #prepend>value</template>
         </el-input>
 
-        <el-table :data="primaryData" v-show="dataTableLayout == 'add'" :cell-style="urlColumnColor">
+        <el-table :data="primaryData" v-show="dataTableLayout == 'add'" :cell-style="addColumnColor">
             <el-table-column type="index"></el-table-column>
+            <el-table-column label="预览" width="80px" :show-overflow-tooltip="true">
+                <template #default="scope">
+                    <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="key">
                 <el-input v-model="changeDataAddInput" placeholder="" disabled></el-input>
             </el-table-column>
@@ -196,13 +217,18 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataAdd" active-text="插入" inactive-text="未插入"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingDataAdd" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'data', 'add')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
         <el-table :data="primaryData" v-show="dataTableLayout == 'edit'" :cell-style="editColumnColor">
             <el-table-column type="index"></el-table-column>
+            <el-table-column label="预览" width="80px" :show-overflow-tooltip="true">
+                <template #default="scope">
+                    <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="把这个key">
                 <el-input v-model="changeDataEditInputA" placeholder="" disabled></el-input>
             </el-table-column>
@@ -218,13 +244,18 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataEdit" active-text="修改" inactive-text="未修改"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingDataEdit" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'data', 'edit')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
         </el-table>
         <el-table :data="primaryData" v-show="dataTableLayout == 'del'" :cell-style="delColumnColor">
             <el-table-column type="index"></el-table-column>
+            <el-table-column label="预览" width="80px" :show-overflow-tooltip="true">
+                <template #default="scope">
+                    <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="将这个Key删除掉">
                 <el-input v-model="changeDataDelInput" placeholder="" disabled></el-input>
             </el-table-column>
@@ -234,7 +265,7 @@
             <el-table-column label="操作" width="65px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataDel" active-text="删除" inactive-text="未删除"
-                        :loading="scope.row.urlLoading" style="--el-switch-on-color: #67C23A;"
+                        :loading="scope.row.loadingDataDel" style="--el-switch-on-color: #67C23A;"
                         @click="repCaseData(scope.row, 'data', 'del')" inline-prompt></el-switch>
                 </template>
             </el-table-column>
@@ -260,13 +291,16 @@ export default {
             primaryUrl: [],
             primaryParams: [],
             primaryData: [],
+
             changeUrlInput: '',
+
             changeParamsAddInput: '',
             changeParamsAddInputValue: null,
             changeParamsEditInputA: '',
             changeParamsEditInputB: '',
             changeParamsEditInputC: '',
             changeParamsDelInput: '',
+
             changeDataAddInput: '',
             changeDataAddInputValue: null,
             changeDataEditInputA: '',
@@ -279,11 +313,9 @@ export default {
     methods: {
         // 变更数据操作
         async repCaseData(row, repType, operate) {
-            console.log(row);
-            console.log(repType);
-            console.log(operate)
             // 模板数据变更
             if (repType == 'url') {
+                row.loadingUrlEdit = true
                 await this.$http({
                     url: '/ownRep/url/edit',
                     method: 'PUT',
@@ -298,12 +330,36 @@ export default {
                     headers: {
                         'content-type': "application/json"
                     }
-                })
+                }).then(
+                    function () {
+                        row.loadingUrlEdit = false
+                        if (row.repUrl) {
+                            ElNotification.success({
+                                title: 'Success',
+                                message: '变更成功',
+                                offset: 200,
+                            })
+                        } else {
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: '未变更',
+                                offset: 200,
+                            })
+                        }
+
+                    }
+                ).catch(
+                    function (error) {
+                        row.loadingUrlEdit = false
+                        ElMessage.error(error.message)
+                    }
+                )
 
             } else if (repType == 'params') {
                 if (operate == 'add') {
+                    row.loadingParamsAdd = true
                     await this.$http({
-                        url: 'rep/params/add',
+                        url: 'ownRep/params/add',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -316,10 +372,29 @@ export default {
                         headers: {
                             'content-type': "application/json"
                         }
-                    })
+                    }).then(
+                        function () {
+                            row.loadingParamsAdd = false
+                            ElNotification.success({
+                                title: 'Success',
+                                message: 'Params插入字段成功',
+                                offset: 200,
+                            })
+                        }
+                    ).catch(
+                        function () {
+                            row.loadingParamsAdd = false
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: 'Params插入操作不可逆',
+                                offset: 200,
+                            })
+                        }
+                    )
                 } else if (operate == 'edit') {
+                    row.loadingParamsEdit = true
                     await this.$http({
-                        url: 'rep/params/edit',
+                        url: 'ownRep/params/edit',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -333,10 +408,37 @@ export default {
                         headers: {
                             'content-type': "application/json"
                         }
-                    })
+                    }).then(
+                        function () {
+                            row.loadingParamsEdit = false
+                            if (row.repParamsEdit) {
+                                ElNotification.success({
+                                    title: 'Success',
+                                    message: 'Params替换字段成功',
+                                    offset: 200,
+                                })
+                            } else {
+                                ElNotification.warning({
+                                    title: 'Warning',
+                                    message: 'Params替换字段未替换',
+                                    offset: 200,
+                                })
+                            }
+                        }
+                    ).catch(
+                        function () {
+                            row.loadingParamsEdit = false
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: 'Params字段未替换',
+                                offset: 200,
+                            })
+                        }
+                    )
                 } else if (operate == 'del') {
+                    row.loadingParamsDel = true
                     await this.$http({
-                        url: 'rep/params/del',
+                        url: 'ownRep/params/del',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -348,12 +450,31 @@ export default {
                         headers: {
                             'content-type': "application/json"
                         }
-                    })
+                    }).then(
+                        function () {
+                            row.loadingParamsDel = false
+                            ElNotification.success({
+                                title: 'Success',
+                                message: 'Params字段删除成功',
+                                offset: 200,
+                            })
+                        }
+                    ).catch(
+                        function () {
+                            row.loadingParamsDel = false
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: 'Params删除操作不可逆',
+                                offset: 200,
+                            })
+                        }
+                    )
                 }
             } else if (repType == 'data') {
                 if (operate == 'add') {
+                    row.loadingDataAdd = true
                     await this.$http({
-                        url: 'rep/data/add',
+                        url: 'ownRep/data/add',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -366,10 +487,29 @@ export default {
                         headers: {
                             'content-type': "application/json"
                         }
-                    })
+                    }).then(
+                        function () {
+                            row.loadingDataAdd = false
+                            ElNotification.success({
+                                title: 'Success',
+                                message: 'Data插入字段成功',
+                                offset: 200,
+                            })
+                        }
+                    ).catch(
+                        function () {
+                            row.loadingDataAdd = false
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: 'Data插入操作不可逆',
+                                offset: 200,
+                            })
+                        }
+                    )
                 } else if (operate == 'edit') {
+                    row.loadingDataDel = true
                     await this.$http({
-                        url: 'rep/data/edit',
+                        url: 'ownRep/data/edit',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -383,10 +523,37 @@ export default {
                         headers: {
                             'content-type': "application/json"
                         }
-                    })
+                    }).then(
+                        function () {
+                            row.loadingDataDel = false
+                            if (row.repDataEdit) {
+                                ElNotification.success({
+                                    title: 'Success',
+                                    message: 'Data替换字段成功',
+                                    offset: 200,
+                                })
+                            } else {
+                                ElNotification.warning({
+                                    title: 'Warning',
+                                    message: 'Data替换字段未替换',
+                                    offset: 200,
+                                })
+                            }
+                        }
+                    ).catch(
+                        function () {
+                            row.loadingDataDel = false
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: 'Data字段未替换',
+                                offset: 200,
+                            })
+                        }
+                    )
                 } else if (operate == 'del') {
+                    row.loadingDataDel = true
                     await this.$http({
-                        url: 'rep/data/del',
+                        url: 'ownRep/data/del',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -398,7 +565,25 @@ export default {
                         headers: {
                             'content-type': "application/json"
                         }
-                    })
+                    }).then(
+                        function () {
+                            row.loadingDataDel = false
+                            ElNotification.success({
+                                title: 'Success',
+                                message: 'Data字段删除成功',
+                                offset: 200,
+                            })
+                        }
+                    ).catch(
+                        function () {
+                            row.loadingDataDel = false
+                            ElNotification.warning({
+                                title: 'Warning',
+                                message: 'Data删除操作不可逆',
+                                offset: 200,
+                            })
+                        }
+                    )
                 }
             }
         },
@@ -438,8 +623,17 @@ export default {
         async changeBoxClick(row) {
             row.checkbox = row.checkbox == true ? false : true
             if (row.checkbox == true) {
+                row.loadingUrlEdit = false
                 this.primaryUrl.push(row)
+
+                row.loadingParamsAdd = false
+                row.loadingParamsEdit = false
+                row.loadingParamsDel = false
                 this.primaryParams.push(row)
+
+                row.loadingDataAdd = false
+                row.loadingDataEdit = false
+                row.loadingDataDel = false
                 this.primaryData.push(row)
                 // 请求用例接口
                 var responseData = []
@@ -495,7 +689,7 @@ export default {
                 }
             }
         },
-        editColumnColor({ row, column, rowIndex, columnIndex }) {
+        addColumnColor({ row, column, rowIndex, columnIndex }) {
             if (row.temp_id > 0 && columnIndex === 4) {
                 return {
                     background: '#77693b'
@@ -507,13 +701,25 @@ export default {
                 }
             }
         },
-        delColumnColor({ row, column, rowIndex, columnIndex }) {
-            if (row.temp_id > 0 && columnIndex === 2) {
+        editColumnColor({ row, column, rowIndex, columnIndex }) {
+            if (row.temp_id > 0 && columnIndex === 5) {
                 return {
                     background: '#77693b'
                 }
             }
-            if (row.case_id > 0 && columnIndex === 3) {
+            if (row.case_id > 0 && columnIndex === 6) {
+                return {
+                    background: '#4a7538'
+                }
+            }
+        },
+        delColumnColor({ row, column, rowIndex, columnIndex }) {
+            if (row.temp_id > 0 && columnIndex === 3) {
+                return {
+                    background: '#77693b'
+                }
+            }
+            if (row.case_id > 0 && columnIndex === 4) {
                 return {
                     background: '#4a7538'
                 }
