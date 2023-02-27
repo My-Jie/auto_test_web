@@ -88,7 +88,18 @@ export default {
         // 修改描述的接口
         async checkDescription(row) {
             row.descriptionLoading = true
-            await this.$http.put('/caseService/set/api/description?case_id=' + this.caseId + '&number=' + row.number + '&description=' + row.description).then(
+            await this.$http({
+                url: '/caseService/set/api/description',
+                method: 'PUT',
+                data: JSON.stringify({
+                    case_id: this.caseId,
+                    number: row.number,
+                    description: row.description
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
                 function () {
                     ElNotification.success({
                         title: 'Success',
@@ -120,7 +131,18 @@ export default {
                 newConfig.is_login = row.config.is_login
                 row.isLoginLoading = true
             }
-            await this.$http.put('/caseService/set/api/config?case_id=' + this.caseId + '&number=' + row.number, newConfig).then(
+            await this.$http({
+                url: '/caseService/set/api/config',
+                method: "PUT",
+                data: JSON.stringify({
+                    case_id: this.caseId,
+                    number: row.number,
+                    config: newConfig
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
                 function () {
                     if (config == 'stop') {
                         row.stopLoading = false
