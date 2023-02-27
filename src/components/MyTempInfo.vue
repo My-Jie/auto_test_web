@@ -4,7 +4,18 @@
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
             <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
-            <el-table-column label="模板名称" prop="temp_name" width="400px"></el-table-column>
+            <el-table-column label="" width="40">
+                <template #default="scope">
+                    <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
+                    <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
+                </template>
+            </el-table-column>
+            <el-table-column label="模板名称" prop="temp_name" width="400px">
+                <template #default="scope">
+                    <div v-if="scope.row.temp_name && scope.row.edit">{{ scope.row.temp_name }}</div>
+                    <el-input v-model="scope.row.temp_name" placeholder="可输入" v-if="scope.row.edit == false"></el-input>
+                </template>
+            </el-table-column>
             <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>
             <el-table-column label="API数量" prop="api_count" align="center"></el-table-column>
             <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
@@ -91,6 +102,7 @@
 import TempData from './TempData.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
+import { Edit, Check } from '@element-plus/icons-vue'
 export default {
     name: "MyTempInfo",
 
@@ -104,6 +116,8 @@ export default {
 
     data() {
         return {
+            Edit,
+            Check,
             loading: !this.tempInfo ? true : false,
             myDialog: false,
             uploadDialogBl: false,
@@ -125,6 +139,35 @@ export default {
     },
 
     methods: {
+        async updateName(row) {
+            row.checkLoading = true
+            await this.$http({
+                url: '/template/name/edit',
+                method: 'PUT',
+                data: JSON.stringify({
+                    temp_id: row.id,
+                    new_name: row.temp_name
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '修改成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            row.checkLoading = false
+            row.edit = true
+        },
+
         indexMethod(index) {
             return this.tempInfo[index]['id']
         },

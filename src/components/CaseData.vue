@@ -24,7 +24,8 @@
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <el-table-column label="description" prop="description" width="300px" align="center">
             <template #default="scope">
-                <el-button :icon="Edit" v-if="scope.row.edit" @click="editStatus(scope.row)"></el-button>
+                <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
+                <div v-if="scope.row.description && scope.row.edit">{{ scope.row.description }}</div>
                 <el-col :span="18">
                     <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false">
                         <template #append>
@@ -37,23 +38,27 @@
         </el-table-column>
         <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="250px">
             <template #default="scope">
-                <json-viewer :value="scope.row.check" />
+                <!-- <json-viewer :value="scope.row.check" /> -->
                 <el-button :icon="Edit" size="small"></el-button>
+                <div>{{ JSON.stringify(scope.row.check, null, 1) }}</div>
             </template>
         </el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <json-viewer :value="scope.row.params" />
+                <!-- <json-viewer :value="scope.row.params" /> -->
+                <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
             </template>
         </el-table-column>
         <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <json-viewer :value="scope.row.data" />
+                <!-- <json-viewer :value="scope.row.data" /> -->
+                <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
             </template>
         </el-table-column>
         <el-table-column label="headers" prop="headers" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <json-viewer :value="scope.row.headers" />
+                <!-- <json-viewer :value="scope.row.headers" /> -->
+                <div>{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
             </template>
         </el-table-column>
     </el-table>
@@ -80,9 +85,6 @@ export default {
     methods: {
         indexMethod(index) {
             return this.caseData[index]['number']
-        },
-        editStatus(row) {
-            row.edit = false
         },
 
         // 修改描述的接口
@@ -113,6 +115,7 @@ export default {
                 }
             )
             row.descriptionLoading = false
+            row.edit = true
         },
 
         // 配置项设置方法
@@ -177,14 +180,3 @@ export default {
 }
 
 </script>
-
-
-<style>
-.open {
-    color: #85ce61;
-}
-
-.close {
-    color: #ebb563;
-}
-</style>

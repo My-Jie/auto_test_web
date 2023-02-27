@@ -42,6 +42,8 @@ export default {
         this.tempInfo[x].runLoading = false
         this.tempInfo[x].dataLoading = false
         this.tempInfo[x].tempToCaseLoading = false
+        this.tempInfo[x].edit = true
+        this.tempInfo[x].checkLoading = false
         // this.tempInfo[x].paramsChangeLoading = false
       }
       // 所有的状态都改为false
@@ -71,6 +73,8 @@ export default {
         this.caseInfo[x].runLoading = false
         this.caseInfo[x].dataLoading = false
         this.caseInfo[x].copyLoading = false
+        this.caseInfo[x].edit = true
+        this.caseInfo[x].checkLoading = false
         // 测试报告地址
         this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
         // this.caseInfo[x].repLoading = false

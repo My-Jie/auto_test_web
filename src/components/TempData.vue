@@ -9,22 +9,20 @@
         <el-table-column label="json_body" prop="json_body" width="100%" align="center"></el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true'>
             <template #default="scope">
-                <json-viewer :value="scope.row.params" />
-                <!-- <p>{{ JSON.stringify(scope.row.params, null, 1) }}</p> -->
+                <!-- <json-viewer :value="scope.row.params" /> -->
+                <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
             </template>
         </el-table-column>
         <el-table-column label="data" prop="data" show-overflow-tooltip='true'>
             <template #default="scope">
-                <json-viewer :value="scope.row.data" />
-                <!-- <json-viewer :value="JSON.stringify(scope.row.data, 4)" /> -->
-                <!-- <p>{{ JSON.stringify(scope.row.data, null, 1) }}</p> -->
+                <!-- <json-viewer :value="scope.row.data" /> -->
+                <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
             </template>
         </el-table-column>
         <el-table-column label="response" prop="response" show-overflow-tooltip='true'>
             <template #default="scope">
-                <json-viewer :value="scope.row.response" />
-                <!-- <json-viewer :value="JSON.stringify(scope.row.data, 4)" /> -->
-                <!-- <p>{{ JSON.stringify(scope.row.data, null, 1) }}</p> -->
+                <!-- <json-viewer :value="scope.row.response" /> -->
+                <div>{{ JSON.stringify(scope.row.response, null, 1) }}</div>
             </template>
         </el-table-column>
     </el-table>

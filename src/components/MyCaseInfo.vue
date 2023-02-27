@@ -3,7 +3,18 @@
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
             <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
-            <el-table-column label="用例名称" prop="name" width="500px"></el-table-column>
+            <el-table-column label="" width="40">
+                <template #default="scope">
+                    <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
+                    <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
+                </template>
+            </el-table-column>
+            <el-table-column label="用例名称" prop="name" width="500px">
+                <template #default="scope">
+                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-{{ scope.row.case_name }}</div>
+                    <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"></el-input>
+                </template>
+            </el-table-column>
             <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
             <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
@@ -14,7 +25,7 @@
                     <el-button-group class="ml-4">
                         <el-button type="primary" plain @click="getCaseData(scope.row)"
                             :loading="scope.row.dataLoading">详情</el-button>
-                        <el-button type="primary" plain @click="replaceData(scope.row)">替换</el-button>
+                        <el-button type="primary" plain @click="replaceData(scope.row)">提取</el-button>
                         <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
                             :loading="scope.row.copyLoading">复制</el-button>
                     </el-button-group>&nbsp;
@@ -186,6 +197,7 @@
 import CaseData from './CaseData.vue';
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
+import { Edit, Check } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
@@ -198,6 +210,8 @@ export default {
 
     data() {
         return {
+            Edit,
+            Check,
             loading: !this.caseInfo ? true : false,
             myDialog: false,
             thisCaseData: [],
@@ -222,6 +236,34 @@ export default {
     },
 
     methods: {
+        async updateName(row) {
+            row.checkLoading = true
+            await this.$http({
+                url: '/caseService/name/edit',
+                method: 'PUT',
+                data: JSON.stringify({
+                    case_id: row.case_id,
+                    new_name: row.case_name
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '修改成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            row.checkLoading = false
+            row.edit = true
+        },
         indexMethod(index) {
             return this.caseInfo[index]['case_id']
         },
@@ -468,11 +510,7 @@ export default {
                         case_[x].failStopLoading = false
                         case_[x].isLoginLoading = false
                         case_[x].descriptionLoading = false
-                        if (case_[x].description) {
-                            case_[x].edit = false
-                        } else {
-                            case_[x].edit = true
-                        }
+                        case_[x].edit = true
                     }
                     dialog_ = true
                 }
