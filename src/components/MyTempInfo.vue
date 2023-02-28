@@ -13,7 +13,8 @@
             <el-table-column label="模板名称" prop="temp_name" width="400px">
                 <template #default="scope">
                     <div v-if="scope.row.temp_name && scope.row.edit">{{ scope.row.temp_name }}</div>
-                    <el-input v-model="scope.row.temp_name" placeholder="可输入" v-if="scope.row.edit == false"></el-input>
+                    <el-input v-model="scope.row.temp_name" placeholder="可输入" v-if="scope.row.edit == false"
+                        @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>

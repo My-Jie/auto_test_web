@@ -25,13 +25,16 @@ export default {
       caseInfo: [],
       // 全局参数变更弹窗
       dialogParamsCharge: false,
-      mySwitch: true
+      mySwitch: true,
+      tempInfoLoading: false,
+      caseInfoLoading: false
     }
   },
 
   methods: {
     // 获取模板信息
     async getTempInfo() {
+      this.tempInfoLoading = true
       this.tempInfo = []
       var temp = []
       await this.$http.get('/template/name/list?outline=false').then(
@@ -58,11 +61,13 @@ export default {
       if (!this.isTemp) {
         this.clickStatus['isTemp'] = true
       }
+      this.tempInfoLoading = false
 
     },
 
     // 获取用例信息
     async getCaseInfo() {
+      this.caseInfoLoading = true
       this.caseInfo = []
       var case_ = []
       await this.$http.get('/caseService/data/case/list?outline=false').then(
@@ -91,6 +96,7 @@ export default {
       if (!this.isTemp) {
         this.clickStatus['isCase'] = true
       }
+      this.caseInfoLoading = false
     },
     mySwitchTo() {
       var myDark = document.querySelector('html').style
@@ -106,14 +112,14 @@ export default {
   <el-container>
     <el-header>
       <!-- 模板信息 -->
-      <el-button type="primary" @click="getTempInfo">获取模板信息</el-button>
+      <el-button type="primary" @click="getTempInfo" :loading="tempInfoLoading">获取模板信息</el-button>
       <!-- 用例信息 -->
-      <el-button type="primary" @click="getCaseInfo">获取用例信息</el-button>
+      <el-button type="primary" @click="getCaseInfo" :loading="caseInfoLoading">获取用例信息</el-button>
       <!-- 参数变更 -->
       <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
       <!-- 开关灯 -->
       <!-- <el-switch v-model="mySwitch" class="mt-2" style="--el-switch-on-color: #000; --el-switch-off-color: #959999aa;"
-        inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
+            inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>

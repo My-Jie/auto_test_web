@@ -12,7 +12,8 @@
             <el-table-column label="用例名称" prop="name" width="500px">
                 <template #default="scope">
                     <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-{{ scope.row.case_name }}</div>
-                    <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"></el-input>
+                    <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"
+                        @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
@@ -67,7 +68,8 @@
 
             <!-- 原始数据查询 -->
             <el-form-item :inline="true">
-                <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3">
+                <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3"
+                    @keyup.enter.native="getResponseJsonPath">
                     <template #prepend>
                         <el-select v-model="selectResponse" placeholder="请选择数据源">
                             <el-option label="从Response中的value字段" value="value" />
@@ -99,7 +101,8 @@
             <br>
             <!-- 被替换数据的查询预览 -->
             <el-form-item :inline="true">
-                <el-input v-model="fixedResponseValueJsonpath" placeholder="准备替换的数据" clearable minlength="3">
+                <el-input v-model="fixedResponseValueJsonpath" placeholder="准备替换的数据" clearable minlength="3"
+                    @keyup.enter.native="getTestDataJsonpath">
                     <template #prepend>预选表达式</template>
                     <template #append>
                         <el-button @click="getTestDataJsonpath">
@@ -509,6 +512,7 @@ export default {
                         case_[x].stopLoading = false
                         case_[x].failStopLoading = false
                         case_[x].isLoginLoading = false
+                        case_[x].sleepLoading = false
                         case_[x].descriptionLoading = false
                         case_[x].edit = true
                     }

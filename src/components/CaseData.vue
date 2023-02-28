@@ -12,9 +12,13 @@
                     :loading="scope.row.isLoginLoading" class="ml-2" style="--el-switch-on-color: #67C23A;"
                     @click="setConfigStatus(scope.row, 'is_login')" inline-prompt></el-switch>
                 <el-col :span="20">
-                    <el-input v-model="scope.row.config.sleep" size="small">
+                    <el-input v-model="scope.row.config.sleep" size="small"
+                        @keyup.enter.native="setConfigStatus(scope.row, 'sleep')">
                         <template #prepend>轮询</template>
-                        <template #append>秒后失败</template>
+                        <template #append>
+                            <el-button :icon="Check" size="small"
+                                @click="setConfigStatus(scope.row, 'sleep')">轮询失败</el-button>
+                        </template>
                     </el-input>
                 </el-col>
             </template>
@@ -33,7 +37,8 @@
         <el-table-column label="description" prop="description" width="250px">
             <template #default="scope">
                 <div v-if="scope.row.description && scope.row.edit">{{ scope.row.description }}</div>
-                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false"></el-input>
+                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false"
+                    @keyup.enter.native="checkDescription(scope.row)"></el-input>
             </template>
         </el-table-column>
         <!-- 校验的按钮和内容框 -->
@@ -152,6 +157,9 @@ export default {
             } else if (config == 'is_login') {
                 newConfig.is_login = row.config.is_login
                 row.isLoginLoading = true
+            } else if (config == 'sleep') {
+                newConfig.sleep = row.config.sleep
+                row.sleepLoading = true
             }
             await this.$http({
                 url: '/caseService/set/api/config',
@@ -185,6 +193,13 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: 'number:' + row.number + ' ' + isLoginMsg,
+                            offset: 200,
+                        })
+                    } else if (config == 'sleep') {
+                        row.sleepLoading = false
+                        ElNotification.success({
+                            title: 'Success',
+                            message: 'number:' + row.number + ' ' + row.config.sleep + 's',
                             offset: 200,
                         })
                     }
