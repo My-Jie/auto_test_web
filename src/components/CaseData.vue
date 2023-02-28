@@ -22,42 +22,61 @@
         <el-table-column fixed="left" label="number" prop="number" type="index" :index="indexMethod"
             width="60"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
-        <el-table-column label="description" prop="description" width="300px" align="center">
+        <!-- 描述的按钮和内容框 -->
+        <el-table-column label="" width="40" align="center">
             <template #default="scope">
                 <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
+                <el-button :icon="Check" size="small" v-if="!scope.row.edit"
+                    @click="checkDescription(scope.row)"></el-button>
+            </template>
+        </el-table-column>
+        <el-table-column label="description" prop="description" width="250px">
+            <template #default="scope">
                 <div v-if="scope.row.description && scope.row.edit">{{ scope.row.description }}</div>
-                <el-col :span="18">
-                    <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false">
-                        <template #append>
-                            <el-button :icon="Check" @click="checkDescription(scope.row)"
-                                :loading="scope.row.descriptionLoading" />
-                        </template>
-                    </el-input>
-                </el-col>
+                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false"></el-input>
+            </template>
+        </el-table-column>
+        <!-- 校验的按钮和内容框 -->
+        <el-table-column label="" width="40" align="center">
+            <template #default="scope">
+                <el-button :icon="Edit" size="small"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="250px">
             <template #default="scope">
-                <!-- <json-viewer :value="scope.row.check" /> -->
-                <el-button :icon="Edit" size="small"></el-button>
                 <div>{{ JSON.stringify(scope.row.check, null, 1) }}</div>
+            </template>
+        </el-table-column>
+        <!-- params的按钮和内容框 -->
+        <el-table-column label="" width="40" align="center">
+            <template #default="scope">
+                <el-button :icon="Edit" size="small"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <!-- <json-viewer :value="scope.row.params" /> -->
                 <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
+            </template>
+        </el-table-column>
+        <!-- data的按钮和内容框 -->
+        <el-table-column label="" width="40" align="center">
+            <template #default="scope">
+                <el-button :icon="Edit" size="small"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <!-- <json-viewer :value="scope.row.data" /> -->
                 <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
+            </template>
+        </el-table-column>
+        <!-- headers的按钮和内容框 -->
+        <el-table-column label="" width="40" align="center">
+            <template #default="scope">
+                <el-button :icon="Edit" size="small"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="headers" prop="headers" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <!-- <json-viewer :value="scope.row.headers" /> -->
                 <div>{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
             </template>
         </el-table-column>

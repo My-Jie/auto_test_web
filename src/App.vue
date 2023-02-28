@@ -4,6 +4,7 @@ import MyTempInfo from "./components/MyTempInfo.vue"
 import MyCaseInfo from "./components/MyCaseInfo.vue"
 import MyChange from './components/MyChange.vue'
 import { ElMessage } from 'element-plus'
+import { Check, Close } from '@element-plus/icons-vue'
 export default {
   components: {
     MyTempInfo,
@@ -12,6 +13,8 @@ export default {
   },
   data() {
     return {
+      Check,
+      Close,
       // 判断哪个按钮点击了
       clickStatus: {
         isTemp: false,
@@ -21,7 +24,8 @@ export default {
       tempInfo: [],
       caseInfo: [],
       // 全局参数变更弹窗
-      dialogParamsCharge: false
+      dialogParamsCharge: false,
+      mySwitch: true
     }
   },
 
@@ -87,6 +91,11 @@ export default {
       if (!this.isTemp) {
         this.clickStatus['isCase'] = true
       }
+    },
+    mySwitchTo() {
+      var myDark = document.querySelector('html').style
+      console.log(myDark);
+      dark.color = '#fff'
     }
   }
 }
@@ -102,6 +111,9 @@ export default {
       <el-button type="primary" @click="getCaseInfo">获取用例信息</el-button>
       <!-- 参数变更 -->
       <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
+      <!-- 开关灯 -->
+      <!-- <el-switch v-model="mySwitch" class="mt-2" style="--el-switch-on-color: #000; --el-switch-off-color: #959999aa;"
+        inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
@@ -112,29 +124,16 @@ export default {
         <my-change v-if="dialogParamsCharge"></my-change>
       </el-dialog>
     </el-main>
-
-
-
-
   </el-container>
-  <el-backtop :bottom="100">
-    <div style="
-            height: 100%;
-            width: 100%;
-            background-color: var(--el-bg-color-overlay);
-            box-shadow: var(--el-box-shadow-lighter);
-            text-align: center;
-            line-height: 40px;
-            color: #1989fa;
-            visibility-height: 50px;
-          ">
-      UP
-    </div>
-  </el-backtop>
 </template>
 
 
 <style scoped>
+.el-switch {
+  position: absolute;
+  right: 80px;
+}
+
 /* .logo {
   height: 6em;
   padding: 1.5em;
@@ -142,7 +141,7 @@ export default {
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #959999aa);
 }
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
