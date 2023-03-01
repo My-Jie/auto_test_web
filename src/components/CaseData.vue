@@ -1,5 +1,5 @@
 <template>
-    <el-table v-loading='loading' :data="caseData" stripe fit>
+    <el-table :data="caseData" stripe fit>
         <el-table-column fixed="left" label="config" prop="config" width="250%">
             <template #default="scope">
                 <el-switch v-model="scope.row.config.stop" active-text="主动结束" inactive-text="主动结束"
@@ -44,7 +44,7 @@
         <!-- 校验的按钮和内容框 -->
         <el-table-column label="" width="40" align="center">
             <template #default="scope">
-                <el-button :icon="Edit" size="small"></el-button>
+                <el-button :icon="Edit" size="small" @click=setCheck(scope.row)></el-button>
             </template>
         </el-table-column>
         <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="250px">
@@ -86,12 +86,63 @@
             </template>
         </el-table-column>
     </el-table>
+    <!-- check的弹窗 -->
+    <el-dialog v-model='checkDialog' width="50%"
+        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
+        :close-on-press-escape=false @close='closeCheckDialog'>
+        <el-table :data="checkInfo" stripe fit empty-text="空">
+            <el-table-column label="key" align="center" width="120px">
+                <template #default="scope">
+                    <div v-show="!scope.row.edit">{{ scope.row.key }}</div>
+                    <el-input v-show="scope.row.edit" v-model="scope.row.key" placeholder="校验字段" size="small" />
+                </template>
+            </el-table-column>
+            <el-table-column label="比较符" align="center" width="90px">
+                <template #default="scope">
+                    <div v-show="!scope.row.edit">{{ scope.row.compare }}</div>
+                    <el-select v-model="scope.row.s" :placeholder="scope.row.s" v-show="scope.row.edit" size="small">
+                        <el-option label="等于" value="==" />
+                        <el-option label="不等于" value="!=" />
+                        <el-option label="小于" value="<" />
+                        <el-option label="小于等于" value="<=" />
+                        <el-option label="大于" value=">" />
+                        <el-option label="大于等于" value=">=" />
+                        <el-option label="包含" value="in" />
+                        <el-option label="不包含" value="not in" />
+                        <el-option label="不包含" value="notin" />
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column label="value" align="center">
+                <template #default="scope">
+                    <div v-show="!scope.row.edit">{{ scope.row.value }}</div>
+                    <el-input v-show="scope.row.edit" v-model="scope.row.value" placeholder="校验内容" size="small" />
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="180px">
+                <template #default="scope">
+                    <!-- 编辑操作 -->
+                    <el-button :icon="Edit" type="primary" size="small" v-show="!scope.row.edit"
+                        @click="scope.row.edit = true"></el-button>
+                    <el-button :icon="Check" type="success" size="small" v-show="scope.row.edit"
+                        @click="checkCheck(scope.row)"></el-button>
+                    <!-- 增加操作 -->
+                    <el-button :icon="Plus" type="warning" size="small" @click="addRow"></el-button>
+                    <!-- 删除操作 -->
+                    <el-button :icon="Delete" type="danger" size="small" v-show="!scope.row.del"
+                        @click="scope.row.del = true"></el-button>
+                    <el-button :icon="Check" type="success" size="small" v-show="scope.row.del"
+                        @click="checkDel(scope.row)"></el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </el-dialog>
 </template>
 
 <script>
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check } from '@element-plus/icons-vue'
+import { Edit, Check, Plus, Delete } from '@element-plus/icons-vue'
 export default {
     name: 'CaseData',
     props: {
@@ -102,11 +153,111 @@ export default {
     data() {
         return {
             Edit,
-            Check
+            Check,
+            Plus,
+            Delete,
+            checkDialog: false,
+            checkNumber: null,
+            checkInfo: [],
         }
     },
 
     methods: {
+        // 校验内容的弹窗
+        setCheck(row) {
+            this.checkNumber = row.number
+            for (var x in row.check) {
+                var checkDict = {}
+                checkDict.key = x
+                checkDict.edit = false
+                checkDict.del = false
+                if (row.check[x] instanceof Array) {
+                    var compare = row.check[x][0]
+                    if (compare == '==') {
+                        checkDict.compare = '等于'
+                        checkDict.s = compare
+                        // checkDict.value = JSON.stringify(row.check[x][1], null, 1)
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == '<') {
+                        checkDict.compare = '小于'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == '<=') {
+                        checkDict.compare = '小于等于'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == '!=') {
+                        checkDict.compare = '不等于'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == '>') {
+                        checkDict.compare = '大于'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == '>=') {
+                        checkDict.compare = '大于等于'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == 'in') {
+                        checkDict.compare = '包含'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == 'not in') {
+                        checkDict.compare = '不包含'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else if (compare == 'notin') {
+                        checkDict.compare = '不包含'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    } else {
+                        checkDict.compare = '未识别'
+                        checkDict.s = compare
+                        checkDict.value = row.check[x][1]
+                    }
+
+                } else {
+                    checkDict.compare = '等于'
+                    checkDict.s = '=='
+                    checkDict.value = row.check[x]
+                }
+                if (checkDict.value == null) {
+                    checkDict.value = 'null'
+                }
+                // 添加到数组
+                this.checkInfo.push(checkDict)
+            }
+            this.checkDialog = true
+        },
+        // 编辑的Check的确认
+        checkCheck(row) {
+            row.edit = false
+            console.log(row);
+            console.log(this.caseId);
+            console.log(this.checkNumber);
+        },
+        // 新增row
+        addRow() {
+            this.checkInfo.push({
+                compare: '等于',
+                key: '',
+                s: '==',
+                value: null,
+                del: false,
+                edit: true
+            })
+        },
+        // 删除的确认
+        checkDel(row) {
+            row.del = false
+            console.log(row);
+        },
+        // 关闭校验弹窗
+        closeCheckDialog() {
+            this.checkDialog = false
+            this.checkInfo = []
+        },
+
         indexMethod(index) {
             return this.caseData[index]['number']
         },

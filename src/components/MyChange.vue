@@ -7,6 +7,9 @@
                     <el-option label="POST" value="POST" />
                     <el-option label="PUT" value="PUT" />
                     <el-option label="DELETE" value="DELETE" />
+                    <el-option label="HEAD" value="HEAD" />
+                    <el-option label="OPTIONS" value="OPTIONS" />
+                    <el-option label="PATCH" value="PATCH" />
                 </el-select>
             </template>
             <template #append>
