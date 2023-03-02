@@ -91,16 +91,17 @@
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
         :close-on-press-escape=false @close='closeCheckDialog'>
         <el-table :data="checkInfo" stripe fit empty-text="空">
+            <el-table-column type="index"></el-table-column>
             <el-table-column label="key" align="center" width="120px">
                 <template #default="scope">
-                    <div v-show="!scope.row.edit">{{ scope.row.key }}</div>
-                    <el-input v-show="scope.row.edit" v-model="scope.row.key" placeholder="校验字段" size="small" />
+                    <div v-if="!scope.row.edit">{{ scope.row.key }}</div>
+                    <el-input v-if="scope.row.edit" v-model="scope.row.key" placeholder="校验字段" size="small" />
                 </template>
             </el-table-column>
             <el-table-column label="比较符" align="center" width="90px">
                 <template #default="scope">
-                    <div v-show="!scope.row.edit">{{ scope.row.compare }}</div>
-                    <el-select v-model="scope.row.s" :placeholder="scope.row.s" v-show="scope.row.edit" size="small">
+                    <div v-if="!scope.row.edit">{{ scope.row.compare }}</div>
+                    <el-select v-model="scope.row.s" :placeholder="scope.row.s" v-if="scope.row.edit" size="small">
                         <el-option label="等于" value="==" />
                         <el-option label="不等于" value="!=" />
                         <el-option label="小于" value="<" />
@@ -113,25 +114,46 @@
                     </el-select>
                 </template>
             </el-table-column>
+            <el-table-column label="数据类型" align="center" width="90px">
+                <template #default="scope">
+                    <div v-if="!scope.row.edit">{{ scope.row.type }}</div>
+                    <el-select v-model="scope.row.type" :placeholder="scope.row.type" v-if="scope.row.edit" size="small">
+                        <el-option label="string" value='string' />
+                        <el-option label="number" value='number' />
+                        <el-option label="boolean" value='boolean' />
+                        <el-option label="null" value='null' />
+                    </el-select>
+                </template>
+            </el-table-column>
             <el-table-column label="value" align="center">
                 <template #default="scope">
-                    <div v-show="!scope.row.edit">{{ scope.row.value }}</div>
-                    <el-input v-show="scope.row.edit" v-model="scope.row.value" placeholder="校验内容" size="small" />
+                    <div v-if="!scope.row.edit">{{ scope.row.value }}</div>
+                    <el-input v-if="scope.row.edit && scope.row.type == 'string'" v-model="scope.row.value"
+                        placeholder="校验内容" size="small" />
+                    <el-input-number v-if="scope.row.edit && scope.row.type == 'number'" v-model="scope.row.value"
+                        placeholder="校验内容" size="small" />
+                    <el-select v-if="scope.row.edit && scope.row.type == 'boolean'" v-model="scope.row.value"
+                        :placeholder=true size="small">
+                        <el-option label="true" :value='true' />
+                        <el-option label="false" :value='false' />
+                    </el-select>
+                    <el-input v-if="scope.row.edit && scope.row.type == 'null'" v-model="scope.row.value"
+                        placeholder="null" size="small" />
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="180px">
                 <template #default="scope">
                     <!-- 编辑操作 -->
-                    <el-button :icon="Edit" type="primary" size="small" v-show="!scope.row.edit"
+                    <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit"
                         @click="scope.row.edit = true"></el-button>
-                    <el-button :icon="Check" type="success" size="small" v-show="scope.row.edit"
+                    <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
                         @click="checkCheck(scope.row)"></el-button>
                     <!-- 增加操作 -->
                     <el-button :icon="Plus" type="warning" size="small" @click="addRow"></el-button>
                     <!-- 删除操作 -->
-                    <el-button :icon="Delete" type="danger" size="small" v-show="!scope.row.del"
-                        @click="scope.row.del = true"></el-button>
-                    <el-button :icon="Check" type="success" size="small" v-show="scope.row.del"
+                    <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del"
+                        @click="Del(scope.row)"></el-button>
+                    <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
                         @click="checkDel(scope.row)"></el-button>
                 </template>
             </el-table-column>
@@ -166,17 +188,19 @@ export default {
         // 校验内容的弹窗
         setCheck(row) {
             this.checkNumber = row.number
+            var num = 0
             for (var x in row.check) {
                 var checkDict = {}
                 checkDict.key = x
                 checkDict.edit = false
                 checkDict.del = false
+                checkDict.num = num
                 if (row.check[x] instanceof Array) {
                     var compare = row.check[x][0]
+                    checkDict.type = row.check[x][1] == null ? "null" : typeof row.check[x][1]
                     if (compare == '==') {
                         checkDict.compare = '等于'
                         checkDict.s = compare
-                        // checkDict.value = JSON.stringify(row.check[x][1], null, 1)
                         checkDict.value = row.check[x][1]
                     } else if (compare == '<') {
                         checkDict.compare = '小于'
@@ -220,12 +244,14 @@ export default {
                     checkDict.compare = '等于'
                     checkDict.s = '=='
                     checkDict.value = row.check[x]
+                    checkDict.type = row.check[x] == null ? "null" : typeof row.check[x]
                 }
                 if (checkDict.value == null) {
                     checkDict.value = 'null'
                 }
                 // 添加到数组
                 this.checkInfo.push(checkDict)
+                num++
             }
             this.checkDialog = true
         },
@@ -240,12 +266,28 @@ export default {
         addRow() {
             this.checkInfo.push({
                 compare: '等于',
-                key: '',
+                key: null,
                 s: '==',
                 value: null,
                 del: false,
-                edit: true
+                edit: true,
+                type: 'string',
+                num: this.checkInfo.length
             })
+        },
+        // 删除的判断
+        Del(row) {
+            console.log(row);
+            if ((row.key == null || row.key == '') && (row.value == null || row.value == '')) {
+                var num = 0
+                for (var x in this.checkInfo) {
+                    if (this.checkInfo[x].num == row.num)
+                        this.checkInfo.splice(num, 1)
+                    num++
+                }
+            } else {
+                row.del = true
+            }
         },
         // 删除的确认
         checkDel(row) {

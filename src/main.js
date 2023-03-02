@@ -36,4 +36,5 @@ import axios from 'axios'
 axios.defaults.baseURL = '/api'
 app.config.globalProperties.$http = axios
 
+app.config.warnHandler = () => null;
 app.mount('#app')
