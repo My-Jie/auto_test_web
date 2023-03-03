@@ -3,13 +3,15 @@
 import MyTempInfo from "./components/MyTempInfo.vue"
 import MyCaseInfo from "./components/MyCaseInfo.vue"
 import MyChange from './components/MyChange.vue'
+import MyUpload from './components/Upload.vue'
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 export default {
   components: {
     MyTempInfo,
     MyCaseInfo,
-    MyChange
+    MyChange,
+    MyUpload
   },
   data() {
     return {
@@ -25,6 +27,7 @@ export default {
       caseInfo: [],
       // 全局参数变更弹窗
       dialogParamsCharge: false,
+      dialogUpload: false,
       mySwitch: true,
       tempInfoLoading: false,
       caseInfoLoading: false
@@ -117,9 +120,11 @@ export default {
       <el-button type="primary" @click="getCaseInfo" :loading="caseInfoLoading">获取用例信息</el-button>
       <!-- 参数变更 -->
       <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
+      <!-- 文件上传 -->
+      <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
       <!-- 开关灯 -->
       <!-- <el-switch v-model="mySwitch" class="mt-2" style="--el-switch-on-color: #000; --el-switch-off-color: #959999aa;"
-            inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
+              inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
@@ -128,6 +133,11 @@ export default {
       <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogParamsCharge = false'>
         <my-change v-if="dialogParamsCharge"></my-change>
+      </el-dialog>
+      <!-- 文件上传的弹窗 -->
+      <el-dialog v-model='dialogUpload' width="50%" title="文件上传" :close-on-click-modal=false
+        :close-on-press-escape=false @close='dialogUpload = false'>
+        <my-upload v-if="dialogUpload"></my-upload>
       </el-dialog>
     </el-main>
   </el-container>
