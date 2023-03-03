@@ -98,6 +98,18 @@
                     <el-input v-if="scope.row.edit" v-model="scope.row.key" placeholder="校验字段" size="small" />
                 </template>
             </el-table-column>
+            <el-table-column label="数据类型" align="center" width="90px">
+                <template #default="scope">
+                    <el-button v-if="!scope.row.edit" :type="scope.row.color" size="small" link>{{ scope.row.type
+                    }}</el-button>
+                    <el-select v-model="scope.row.type" :placeholder="scope.row.type" v-if="scope.row.edit" size="small">
+                        <el-option label="string" value='string' />
+                        <el-option label="number" value='number' />
+                        <el-option label="boolean" value='boolean' />
+                        <el-option label="null" value='null' />
+                    </el-select>
+                </template>
+            </el-table-column>
             <el-table-column label="比较符" align="center" width="90px">
                 <template #default="scope">
                     <div v-if="!scope.row.edit">{{ scope.row.s }}</div>
@@ -111,17 +123,6 @@
                         <el-option label="in" value="in" />
                         <el-option label="not in" value="not in" />
                         <el-option label="notin" value="notin" />
-                    </el-select>
-                </template>
-            </el-table-column>
-            <el-table-column label="数据类型" align="center" width="90px">
-                <template #default="scope">
-                    <div v-if="!scope.row.edit">{{ scope.row.type }}</div>
-                    <el-select v-model="scope.row.type" :placeholder="scope.row.type" v-if="scope.row.edit" size="small">
-                        <el-option label="string" value='string' />
-                        <el-option label="number" value='number' />
-                        <el-option label="boolean" value='boolean' />
-                        <el-option label="null" value='null' />
                     </el-select>
                 </template>
             </el-table-column>
@@ -241,6 +242,18 @@ export default {
                 if (checkDict.value == null) {
                     checkDict.value = 'null'
                 }
+                // 颜色
+                if (checkDict.type == 'string') {
+                    checkDict.color = 'success'
+                } else if (checkDict.type == 'number') {
+                    checkDict.color = 'primary'
+                } else if (checkDict.type == 'boolean') {
+                    checkDict.color = 'warning'
+                } else if (checkDict.type == 'null') {
+                    checkDict.color = 'danger'
+                } else {
+                    checkDict.color = 'info'
+                }
                 // 添加到数组
                 this.checkInfo.push(checkDict)
                 num++
@@ -257,6 +270,7 @@ export default {
                 del: false,
                 edit: true,
                 type: 'string',
+                color: '',
                 num: this.checkInfo.length
             })
         },
@@ -268,7 +282,6 @@ export default {
         // 删除的判断
         Del(row) {
             row.EditDisabled = true
-            console.log(row);
             if (row.key == null || row.key == '') {
                 var num = 0
                 for (var x in this.checkInfo) {
@@ -283,7 +296,6 @@ export default {
         },
         // 编辑的Check的确认
         async checkCheck(row, myType) {
-            console.log(row);
             var flag = false
             await this.$http({
                 url: '/caseService/set/api/check',
@@ -326,8 +338,20 @@ export default {
                     // 判断key出现的次数
                     var num = 0
                     for (var x in this.checkInfo) {
-                        if (this.checkCheck[x].key == row.key) {
+                        if (this.checkInfo[x].key == row.key) {
                             num++
+                        }
+                        // 颜色
+                        if (this.checkInfo[x].type == 'string') {
+                            this.checkInfo[x].color = 'success'
+                        } else if (this.checkInfo[x].type == 'number') {
+                            this.checkInfo[x].color = 'primary'
+                        } else if (this.checkInfo[x].type == 'boolean') {
+                            this.checkInfo[x].color = 'warning'
+                        } else if (this.checkInfo[x].type == 'null') {
+                            this.checkInfo[x].color = 'danger'
+                        } else {
+                            this.checkInfo[x].color = 'info'
                         }
                     }
                     // key超出2次就删掉最前面的一个
@@ -380,6 +404,11 @@ export default {
                     break
                 }
             }
+            ElNotification.success({
+                title: 'Success',
+                message: 'CaseId : ' + this.caseId + ' -Number : ' + this.checkNumber + ' 刷新成功',
+                offset: 200,
+            })
         },
 
         indexMethod(index) {
