@@ -55,7 +55,7 @@
         <!-- params的按钮和内容框 -->
         <el-table-column label="" width="40" align="center">
             <template #default="scope">
-                <el-button :icon="Edit" size="small"></el-button>
+                <el-button :icon="Edit" size="small" @click="setData(scope.row, 'Params')"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="400px">
@@ -66,7 +66,7 @@
         <!-- data的按钮和内容框 -->
         <el-table-column label="" width="40" align="center">
             <template #default="scope">
-                <el-button :icon="Edit" size="small"></el-button>
+                <el-button :icon="Edit" size="small" @click="setData(scope.row, 'Data')"></el-button>
             </template>
         </el-table-column>
         <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="400px">
@@ -89,7 +89,7 @@
     <!-- check的弹窗 -->
     <el-dialog v-model='checkDialog' width="50%"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
-        :close-on-press-escape=false @close='closeCheckDialog'>
+        :close-on-press-escape=false @close="closeCheckDialog('Check')">
         <el-table :data="checkInfo" stripe fit empty-text="空">
             <el-table-column type="index"></el-table-column>
             <el-table-column label="key" align="center" width="120px">
@@ -160,6 +160,36 @@
             </el-table-column>
         </el-table>
     </el-dialog>
+    <!-- params\data的弹窗 -->
+    <el-dialog v-model="dataDialog" width="60%"
+        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , ' + this.dataTitle + ' 数据'"
+        :close-on-click-modal=false :close-on-press-escape=false @close="closeCheckDialog(this.dataTitle)">
+        <el-button type="success" @click="formatData()">格式化</el-button>
+        <el-button type="info" @click="initData()">初始化</el-button>
+        <el-button type="warning" @click="emptyData()">清空数据</el-button>
+        <el-button type="primary" :icon="Check" @click="setParamsData(this.dataTitle)">提交</el-button>
+        <br>
+        <br>
+        <el-input v-model="dataInfo" type="textarea" :rows="dataLength" spellcheck="false">
+        </el-input>
+        <el-collapse :v-model="activeName = '1'" accordion>
+            <el-collapse-item title="假数据表达式(*单花括号)" name="1">
+                <p>1.身份证: {ssn}</p>
+                <p>2.电话: {phone_number}</p>
+                <p>3.银行卡: {credit_card_number}</p>
+                <p>4.城市: {city}</p>
+                <p>5.地址: {address}</p>
+                <p>6.随机数字: {random_int.1} number为长度</p>
+                <p>7.随机小写字母: {random_lower.1} number为长度</p>
+                <p>8.随机大写字母: {random_upper.1} number为长度</p>
+                <p>9.随机大小写字母: {random_letter.1} number为长度</p>
+                <p>10.随机汉字: {random_cn.1} number为长度</p>
+                <p>11.数字计算: {compute}</p>
+                <p>12.时间戳: {time_int.0} 0:当前时间, -1:当前时间前一天, 1:当前时间后一天,-2:前一天00:00:00, 2:后一天23:59:59</p>
+                <p>13.时间字符串: {time_str.1} 同上</p>
+            </el-collapse-item>
+        </el-collapse>
+    </el-dialog>
 </template>
 
 <script>
@@ -180,12 +210,63 @@ export default {
             Plus,
             Delete,
             checkDialog: false,
+            dataDialog: false,
+            dataInfo: '',
+            dataInit: '',
+            dataTitle: '',
+            dataLength: 5,
             checkNumber: null,
             checkInfo: []
         }
     },
 
     methods: {
+        // params/data数据的弹窗
+        setData(row, type_) {
+            this.checkNumber = row.number
+            this.dataTitle = type_
+            this.dataDialog = true
+            if (type_ == 'Params') {
+                var length = 0
+                for (var _ in row.params) {
+                    length++
+                }
+                this.dataLength = length > this.dataLength ? length : this.dataLength + 2
+                this.dataInfo = JSON.stringify(row.params, null, 8);
+                this.dataInit = row.params
+            } else {
+                var length = 0
+                for (var _ in row.data) {
+                    length++
+                }
+                this.dataLength = length > this.dataLength ? length : this.dataLength + 2
+                this.dataInfo = JSON.stringify(row.data, null, 8);
+                this.dataInit = row.data
+            }
+
+        },
+        // 初始化数据
+        initData() {
+            try {
+                this.dataInfo = JSON.stringify(this.dataInit, null, 8);
+                ElMessage.success('数据初始化成功')
+            } catch (e) {
+                ElMessage.error('数据初始化失败，格式有误')
+            }
+        },
+        // 格式化数据
+        formatData() {
+            try {
+                this.dataInfo = JSON.stringify(JSON.parse(this.dataInfo), null, 8);
+                ElMessage.success('数据格式化成功')
+            } catch (e) {
+                ElMessage.error('数据格式化失败，格式有误')
+            }
+        },
+        // 清空数据
+        emptyData() {
+            this.dataInfo = JSON.stringify({}, null, 8);
+        },
         // 校验内容的弹窗
         setCheck(row) {
             this.checkNumber = row.number
@@ -373,15 +454,15 @@ export default {
                     }
                 }
             }
-
         },
         // 关闭校验弹窗
-        async closeCheckDialog() {
+        async closeCheckDialog(type_) {
+            this.dataLength = 5
             this.checkDialog = false
             this.checkInfo = []
             this.delDisabled = false
             this.EditDisabled = false
-            var check = null
+            var responseData = null
             await this.$http({
                 url: '/caseService/query/api/info',
                 method: 'GET',
@@ -391,7 +472,7 @@ export default {
                 }
             }).then(
                 function (response) {
-                    check = response.data.check
+                    responseData = response.data
                 }
             ).catch(
                 function (error) {
@@ -400,7 +481,13 @@ export default {
             )
             for (var x in this.caseData) {
                 if (this.checkNumber == this.caseData[x].number) {
-                    this.caseData[x].check = check
+                    if (type_ == 'Check') {
+                        this.caseData[x].check = responseData.check
+                    } else if (type_ == 'Params') {
+                        this.caseData[x].params = responseData.params
+                    } else if (type_ == 'Data') {
+                        this.caseData[x].data = responseData.data
+                    }
                     break
                 }
             }
@@ -511,10 +598,42 @@ export default {
             ).catch(function (error) {
                 ElMessage.error(error.message)
             })
+        },
 
-
+        // 修改params/data数据
+        async setParamsData(type_) {
+            try {
+                var dataInfo = JSON.parse(this.dataInfo)
+            } catch (e) {
+                ElMessage.error('Json数据格式有误, 未提交')
+                return
+            }
+            await this.$http({
+                url: '/caseService/set/api/params/data',
+                method: 'PUT',
+                data: JSON.stringify({
+                    case_id: this.caseId,
+                    number: this.checkNumber,
+                    type: type_,
+                    data_info: dataInfo
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '修改成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
         }
     }
 }
-
 </script>
