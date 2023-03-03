@@ -100,17 +100,17 @@
             </el-table-column>
             <el-table-column label="比较符" align="center" width="90px">
                 <template #default="scope">
-                    <div v-if="!scope.row.edit">{{ scope.row.compare }}</div>
+                    <div v-if="!scope.row.edit">{{ scope.row.s }}</div>
                     <el-select v-model="scope.row.s" :placeholder="scope.row.s" v-if="scope.row.edit" size="small">
-                        <el-option label="等于" value="==" />
-                        <el-option label="不等于" value="!=" />
-                        <el-option label="小于" value="<" />
-                        <el-option label="小于等于" value="<=" />
-                        <el-option label="大于" value=">" />
-                        <el-option label="大于等于" value=">=" />
-                        <el-option label="包含" value="in" />
-                        <el-option label="不包含" value="not in" />
-                        <el-option label="不包含" value="notin" />
+                        <el-option label="==" value="==" />
+                        <el-option label="!=" value="!=" />
+                        <el-option label="<" value="<" />
+                        <el-option label="<=" value="<=" />
+                        <el-option label=">" value=">" />
+                        <el-option label=">=" value=">=" />
+                        <el-option label="in" value="in" />
+                        <el-option label="not in" value="not in" />
+                        <el-option label="notin" value="notin" />
                     </el-select>
                 </template>
             </el-table-column>
@@ -137,7 +137,7 @@
                         <el-option label="true" :value='true' />
                         <el-option label="false" :value='false' />
                     </el-select>
-                    <el-input v-if="scope.row.edit && scope.row.type == 'null'" v-model="scope.row.value"
+                    <el-input v-if="scope.row.edit && scope.row.type == 'null'" v-model="scope.row.value" disabled=true
                         placeholder="null" size="small" />
                 </template>
             </el-table-column>
@@ -145,16 +145,16 @@
                 <template #default="scope">
                     <!-- 编辑操作 -->
                     <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit"
-                        @click="scope.row.edit = true"></el-button>
+                        :disabled="scope.row.EditDisabled" @click="myEdit(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
-                        @click="checkCheck(scope.row)"></el-button>
+                        @click="checkCheck(scope.row, 'edit')"></el-button>
                     <!-- 增加操作 -->
                     <el-button :icon="Plus" type="warning" size="small" @click="addRow"></el-button>
                     <!-- 删除操作 -->
                     <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del"
-                        @click="Del(scope.row)"></el-button>
+                        :disabled="scope.row.delDisabled" @click="Del(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
-                        @click="checkDel(scope.row)"></el-button>
+                        @click="checkCheck(scope.row, 'del')"></el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -180,7 +180,7 @@ export default {
             Delete,
             checkDialog: false,
             checkNumber: null,
-            checkInfo: [],
+            checkInfo: []
         }
     },
 
@@ -194,48 +194,40 @@ export default {
                 checkDict.key = x
                 checkDict.edit = false
                 checkDict.del = false
+                checkDict.delDisabled = false
+                checkDict.EditDisabled = false
                 checkDict.num = num
                 if (row.check[x] instanceof Array) {
                     var compare = row.check[x][0]
                     checkDict.type = row.check[x][1] == null ? "null" : typeof row.check[x][1]
                     if (compare == '==') {
-                        checkDict.compare = '等于'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == '<') {
-                        checkDict.compare = '小于'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == '<=') {
-                        checkDict.compare = '小于等于'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == '!=') {
-                        checkDict.compare = '不等于'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == '>') {
-                        checkDict.compare = '大于'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == '>=') {
-                        checkDict.compare = '大于等于'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == 'in') {
-                        checkDict.compare = '包含'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == 'not in') {
-                        checkDict.compare = '不包含'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else if (compare == 'notin') {
-                        checkDict.compare = '不包含'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     } else {
-                        checkDict.compare = '未识别'
                         checkDict.s = compare
                         checkDict.value = row.check[x][1]
                     }
@@ -255,18 +247,11 @@ export default {
             }
             this.checkDialog = true
         },
-        // 编辑的Check的确认
-        checkCheck(row) {
-            row.edit = false
-            console.log(row);
-            console.log(this.caseId);
-            console.log(this.checkNumber);
-        },
         // 新增row
         addRow() {
             this.checkInfo.push({
                 compare: '等于',
-                key: null,
+                key: '',
                 s: '==',
                 value: null,
                 del: false,
@@ -275,29 +260,126 @@ export default {
                 num: this.checkInfo.length
             })
         },
+        // 编辑的判断
+        myEdit(row) {
+            row.edit = true
+            row.delDisabled = true
+        },
         // 删除的判断
         Del(row) {
+            row.EditDisabled = true
             console.log(row);
-            if ((row.key == null || row.key == '') && (row.value == null || row.value == '')) {
+            if (row.key == null || row.key == '') {
                 var num = 0
                 for (var x in this.checkInfo) {
-                    if (this.checkInfo[x].num == row.num)
+                    if (this.checkInfo[x].num == row.num) {
                         this.checkInfo.splice(num, 1)
+                    }
                     num++
                 }
             } else {
                 row.del = true
             }
         },
-        // 删除的确认
-        checkDel(row) {
-            row.del = false
+        // 编辑的Check的确认
+        async checkCheck(row, myType) {
             console.log(row);
+            var flag = false
+            await this.$http({
+                url: '/caseService/set/api/check',
+                method: 'PUT',
+                data: JSON.stringify({
+                    case_id: this.caseId,
+                    number: this.checkNumber,
+                    type: myType,
+                    check: {
+                        key: row.key,
+                        s: row.s,
+                        type: row.type,
+                        value: row.value,
+                    }
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function () {
+                    flag = true
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '修改成功',
+                        offset: 200,
+                    })
+                }
+
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            if (flag) {
+                row.edit = false
+                row.delDisabled = false
+                row.EditDisabled = false
+                if (myType == 'edit') {
+                    // 判断key出现的次数
+                    var num = 0
+                    for (var x in this.checkInfo) {
+                        if (this.checkCheck[x].key == row.key) {
+                            num++
+                        }
+                    }
+                    // key超出2次就删掉最前面的一个
+                    if (num >= 2) {
+                        for (var x in this.checkInfo) {
+                            if (this.checkInfo[x].key == row.key) {
+                                this.checkInfo.splice(x, 1)
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    // 删除逻辑
+                    for (var x in this.checkInfo) {
+                        if (this.checkInfo[x].key == row.key) {
+                            this.checkInfo.splice(x, 1)
+                            break
+                        }
+                    }
+                }
+            }
+
         },
         // 关闭校验弹窗
-        closeCheckDialog() {
+        async closeCheckDialog() {
             this.checkDialog = false
             this.checkInfo = []
+            this.delDisabled = false
+            this.EditDisabled = false
+            var check = null
+            await this.$http({
+                url: '/caseService/query/api/info',
+                method: 'GET',
+                params: {
+                    case_id: this.caseId,
+                    number: this.checkNumber,
+                }
+            }).then(
+                function (response) {
+                    check = response.data.check
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            for (var x in this.caseData) {
+                if (this.checkNumber == this.caseData[x].number) {
+                    this.caseData[x].check = check
+                    break
+                }
+            }
         },
 
         indexMethod(index) {
