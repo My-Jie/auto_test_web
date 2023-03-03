@@ -77,7 +77,7 @@
         <!-- headers的按钮和内容框 -->
         <el-table-column label="" width="40" align="center">
             <template #default="scope">
-                <el-button :icon="Edit" size="small"></el-button>
+                <el-button :icon="Edit" size="small" @click=setHeader(scope.row)></el-button>
             </template>
         </el-table-column>
         <el-table-column label="headers" prop="headers" show-overflow-tooltip='true' width="400px">
@@ -90,6 +90,9 @@
     <el-dialog v-model='checkDialog' width="50%"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
         :close-on-press-escape=false @close="closeCheckDialog('Check')">
+        <!-- 增加操作 -->
+        <el-button v-if="checkInfo.length <= 0" :icon="Plus" type="warning" size="small"
+            @click="addRow('check')"></el-button>
         <el-table :data="checkInfo" stripe fit empty-text="空">
             <el-table-column type="index"></el-table-column>
             <el-table-column label="key" align="center" width="120px">
@@ -150,10 +153,10 @@
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
                         @click="checkCheck(scope.row, 'edit')"></el-button>
                     <!-- 增加操作 -->
-                    <el-button :icon="Plus" type="warning" size="small" @click="addRow"></el-button>
+                    <el-button :icon="Plus" type="warning" size="small" @click="addRow('check')"></el-button>
                     <!-- 删除操作 -->
                     <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del"
-                        :disabled="scope.row.delDisabled" @click="Del(scope.row)"></el-button>
+                        :disabled="scope.row.delDisabled" @click="checkDel(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
                         @click="checkCheck(scope.row, 'del')"></el-button>
                 </template>
@@ -190,6 +193,45 @@
             </el-collapse-item>
         </el-collapse>
     </el-dialog>
+    <!-- header的弹窗 -->
+    <el-dialog v-model='headerDialog' width="50%"
+        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 请求头'" :close-on-click-modal=false
+        :close-on-press-escape=false @close="closeCheckDialog('Header')">
+        <!-- 增加操作 -->
+        <el-button v-if="headerInfo.length <= 0" :icon="Plus" type="warning" size="small"
+            @click="addRow('header')"></el-button>
+        <el-table :data="headerInfo" stripe fit empty-text="空">
+            <el-table-column type="index"></el-table-column>
+            <el-table-column label="key" align="center" width="120px">
+                <template #default="scope">
+                    <div v-if="!scope.row.edit">{{ scope.row.key }}</div>
+                    <el-input v-if="scope.row.edit" v-model="scope.row.key" placeholder="header键" size="small" />
+                </template>
+            </el-table-column>
+            <el-table-column label="value" align="center">
+                <template #default="scope">
+                    <div v-if="!scope.row.edit">{{ scope.row.value }}</div>
+                    <el-input v-if="scope.row.edit" v-model="scope.row.value" placeholder="headers值" size="small" />
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="180px">
+                <template #default="scope">
+                    <!-- 编辑操作 -->
+                    <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit"
+                        :disabled="scope.row.EditDisabled" @click="myEdit(scope.row)"></el-button>
+                    <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
+                        @click="HeaderCheck(scope.row, 'edit')"></el-button>
+                    <!-- 增加操作 -->
+                    <el-button :icon="Plus" type="warning" size="small" @click="addRow('header')"></el-button>
+                    <!-- 删除操作 -->
+                    <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del"
+                        :disabled="scope.row.delDisabled" @click="headerDel(scope.row)"></el-button>
+                    <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
+                        @click="HeaderCheck(scope.row, 'del')"></el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </el-dialog>
 </template>
 
 <script>
@@ -211,12 +253,14 @@ export default {
             Delete,
             checkDialog: false,
             dataDialog: false,
+            headerDialog: false,
             dataInfo: '',
             dataInit: '',
             dataTitle: '',
             dataLength: 5,
             checkNumber: null,
-            checkInfo: []
+            checkInfo: [],
+            headerInfo: []
         }
     },
 
@@ -267,6 +311,90 @@ export default {
         emptyData() {
             this.dataInfo = JSON.stringify({}, null, 8);
         },
+        // 请求偷内容的弹窗
+        setHeader(row) {
+            this.checkNumber = row.number
+            var num = 0
+            for (var x in row.headers) {
+                var checkDict = {}
+                checkDict.key = x
+                checkDict.value = row.headers[x]
+                checkDict.edit = false
+                checkDict.del = false
+                checkDict.delDisabled = false
+                checkDict.EditDisabled = false
+                checkDict.num = num
+                // 添加到数组
+                this.headerInfo.push(checkDict)
+                num++
+            }
+            this.headerDialog = true
+        },
+        // 请求头内容的提交
+        async HeaderCheck(row, myType) {
+            var flag = false
+            await this.$http({
+                url: '/caseService/set/api/header',
+                method: 'PUT',
+                data: JSON.stringify({
+                    case_id: this.caseId,
+                    number: this.checkNumber,
+                    type: myType,
+                    header: {
+                        key: row.key,
+                        value: row.value,
+                    }
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function () {
+                    flag = true
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '修改成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            if (flag) {
+                row.edit = false
+                row.delDisabled = false
+                row.EditDisabled = false
+                if (myType == 'edit') {
+                    // 判断key出现的次数
+                    var num = 0
+                    for (var x in this.headerInfo) {
+                        if (this.headerInfo[x].key == row.key) {
+                            num++
+                        }
+                    }
+                    // key超出2次就删掉最前面的一个
+                    if (num >= 2) {
+                        for (var x in this.headerInfo) {
+                            if (this.headerInfo[x].key == row.key) {
+                                this.headerInfo.splice(x, 1)
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    // 删除逻辑
+                    for (var x in this.headerInfo) {
+                        if (this.headerInfo[x].key == row.key) {
+                            this.headerInfo.splice(x, 1)
+                            break
+                        }
+                    }
+                }
+            }
+        },
+
         // 校验内容的弹窗
         setCheck(row) {
             this.checkNumber = row.number
@@ -342,18 +470,29 @@ export default {
             this.checkDialog = true
         },
         // 新增row
-        addRow() {
-            this.checkInfo.push({
-                compare: '等于',
-                key: '',
-                s: '==',
-                value: null,
-                del: false,
-                edit: true,
-                type: 'string',
-                color: '',
-                num: this.checkInfo.length
-            })
+        addRow(myType) {
+            if (myType == 'check') {
+                this.checkInfo.push({
+                    compare: '等于',
+                    key: '',
+                    s: '==',
+                    value: null,
+                    del: false,
+                    edit: true,
+                    type: 'string',
+                    color: '',
+                    num: this.checkInfo.length
+                })
+            } else {
+                this.headerInfo.push({
+                    key: '',
+                    value: null,
+                    del: false,
+                    edit: true,
+                    num: this.headerInfo.length
+                })
+            }
+
         },
         // 编辑的判断
         myEdit(row) {
@@ -361,13 +500,28 @@ export default {
             row.delDisabled = true
         },
         // 删除的判断
-        Del(row) {
+        checkDel(row) {
             row.EditDisabled = true
             if (row.key == null || row.key == '') {
                 var num = 0
                 for (var x in this.checkInfo) {
                     if (this.checkInfo[x].num == row.num) {
                         this.checkInfo.splice(num, 1)
+                    }
+                    num++
+                }
+            } else {
+                row.del = true
+            }
+        },
+        // header删除的判断
+        headerDel(row) {
+            row.EditDisabled = true
+            if (row.key == null || row.key == '') {
+                var num = 0
+                for (var x in this.headerInfo) {
+                    if (this.headerInfo[x].num == row.num) {
+                        this.headerInfo.splice(num, 1)
                     }
                     num++
                 }
@@ -460,8 +614,8 @@ export default {
             this.dataLength = 5
             this.checkDialog = false
             this.checkInfo = []
-            this.delDisabled = false
-            this.EditDisabled = false
+            this.headerDialog = false
+            this.headerInfo = []
             var responseData = null
             await this.$http({
                 url: '/caseService/query/api/info',
@@ -487,6 +641,8 @@ export default {
                         this.caseData[x].params = responseData.params
                     } else if (type_ == 'Data') {
                         this.caseData[x].data = responseData.data
+                    } else if (type_ == 'Header') {
+                        this.caseData[x].headers = responseData.headers
                     }
                     break
                 }
