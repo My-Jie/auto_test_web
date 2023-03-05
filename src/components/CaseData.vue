@@ -260,7 +260,8 @@ export default {
             dataLength: 5,
             checkNumber: null,
             checkInfo: [],
-            headerInfo: []
+            headerInfo: [],
+            renovate: false
         }
     },
 
@@ -311,7 +312,7 @@ export default {
         emptyData() {
             this.dataInfo = JSON.stringify({}, null, 8);
         },
-        // 请求偷内容的弹窗
+        // 请求头内容的弹窗
         setHeader(row) {
             this.checkNumber = row.number
             var num = 0
@@ -393,6 +394,7 @@ export default {
                     }
                 }
             }
+            this.renovate = true
         },
 
         // 校验内容的弹窗
@@ -608,6 +610,7 @@ export default {
                     }
                 }
             }
+            this.renovate = true
         },
         // 关闭校验弹窗
         async closeCheckDialog(type_) {
@@ -617,6 +620,9 @@ export default {
             this.headerDialog = false
             this.headerInfo = []
             var responseData = null
+            if (!this.renovate) {
+                return
+            }
             await this.$http({
                 url: '/caseService/query/api/info',
                 method: 'GET',
@@ -652,6 +658,7 @@ export default {
                 message: 'CaseId : ' + this.caseId + ' -Number : ' + this.checkNumber + ' 刷新成功',
                 offset: 200,
             })
+            this.renovate = false
         },
 
         indexMethod(index) {
@@ -789,6 +796,7 @@ export default {
                     ElMessage.error(error.message)
                 }
             )
+            this.renovate = true
         }
     }
 }
