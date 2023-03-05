@@ -87,7 +87,7 @@
         </el-table-column>
     </el-table>
     <!-- check的弹窗 -->
-    <el-dialog v-model='checkDialog' width="50%"
+    <el-dialog v-model='checkDialog' width="50%" draggable
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
         :close-on-press-escape=false @close="closeCheckDialog('Check')">
         <!-- 增加操作 -->
@@ -164,7 +164,7 @@
         </el-table>
     </el-dialog>
     <!-- params\data的弹窗 -->
-    <el-dialog v-model="dataDialog" width="60%"
+    <el-dialog v-model="dataDialog" width="60%" draggable
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , ' + this.dataTitle + ' 数据'"
         :close-on-click-modal=false :close-on-press-escape=false @close="closeCheckDialog(this.dataTitle)">
         <el-button type="success" @click="formatData()">格式化</el-button>
@@ -194,7 +194,7 @@
         </el-collapse>
     </el-dialog>
     <!-- header的弹窗 -->
-    <el-dialog v-model='headerDialog' width="50%"
+    <el-dialog v-model='headerDialog' width="50%" draggable
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 请求头'" :close-on-click-modal=false
         :close-on-press-escape=false @close="closeCheckDialog('Header')">
         <!-- 增加操作 -->

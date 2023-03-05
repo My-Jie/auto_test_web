@@ -124,19 +124,18 @@ export default {
       <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
       <!-- 开关灯 -->
       <!-- <el-switch v-model="mySwitch" class="mt-2" style="--el-switch-on-color: #000; --el-switch-off-color: #959999aa;"
-              inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
+                inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
       <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo"></my-case-info>
       <!-- 字段变更的弹窗 -->
       <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
-        :close-on-press-escape=false @close='dialogParamsCharge = false'>
+        :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>
         <my-change v-if="dialogParamsCharge"></my-change>
       </el-dialog>
       <!-- 文件上传的弹窗 -->
-      <el-dialog v-model='dialogUpload' width="50%" title="文件上传" :close-on-click-modal=false
-        :close-on-press-escape=false @close='dialogUpload = false'>
+      <el-dialog v-model='dialogUpload' width="40%" title="文件上传" @close='dialogUpload = false' draggable>
         <my-upload v-if="dialogUpload"></my-upload>
       </el-dialog>
     </el-main>

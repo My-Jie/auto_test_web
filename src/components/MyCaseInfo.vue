@@ -63,7 +63,7 @@
         </el-dialog>
 
         <!-- 替换数据弹窗 -->
-        <el-dialog v-model='repData' width="70%" :close-on-click-modal=false :close-on-press-escape=false
+        <el-dialog v-model='repData' width="70%" :close-on-click-modal=false :close-on-press-escape=false draggable
             :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='closeDialog'>
 
             <!-- 原始数据查询 -->
