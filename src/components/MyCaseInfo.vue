@@ -91,8 +91,9 @@
             <!-- 选择jsonpath数据 -->
             <el-table :data="responseValueJsonpath" stripe fit v-show="responseValueJsonpath.length > 0">
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="用例序号.$.取值表达式" prop="jsonpath"></el-table-column>
-                <el-table-column label="选择[建议第一条]" width="200px" align="center">
+                <el-table-column label="从这个Url的Response数据中" prop="path" show-overflow-tooltip='true'></el-table-column>
+                <el-table-column label="通过序号.$.取值表达式" prop="jsonpath"></el-table-column>
+                <el-table-column label="选择数据源[建议第一条]" width="200px" align="center">
                     <template #default="scope">
                         <el-checkbox v-model=scope.row.checkbox @click.stop="checkboxClick(scope.row)" label="" />
                     </template>
@@ -146,7 +147,7 @@
             <!-- url的表格 -->
             <el-table v-show="tableLayout == 'url'" :data="urlJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="把这个数据" prop="old_data"></el-table-column>
+                <el-table-column label="把这个数据" prop="path" show-overflow-tooltip='true'></el-table-column>
                 <el-table-column label="通过这个表达式" prop="jsonpath"></el-table-column>
                 <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
@@ -162,7 +163,7 @@
             <!-- params的表格 -->
             <el-table v-show="tableLayout == 'params'" :data="parmaJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="把这个数据" prop="old_data"></el-table-column>
+                <el-table-column label="把这个数据" prop="old_data" show-overflow-tooltip='true'></el-table-column>
                 <el-table-column label="通过这个表达式从params取值" prop="jsonpath"></el-table-column>
                 <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
@@ -178,7 +179,7 @@
             <!-- data的表格 -->
             <el-table v-show="tableLayout == 'data'" :data="dataJsonpath" stripe fit>
                 <el-table-column type="index"></el-table-column>
-                <el-table-column label="把这个数据" prop="old_data"></el-table-column>
+                <el-table-column label="把这个数据" prop="old_data" show-overflow-tooltip='true'></el-table-column>
                 <el-table-column label="通过这个表达式从data取值" prop="jsonpath"></el-table-column>
                 <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
                 <el-table-column label="替换成这样" prop="new_data"></el-table-column>
@@ -541,17 +542,30 @@ export default {
                 function (response) {
                     row.runLoading = false
                     if (response.data.code == 0) {
-                        ElNotification({
-                            title: '测试报告',
-                            message: '<a href="' + response.data.data.allure_report[row.case_id] + '/index.html" target="_blank">查看用例[' + row.case_id + ']的报告</a>',
-                            duration: 0,
-                            type: 'success',
-                            position: 'bottom-right',
-                            dangerouslyUseHTMLString: true,
-                        })
+                        var case_report = response.data.data.allure_report[row.case_id]
+                        if (!case_report.is_fail) {
+                            ElNotification({
+                                title: '测试报告',
+                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.case_id + ']的报告</a>',
+                                duration: 0,
+                                type: 'success',
+                                position: 'bottom-right',
+                                dangerouslyUseHTMLString: true,
+                            })
+                        } else {
+                            ElNotification({
+                                title: '测试报告',
+                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.case_id + ']的报告</a>',
+                                duration: 0,
+                                type: 'warning',
+                                position: 'bottom-right',
+                                dangerouslyUseHTMLString: true,
+                            })
+                        }
+
                     } else {
-                        ElNotification.warning({
-                            title: 'Warning',
+                        ElNotification.error({
+                            title: 'Error',
                             message: '用例\n[ ' + row.case_id + '-' + row.name + ' ] 执行失败',
                             offset: 200,
                         })

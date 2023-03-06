@@ -123,12 +123,12 @@ export default {
         },
         btnSubmit() {
             if (this.uploadType == 'temp') {
-                this.uploadUrl = 'api/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName
+                this.uploadUrl = '/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName
             } else {
                 if (this.cover) {
-                    this.uploadUrl = 'api/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_id=' + this.caseId
+                    this.uploadUrl = '/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_id=' + this.caseId
                 } else {
-                    this.uploadUrl = 'api/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_name=' + this.caseName
+                    this.uploadUrl = '/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_name=' + this.caseName
                 }
             }
             this.$refs.upload.submit()

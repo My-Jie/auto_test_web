@@ -200,13 +200,13 @@ export default {
                 if (response.data.message == '新增成功') {
                     ElNotification.success({
                         title: 'Success',
-                        message: '模板[ ' + tempId + '] 新增用例' + response.data.data.case_id + ' ] 成功',
+                        message: '模板 [' + tempId + '] 新增用例 [' + response.data.data.case_id + '] 成功',
                         offset: 200,
                     })
                 } else {
                     ElNotification.success({
                         title: 'Success',
-                        message: '模板[ ' + tempId + '] 覆盖用例' + response.data.data.case_id + ' ] 成功',
+                        message: '模板 [' + tempId + '] 覆盖用例 [' + response.data.data.case_id + '] 成功',
                         offset: 200,
                     })
                 }
@@ -281,7 +281,7 @@ export default {
                     if (response.data.code == 0) {
                         var msg = ''
                         for (var x in response.data.data.allure_report) {
-                            msg += '<a href="' + response.data.data.allure_report[x] + '/index.html" target="_blank">查看用例[' + x + ']的报告</a><br>'
+                            msg += '<a href="' + response.data.data.allure_report[x].report + '/index.html" target="_blank">查看用例[' + x + ']的报告</a><br>'
                         }
                         ElNotification({
                             title: '测试报告',
@@ -292,8 +292,8 @@ export default {
                             dangerouslyUseHTMLString: true,
                         })
                     } else {
-                        ElNotification.warning({
-                            title: 'Warning',
+                        ElNotification.error({
+                            title: 'Error',
                             message: '模板\n[ ' + row.id + '-' + row.temp_name + ' ] 执行失败',
                             offset: 200,
                         })
