@@ -19,7 +19,7 @@
             <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
             <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
-            <el-table-column label="操作" align="center">
+            <el-table-column label="操作" align="center" width="450">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
                     </el-button>&nbsp;
@@ -29,6 +29,7 @@
                         <el-button type="primary" plain @click="replaceData(scope.row)">提取</el-button>
                         <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
                             :loading="scope.row.copyLoading">复制</el-button>
+                        <el-button type="primary" plain @click="caseDown(scope.row)">下载</el-button>
                     </el-button-group>&nbsp;
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
@@ -285,6 +286,28 @@ export default {
             this.caseName = row.name
             this.caseId = row.case_id
             this.caseRow = row
+        },
+        // 下载用例
+        async caseDown(row) {
+            await this.$http({
+                url: '/caseService/download/data/' + row.case_id,
+                method: 'GET',
+                headers: {
+                    responseType: 'blob'
+                }
+            }).then(
+                function (response) {
+                    var blob = new Blob([JSON.stringify(response.data, null, 2)])
+                    var blobUrl = window.URL.createObjectURL(blob)
+
+                    var a = document.createElement('a')
+                    a.style.display = 'none'
+                    a.download = response.data.case_name + '.json' // 自定义下载的文件名
+                    a.href = blobUrl
+                    document.body.appendChild(a)
+                    a.click()
+                }
+            )
         },
         // 替换测试数据
         replaceData(row) {

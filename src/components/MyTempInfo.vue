@@ -31,7 +31,6 @@
                             :loading="scope.row.dataLoading">详情</el-button>
                         <el-button type="primary" plain @click="tempToCase(scope.row)"
                             :loading="scope.row.tempToCaseLoading">转化</el-button>
-
                     </el-button-group>
                 </template>
             </el-table-column>
@@ -61,11 +60,12 @@
             <el-radio-group v-model="radioTempToCase">
                 <el-radio-button :label='true'>新增</el-radio-button>
                 <el-radio-button :label='false'>覆盖</el-radio-button>
+                <el-radio-button :label='null'>下载预处理数据后的测试用例</el-radio-button>
             </el-radio-group>
             <br>
             <br>
             <!-- 新增 -->
-            <el-input v-model="addCaseInput" placeholder="请输入用例名称" v-if="radioTempToCase">
+            <el-input v-model="addCaseInput" placeholder="请输入用例名称" v-if="radioTempToCase == true">
                 <template #prepend>用例名称</template>
             </el-input>
 
@@ -91,11 +91,13 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogTempToCase = false">取消</el-button>
-                    <el-button type="primary" @click="postTempToCase" :loading="tempToCaseLoading">确认</el-button>
+                    <el-button type="primary" @click="postTempToCase" :loading="tempToCaseLoading"
+                        v-if="radioTempToCase != null">确认</el-button>
+                    <el-button type="primary" @click="tempDown" :loading="tempToCaseLoading"
+                        v-if="radioTempToCase == null">下载</el-button>
                 </span>
             </template>
         </el-dialog>
-
     </div>
 </template>
 
@@ -216,6 +218,36 @@ export default {
             this.tempToCaseLoading = false
             this.dialogTempToCase = false
         },
+        // 下载预处理数据后的测试用例
+        async tempDown() {
+            this.tempToCaseLoading = true
+            await this.$http({
+                url: '/caseService/download/init/data/json',
+                method: 'GET',
+                params: {
+                    temp_id: this.tempId,
+                    mode: 'service',
+                    fail_stop: this.activeStop
+                },
+                headers: {
+                    responseType: 'blob'
+                }
+            }).then(
+                function (response) {
+                    var blob = new Blob([JSON.stringify(response.data, null, 2)])
+                    var blobUrl = window.URL.createObjectURL(blob)
+
+                    var a = document.createElement('a')
+                    a.style.display = 'none'
+                    a.download = response.data.temp_name + '.json' // 自定义下载的文件名
+                    a.href = blobUrl
+                    document.body.appendChild(a)
+                    a.click()
+                }
+            )
+            this.tempToCaseLoading = false
+            this.dialogTempToCase = false
+        },
 
         // 清理替换窗口的数据
         closeDialog() {
@@ -265,6 +297,7 @@ export default {
             }
             this.tempId = row.id
         },
+
 
         // 按模板运行数据
         async runCase(row) {
