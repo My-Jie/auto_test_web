@@ -6,6 +6,8 @@ import MyChange from './components/MyChange.vue'
 import MyUpload from './components/Upload.vue'
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
+import { useDark, useToggle } from '@vueuse/core'
+// const toggleDark = useToggle(isDark)
 export default {
   components: {
     MyTempInfo,
@@ -30,11 +32,16 @@ export default {
       dialogUpload: false,
       mySwitch: true,
       tempInfoLoading: false,
-      caseInfoLoading: false
+      caseInfoLoading: false,
+      isDark: useDark(),
     }
   },
 
   methods: {
+    // 暗黑模式
+    toggleDark() {
+      useToggle(this.isDark)
+    },
     // 获取模板信息
     async getTempInfo() {
       this.tempInfoLoading = true
@@ -123,8 +130,8 @@ export default {
       <!-- 文件上传 -->
       <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
       <!-- 开关灯 -->
-      <!-- <el-switch v-model="mySwitch" class="mt-2" style="--el-switch-on-color: #000; --el-switch-off-color: #959999aa;"
-                inline-prompt :active-icon="Check" :inactive-icon="Close" @click="mySwitchTo()" /> -->
+      <span @click.stop="toggleDark()"></span>
+      <el-switch size="small" v-model="isDark" />
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
