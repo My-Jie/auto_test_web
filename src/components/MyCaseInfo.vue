@@ -29,7 +29,13 @@
                         <el-button type="primary" plain @click="replaceData(scope.row)">提取</el-button>
                         <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
                             :loading="scope.row.copyLoading">复制</el-button>
-                        <el-button type="primary" plain @click="caseDown(scope.row)">下载</el-button>
+                        <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
+                            confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
+                            @confirm="caseDataSet(scope.row)" :icon="Download" icon-color="#626AEF" title="下载用例">
+                            <template #reference>
+                                <el-button type="primary" plain>下载</el-button>
+                            </template>
+                        </el-popconfirm>
                     </el-button-group>&nbsp;
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
@@ -202,7 +208,7 @@
 import CaseData from './CaseData.vue';
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check } from '@element-plus/icons-vue'
+import { Edit, Check, Download } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
@@ -217,6 +223,7 @@ export default {
         return {
             Edit,
             Check,
+            Download,
             loading: !this.caseInfo ? true : false,
             myDialog: false,
             thisCaseData: [],
@@ -286,6 +293,26 @@ export default {
             this.caseName = row.name
             this.caseId = row.case_id
             this.caseRow = row
+        },
+        // 下载数据集
+        async caseDataSet(row) {
+            await this.$http({
+                url: '/caseService/down/data/gather',
+                method: 'GET',
+                params: {
+                    case_id: row.case_id
+                },
+                responseType: 'blob'
+            }).then(
+                function (response) {
+                    var blobUrl = window.URL.createObjectURL(new Blob([response.data]))
+                    var link = document.createElement('a')
+                    link.href = blobUrl
+                    link.setAttribute('download', row.temp_name + '-' + row.case_name + '.xlsx')
+                    document.body.appendChild(link)
+                    link.click()
+                }
+            )
         },
         // 下载用例
         async caseDown(row) {

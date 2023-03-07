@@ -7,10 +7,10 @@
     <br>
     <!-- 模板 -->
     <el-form v-if="uploadType == 'temp'">
-        <el-form-item label="模板名称" label-width="80px" :required="true" placeholder="">
+        <el-form-item label="模板名称" label-width="100px" :required="true" placeholder="">
             <el-input v-model="tempName" />
         </el-form-item>
-        <el-form-item label="项目名称" label-width="80px" :required="true">
+        <el-form-item label="项目名称" label-width="100px" :required="true">
             <el-select v-model="projectName" placeholder="选择项目">
                 <el-option label="sales" value="sales" />
                 <el-option label="oms" value="oms" />
@@ -22,19 +22,19 @@
     </el-form>
     <!-- 用例 -->
     <el-form v-if="uploadType == 'case'">
-        <el-form-item label="模板ID" label-width="80px" :required="true">
+        <el-form-item label="绑定模板ID" label-width="100px" :required="true">
             <el-input-number v-model="tempId" placeholder="" />
         </el-form-item>
-        <el-form-item label="覆盖" label-width="80px" :required="true">
+        <el-form-item label="覆盖" label-width="100px" :required="true">
             <el-select v-model="cover" placeholder="">
                 <el-option label="覆盖" :value='true' />
                 <el-option label="不覆盖" :value='false' />
             </el-select>
         </el-form-item>
-        <el-form-item label="用例ID" label-width="80px" :required="true" v-show="cover">
+        <el-form-item label="用例ID" label-width="100px" :required="true" v-show="cover">
             <el-input-number v-model="caseId" placeholder="" />
         </el-form-item>
-        <el-form-item label="用例名称" label-width="80px" :required="true" v-show="!cover">
+        <el-form-item label="用例名称" label-width="100px" :required="true" v-show="!cover">
             <el-input v-model="caseName" placeholder="" />
         </el-form-item>
     </el-form>
