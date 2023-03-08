@@ -583,6 +583,8 @@ export default {
         async runCase(row) {
             this.dialogVisible = false
             row.runLoading = true
+            var flag = false
+            var run_order = null
             ElNotification.success({
                 title: 'Success',
                 message: '开始执行 用例ID: ' + row.case_id,
@@ -612,6 +614,8 @@ export default {
                                 dangerouslyUseHTMLString: true,
                             })
                         }
+                        flag = true
+                        run_order = case_report.run_order
 
                     } else {
                         ElNotification.error({
@@ -630,6 +634,15 @@ export default {
                 })
                 row.runLoading = false
             })
+            // 跟新用例数据
+            if (flag && run_order) {
+                for (var x in this.caseInfo) {
+                    if (this.caseInfo[x].case_id == row.case_id) {
+                        this.caseInfo[x].run_order = run_order
+                        break
+                    }
+                }
+            }
         }
     }
 }
