@@ -1,4 +1,12 @@
 <template>
+    <el-button type="primary" @click="repData = true">提取数据进行替换</el-button>
+    <el-button type="primary" :loading="dataLoading" @click="getCaseData">刷新</el-button>
+    <!-- 替换数据弹窗 -->
+    <el-dialog v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false :close-on-press-escape=false
+        draggable :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>
+        <my-replace-data :case-id="caseId"></my-replace-data>
+    </el-dialog>
+    <!-- 表格 -->
     <el-table :data="caseData" stripe fit>
         <el-table-column fixed="left" label="config" prop="config" width="250%">
             <template #default="scope">
@@ -41,17 +49,6 @@
                     @keyup.enter.native="checkDescription(scope.row)"></el-input>
             </template>
         </el-table-column>
-        <!-- 校验的按钮和内容框 -->
-        <el-table-column label="" width="40" align="center">
-            <template #default="scope">
-                <el-button :icon="Edit" size="small" @click=setCheck(scope.row)></el-button>
-            </template>
-        </el-table-column>
-        <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="250px">
-            <template #default="scope">
-                <div>{{ JSON.stringify(scope.row.check, null, 1) }}</div>
-            </template>
-        </el-table-column>
         <!-- params的按钮和内容框 -->
         <el-table-column label="" width="40" align="center">
             <template #default="scope">
@@ -72,6 +69,17 @@
         <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
+            </template>
+        </el-table-column>
+        <!-- 校验的按钮和内容框 -->
+        <el-table-column label="" width="40" align="center">
+            <template #default="scope">
+                <el-button :icon="Edit" size="small" @click=setCheck(scope.row)></el-button>
+            </template>
+        </el-table-column>
+        <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="250px">
+            <template #default="scope">
+                <div>{{ JSON.stringify(scope.row.check, null, 1) }}</div>
             </template>
         </el-table-column>
         <!-- headers的按钮和内容框 -->
@@ -238,8 +246,12 @@
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Edit, Check, Plus, Delete } from '@element-plus/icons-vue'
+import MyReplaceData from './ReplaceData.vue'
 export default {
     name: 'CaseData',
+    components: {
+        MyReplaceData
+    },
     props: {
         'caseData': Array,
         'caseId': Number
@@ -261,11 +273,38 @@ export default {
             checkNumber: null,
             checkInfo: [],
             headerInfo: [],
-            renovate: false
+            renovate: false,
+            repData: false,
+            dataLoading: false
         }
     },
-
     methods: {
+        // 刷新用例详情数据
+        async getCaseData() {
+            this.dataLoading = true
+            var case_ = []
+            await this.$http.get('/caseService/data/' + this.caseId).then(
+                function (response) {
+                    case_ = response.data['data']
+                    for (var x in case_) {
+                        case_[x].stopLoading = false
+                        case_[x].failStopLoading = false
+                        case_[x].isLoginLoading = false
+                        case_[x].sleepLoading = false
+                        case_[x].descriptionLoading = false
+                        case_[x].edit = true
+                    }
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            for (var x in case_) {
+                this.caseData[x] = case_[x]
+            }
+            this.dataLoading = false
+        },
         // params/data数据的弹窗
         setData(row, type_) {
             this.checkNumber = row.number

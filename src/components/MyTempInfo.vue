@@ -60,7 +60,7 @@
             <el-radio-group v-model="radioTempToCase">
                 <el-radio-button :label='true'>新增</el-radio-button>
                 <el-radio-button :label='false'>覆盖</el-radio-button>
-                <el-radio-button :label='null'>下载预处理数据后的测试用例</el-radio-button>
+                <el-radio-button :label='null'>JSON测试用例</el-radio-button>
             </el-radio-group>
             <br>
             <br>
