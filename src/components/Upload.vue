@@ -140,7 +140,7 @@ export default {
                     this.uploadUrl = '/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_name=' + this.caseName
                 }
             } else if ((this.uploadType == 'gather')) {
-                this.uploadUrl = '/api/caseService/upload/data/gather?case_id=' + this.caseId
+                this.uploadUrl = '/caseDdt/upload/data/gather?case_id=' + this.caseId
             }
             this.$refs.upload.submit()
         },

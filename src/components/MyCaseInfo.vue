@@ -19,7 +19,7 @@
             <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
             <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="350">
+            <el-table-column label="操作" align="center" width="450">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
                     </el-button>&nbsp;
@@ -28,6 +28,8 @@
                             :loading="scope.row.dataLoading">详情</el-button>
                         <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
                             :loading="scope.row.copyLoading">复制</el-button>
+                        <el-button type="primary" plain @click="getGather(scope.row)"
+                            :loading="scope.row.gatherLoading">数据</el-button>
                         <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
                             confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
                             @confirm="caseDataSet(scope.row)" :icon="Download" icon-color="#626AEF" title="下载用例">
@@ -67,12 +69,17 @@
                 </span>
             </template>
         </el-dialog>
+        <!-- 数据集的弹窗 -->
+        <el-dialog v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog" width="70%">
+            <my-gather :gather-data="gatherData"></my-gather>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 
-import CaseData from './CaseData.vue';
+import CaseData from './CaseData.vue'
+import MyGather from './MyGather.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Edit, Check, Download } from '@element-plus/icons-vue'
@@ -83,7 +90,8 @@ export default {
     },
 
     components: {
-        CaseData
+        CaseData,
+        MyGather
     },
 
     data() {
@@ -100,7 +108,8 @@ export default {
             setCopyDialogVisible: false,
             caseName: null,
             caseRow: null,
-            
+            gatherDialog: false,
+            gatherData: []
         }
     },
 
@@ -151,10 +160,38 @@ export default {
             this.caseId = row.case_id
             this.caseRow = row
         },
+        // 获取数据集
+        async getGather(row) {
+            row.gatherLoading = true
+            this.caseName = row.name
+            this.caseId = row.case_id
+            var gather_data = []
+            var gatherDialog = false
+            await this.$http({
+                url: '/caseDdt/data/gather',
+                method: "GET",
+                params: {
+                    case_id: row.case_id
+                }
+            }).then(
+                function (response) {
+                    gather_data = response.data
+                    row.gatherLoading = false
+                    gatherDialog = true
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                    row.gatherLoading = false
+                })
+            this.gatherDialog = gatherDialog
+            this.gatherData = gather_data
+
+        },
         // 下载数据集
         async caseDataSet(row) {
             await this.$http({
-                url: '/caseService/down/data/gather',
+                url: '/caseDdt/down/data/gather',
                 method: 'GET',
                 params: {
                     case_id: row.case_id
@@ -169,7 +206,9 @@ export default {
                     document.body.appendChild(link)
                     link.click()
                 }
-            )
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
         },
         // 下载用例
         async caseDown(row) {
@@ -191,7 +230,9 @@ export default {
                     document.body.appendChild(a)
                     a.click()
                 }
-            )
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
         },
         // 复制测试用例
         async copyCase(row) {
