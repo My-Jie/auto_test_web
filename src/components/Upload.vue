@@ -2,6 +2,7 @@
     <el-radio-group v-model="uploadType">
         <el-radio-button label='temp' @click="cutFile('temp')">模板</el-radio-button>
         <el-radio-button label='case' @click="cutFile('case')">用例</el-radio-button>
+        <el-radio-button label='gather' @click="cutFile('gather')">数据集</el-radio-button>
     </el-radio-group>
     <br>
     <br>
@@ -36,6 +37,12 @@
         </el-form-item>
         <el-form-item label="用例名称" label-width="100px" :required="true" v-show="!cover">
             <el-input v-model="caseName" placeholder="" />
+        </el-form-item>
+    </el-form>
+    <!-- 数据集 -->
+    <el-form v-if="uploadType == 'gather'">
+        <el-form-item label="用例ID" label-width="100px" :required="true">
+            <el-input-number v-model="caseId" placeholder="" />
         </el-form-item>
     </el-form>
 
@@ -89,7 +96,7 @@
 
 <script>
 import { UploadFilled } from '@element-plus/icons-vue'
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElMessage } from 'element-plus'
 export default {
     name: 'MyUpload',
     data() {
@@ -117,25 +124,32 @@ export default {
         cutFile(myType) {
             if (myType == 'temp') {
                 this.fileType = '.har'
-            } else {
+            } else if (myType == 'case') {
                 this.fileType = '.json'
+            } else if (myType == 'gather') {
+                this.fileType = '.xlsx'
             }
         },
         btnSubmit() {
             if (this.uploadType == 'temp') {
                 this.uploadUrl = '/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName
-            } else {
+            } else if (this.uploadType == 'case') {
                 if (this.cover) {
                     this.uploadUrl = '/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_id=' + this.caseId
                 } else {
                     this.uploadUrl = '/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_name=' + this.caseName
                 }
+            } else if ((this.uploadType == 'gather')) {
+                this.uploadUrl = '/api/caseService/upload/data/gather?case_id=' + this.caseId
             }
             this.$refs.upload.submit()
         },
         onSuccess(response) {
-            this.successData = response
-            this.mySuccess = true
+            if (this.uploadType != 'gather') {
+                this.successData = response
+                this.mySuccess = true
+            }
+
             ElMessage.success('上传成功')
         },
         onError() {
