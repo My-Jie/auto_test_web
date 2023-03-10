@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="gatherData" stripe fit>
+    <el-table :data="gatherData" stripe fit :row-class-name="onTableRowClassName">
         <el-table-column label="序号" prop="suite" width="30px" align="center"></el-table-column>
         <el-table-column label="数据集名称" prop="name" width="150px" align="center"></el-table-column>
         <el-table-column label="Number" prop="number" width="100px" align="center"></el-table-column>
@@ -37,7 +37,25 @@ export default {
         return {
 
         }
+    },
+
+    methods: {
+        onTableRowClassName({ row, rowIndex }) {
+            console.log(row);
+            if (row.suite % 2 != 0) {
+                return 'statistics-warning-row';
+            } else {
+                return '';
+            }
+        }
     }
 }
 </script>
+
+
+<style>
+.el-table__row.statistics-warning-row .cell {
+    background: #b9d1b9;
+}
+</style>
 
