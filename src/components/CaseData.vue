@@ -315,7 +315,7 @@ export default {
                 for (var _ in row.params) {
                     length++
                 }
-                this.dataLength = length > this.dataLength ? length : this.dataLength + 2
+                this.dataLength = length > this.dataLength ? length + 2 : this.dataLength + 2
                 this.dataInfo = JSON.stringify(row.params, null, 8);
                 this.dataInit = row.params
             } else {
@@ -323,7 +323,7 @@ export default {
                 for (var _ in row.data) {
                     length++
                 }
-                this.dataLength = length > this.dataLength ? length : this.dataLength + 2
+                this.dataLength = length > this.dataLength ? length + 2 : this.dataLength + 2
                 this.dataInfo = JSON.stringify(row.data, null, 8);
                 this.dataInit = row.data
             }

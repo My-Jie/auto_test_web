@@ -71,7 +71,7 @@
         </el-dialog>
         <!-- 数据集的弹窗 -->
         <el-dialog v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog" width="70%">
-            <my-gather :gather-data="gatherData"></my-gather>
+            <my-gather :gather-data="gatherData" :case-id="caseId"></my-gather>
         </el-dialog>
     </div>
 </template>
@@ -176,6 +176,9 @@ export default {
             }).then(
                 function (response) {
                     gather_data = response.data
+                    for (var x in gather_data) {
+                        gather_data[x]['checkbox'] = true
+                    }
                     row.gatherLoading = false
                     gatherDialog = true
                 }
