@@ -1,6 +1,9 @@
 <template>
-    <el-button type="primary" @click="repData = true">提取数据进行替换</el-button>
-    <el-button type="primary" :loading="dataLoading" @click="getCaseData">刷新</el-button>
+    <el-affix :offset="10">
+        <el-button type="primary" @click="repData = true">提取数据进行替换</el-button>
+        <el-button type="primary" :loading="dataLoading" @click="getCaseData">刷新</el-button>
+    </el-affix>
+
     <!-- 替换数据弹窗 -->
     <el-dialog v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false :close-on-press-escape=false
         draggable :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>

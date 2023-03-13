@@ -7,7 +7,6 @@ import MyUpload from './components/Upload.vue'
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 import { useDark, useToggle } from '@vueuse/core'
-// const toggleDark = useToggle(isDark)
 export default {
   components: {
     MyTempInfo,
@@ -91,7 +90,7 @@ export default {
       for (var x in this.caseInfo) {
         this.caseInfo[x].runLoading = false
         this.caseInfo[x].dataLoading = false
-        this.caseInfo[x].copyLoading = false
+        this.caseInfo[x].gatherLoading = false
         this.caseInfo[x].edit = true
         this.caseInfo[x].checkLoading = false
         // 测试报告地址
@@ -121,17 +120,20 @@ export default {
 <template>
   <el-container>
     <el-header>
-      <!-- 模板信息 -->
-      <el-button type="primary" @click="getTempInfo" :loading="tempInfoLoading">获取模板信息</el-button>
-      <!-- 用例信息 -->
-      <el-button type="primary" @click="getCaseInfo" :loading="caseInfoLoading">获取用例信息</el-button>
-      <!-- 参数变更 -->
-      <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
-      <!-- 文件上传 -->
-      <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
-      <!-- 开关灯 -->
-      <span @click.stop="toggleDark()"></span>
-      <el-switch size="small" v-model="isDark" />
+      <el-affix :offset="10">
+        <!-- 模板信息 -->
+        <el-button type="primary" @click="getTempInfo" :loading="tempInfoLoading">获取模板信息</el-button>
+        <!-- 用例信息 -->
+        <el-button type="primary" @click="getCaseInfo" :loading="caseInfoLoading">获取用例信息</el-button>
+        <!-- 参数变更 -->
+        <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
+        <!-- 文件上传 -->
+        <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
+        <!-- 开关灯 -->
+        <span @click.stop="toggleDark()"></span>
+        <el-switch size="small" v-model="isDark" />
+      </el-affix>
+      <el-backtop :right="100" :bottom="100" />
     </el-header>
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>

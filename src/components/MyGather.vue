@@ -1,6 +1,8 @@
 <template>
-    <el-button type="success" :loading="runLoading" @click="queryRun(false)">同步运行</el-button>
-    <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)">异步运行</el-button>
+    <el-affix :offset="10">
+        <el-button type="success" :loading="runLoading" @click="queryRun(false)">同步运行</el-button>
+        <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)">异步运行</el-button>
+    </el-affix>
     <el-table :data="gatherData" stripe fit :cell-class-name="onTableRowClassName">
         <el-table-column label="选择" width="50px" align="center" size="small" fixed="left">
             <template #default="scope">
