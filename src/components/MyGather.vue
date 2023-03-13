@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import { TurnOff, View } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { View } from '@element-plus/icons-vue'
+import { ElMessage, ElNotification } from 'element-plus'
 export default {
     name: 'MyGather',
     props: {
@@ -128,11 +128,12 @@ export default {
                 return
             }
 
+            var case_id = this.caseId
             await this.$http({
                 url: '/runCase/gather',
                 method: 'POST',
                 data: JSON.stringify({
-                    case_id: this.caseId,
+                    case_id: case_id,
                     suite: suite_list,
                     async_: this.async_
                 }),
@@ -142,7 +143,35 @@ export default {
 
             }).then(
                 function (response) {
-                    console.log(response.data);
+                    if (response.data.code == 0) {
+                        var case_report = response.data.data.allure_report[case_id]
+                        if (!case_report.is_fail) {
+                            ElNotification({
+                                title: '测试报告',
+                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + case_id + ']的报告</a>',
+                                duration: 0,
+                                type: 'success',
+                                position: 'bottom-right',
+                                dangerouslyUseHTMLString: true,
+                            })
+                        } else {
+                            ElNotification({
+                                title: '测试报告',
+                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + case_id + ']的报告</a>',
+                                duration: 0,
+                                type: 'warning',
+                                position: 'bottom-right',
+                                dangerouslyUseHTMLString: true,
+                            })
+                        }
+
+                    } else {
+                        ElNotification.error({
+                            title: 'Error',
+                            message: '用例 [ ' + case_id + ' ] 执行失败',
+                            offset: 200,
+                        })
+                    }
                 }
 
             ).catch(
