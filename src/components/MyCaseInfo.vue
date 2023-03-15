@@ -19,6 +19,23 @@
             <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
             <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
+            <el-table-column label="进度">
+                <template #default="scope">
+                    <el-progress :text-inside="true" :stroke-width="25" :percentage=scope.row.percentage
+                        :status=scope.row.percentageStatus v-if="scope.row.percentage" />
+                    <div v-if="scope.row.percentage == 0">未开始</div>
+                </template>
+            </el-table-column>
+            <el-table-column label="" width="25">
+                <template #default="scope">
+                    <el-button :type=scope.row.percentageStatus :icon="Close" circle
+                        v-if="scope.row.percentage > 0 && scope.row.percentage <= 99" size="small"
+                        @click="stopCaseRun(scope.row)" />
+                    <el-button :type=scope.row.percentageStatus :icon="Check" circle
+                        v-if="scope.row.percentage == 100" size="small"
+                        @click="scope.row.percentage = 0" />
+                </template>
+            </el-table-column>
             <el-table-column label="操作" align="center" width="450">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
@@ -82,7 +99,7 @@ import CaseData from './CaseData.vue'
 import MyGather from './MyGather.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check, Download } from '@element-plus/icons-vue'
+import { Edit, Check, Download, Close } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
@@ -99,6 +116,7 @@ export default {
             Edit,
             Check,
             Download,
+            Close,
             loading: !this.caseInfo ? true : false,
             myDialog: false,
             thisCaseData: [],
@@ -114,6 +132,32 @@ export default {
     },
 
     methods: {
+        stopCaseRun(row) {
+            this.$http({
+                url: '/runCase/case/status',
+                method: 'GET',
+                params: {
+                    key_id: row.key_id
+                }
+            }).then(
+                function (response) {
+                    if (response.data.message == '没有运行这个用例') {
+                        ElNotification.warning({
+                            title: 'Warning',
+                            message: '没有运行这个用例[ ' + row.case_id + ' ]',
+                            offset: 200,
+                        })
+                    } else {
+                        ElNotification.warning({
+                            title: 'Warning',
+                            message: '用例[ ' + row.case_id + ' ]已停止',
+                            offset: 200,
+                        })
+                    }
+
+                }
+            )
+        },
         async updateName(row) {
             row.checkLoading = true
             await this.$http({

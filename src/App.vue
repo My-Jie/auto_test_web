@@ -35,6 +35,7 @@ export default {
       caseInfoLoading: false,
       caseStatus: false,
       isDark: useDark(),
+      progressPercentage: 0
     }
   },
 
@@ -110,6 +111,9 @@ export default {
         this.caseInfo[x].gatherLoading = false
         this.caseInfo[x].edit = true
         this.caseInfo[x].checkLoading = false
+        this.caseInfo[x].percentage = 0
+        this.caseInfo[x].percentageStatus = 'success'
+        this.caseInfo[x].key_id = ''
         // 测试报告地址
         this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
         // this.caseInfo[x].repLoading = false
@@ -125,10 +129,11 @@ export default {
       this.caseInfoLoading = false
 
       // 启动定时器
-      this.start(10000)
+      this.start(5000)
 
     },
     getCaseStatus(key_id = null) {
+      var caseInfo = this.caseInfo
       this.$http({
         url: '/runCase/case/status',
         method: 'GET',
@@ -137,7 +142,18 @@ export default {
         }
       }).then(
         function (response) {
-          console.log(response.data);
+          for (var x in response.data) {
+            for (var y in caseInfo) {
+              if (response.data[x].case_id == caseInfo[y].case_id) {
+                caseInfo[y].percentage = Math.round((response.data[x].success + response.data[x].fail) / response.data[x].total * 100)
+                if (response.data[x].fail > 0) {
+                  caseInfo[y].percentageStatus = 'warning'
+                }
+                caseInfo[y].key_id = x
+                break
+              }
+            }
+          }
         }
       )
     },
