@@ -137,6 +137,8 @@
                         <el-option label="in" value="in" />
                         <el-option label="not in" value="not in" />
                         <el-option label="notin" value="notin" />
+                        <el-option label="!not in" value="!not in" />
+                        <el-option label="!notin" value="!notin" />
                     </el-select>
                 </template>
             </el-table-column>

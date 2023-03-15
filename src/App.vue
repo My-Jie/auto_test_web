@@ -26,23 +26,40 @@ export default {
       // 存获取的数据
       tempInfo: [],
       caseInfo: [],
+      timer: null,
       // 全局参数变更弹窗
       dialogParamsCharge: false,
       dialogUpload: false,
       mySwitch: true,
       tempInfoLoading: false,
       caseInfoLoading: false,
+      caseStatus: false,
       isDark: useDark(),
     }
   },
 
   methods: {
-    // 暗黑模式
-    toggleDark() {
-      useToggle(this.isDark)
+    // 开启定时器
+    start(time) {
+      if (this.caseInfo.length > 0) {
+        if (!this.timer) {
+          this.timer = setInterval(() => {
+            this.getCaseStatus()
+          }, time)
+        }
+      }
     },
+    // 关闭定时器
+    end() {
+      clearInterval(this.timer)
+      this.timer = null
+    },
+
     // 获取模板信息
     async getTempInfo() {
+      // 关闭定时器
+      this.end()
+
       this.tempInfoLoading = true
       this.tempInfo = []
       var temp = []
@@ -106,12 +123,29 @@ export default {
         this.clickStatus['isCase'] = true
       }
       this.caseInfoLoading = false
+
+      // 启动定时器
+      this.start(10000)
+
     },
-    mySwitchTo() {
-      var myDark = document.querySelector('html').style
-      console.log(myDark);
-      dark.color = '#fff'
-    }
+    getCaseStatus(key_id = null) {
+      this.$http({
+        url: '/runCase/case/status',
+        method: 'GET',
+        params: {
+          key_id: key_id
+        }
+      }).then(
+        function (response) {
+          console.log(response.data);
+        }
+      )
+    },
+
+    // 暗黑模式
+    toggleDark() {
+      useToggle(this.isDark)
+    },
   }
 }
 </script>
