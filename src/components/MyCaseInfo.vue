@@ -147,6 +147,8 @@ export default {
                             message: '没有运行这个用例[ ' + row.case_id + ' ]',
                             offset: 200,
                         })
+                        row.percentage = 0
+                        row.percentageStatus = 'success'
                     } else {
                         ElNotification.warning({
                             title: 'Warning',
