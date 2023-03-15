@@ -145,7 +145,6 @@ export default {
           for (var x in response.data) {
             for (var y in caseInfo) {
               if (response.data[x].case_id == caseInfo[y].case_id) {
-
                 var scale = Math.round((response.data[x].success + response.data[x].fail) / response.data[x].total * 100)
                 if (scale == 100 && response.data[x].fail == 0) {
                   caseInfo[y].percentageStatus = 'success'

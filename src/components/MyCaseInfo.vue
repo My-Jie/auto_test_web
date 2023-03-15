@@ -31,9 +31,8 @@
                     <el-button :type=scope.row.percentageStatus :icon="Close" circle
                         v-if="scope.row.percentage > 0 && scope.row.percentage <= 99" size="small"
                         @click="stopCaseRun(scope.row)" />
-                    <el-button :type=scope.row.percentageStatus :icon="Check" circle
-                        v-if="scope.row.percentage == 100" size="small"
-                        @click="scope.row.percentage = 0" />
+                    <el-button :type=scope.row.percentageStatus :icon="Check" circle v-if="scope.row.percentage == 100"
+                        size="small" @click="scope.row.percentage = 0" />
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="450">
@@ -149,6 +148,7 @@ export default {
                         })
                         row.percentage = 0
                         row.percentageStatus = 'success'
+                        row.key_id = null
                     } else {
                         ElNotification.warning({
                             title: 'Warning',
@@ -156,7 +156,6 @@ export default {
                             offset: 200,
                         })
                     }
-
                 }
             )
         },
