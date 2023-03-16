@@ -88,6 +88,11 @@ export default {
         // 查询所有接口
         async getTempInfoAll() {
             this.tempInfoAllLoading = true
+            if (this.infoFlag) {
+                this.allTempInfo = []
+                this.infoFlag = false
+            }
+
             if (!this.getTempId.includes('all')) {
                 var tempInfo = this.allTempInfo
                 await this.$http.get('/template/temp/all').then(
