@@ -4,6 +4,7 @@ import MyTempInfo from "./components/MyTempInfo.vue"
 import MyCaseInfo from "./components/MyCaseInfo.vue"
 import MyChange from './components/MyChange.vue'
 import MyUpload from './components/Upload.vue'
+import MyTransfer from "./components/MyTransfer.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 import { useDark, useToggle } from '@vueuse/core'
@@ -12,7 +13,8 @@ export default {
     MyTempInfo,
     MyCaseInfo,
     MyChange,
-    MyUpload
+    MyUpload,
+    MyTransfer
   },
   data() {
     return {
@@ -31,11 +33,11 @@ export default {
       dialogParamsCharge: false,
       dialogUpload: false,
       mySwitch: true,
+      dialogTempSuit: false,
       tempInfoLoading: false,
       caseInfoLoading: false,
       caseStatus: false,
       isDark: useDark(),
-      progressPercentage: 0
     }
   },
 
@@ -183,6 +185,8 @@ export default {
         <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
         <!-- 文件上传 -->
         <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
+        <!-- 模板组装 -->
+        <el-button type="primary" @click="dialogTempSuit = true">模板组装</el-button>
         <!-- 开关灯 -->
         <span @click.stop="toggleDark()"></span>
         <el-switch size="small" v-model="isDark" />
@@ -200,6 +204,11 @@ export default {
       <!-- 文件上传的弹窗 -->
       <el-dialog v-model='dialogUpload' width="40%" title="文件上传" @close='dialogUpload = false' draggable>
         <my-upload v-if="dialogUpload"></my-upload>
+      </el-dialog>
+      <!-- 模板组装的弹窗 -->
+      <el-dialog v-model="dialogTempSuit" width="70%" title="选择接口组装新模板" :close-on-click-modal=false
+        :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
+        <my-transfer v-if="dialogTempSuit"></my-transfer>
       </el-dialog>
     </el-main>
   </el-container>
