@@ -3,13 +3,27 @@
         <el-transfer v-model="value" :data="allTempInfo" filterable filter-placeholder="搜索内容" :titles="['可选接口列表', '已选接口列表']"
             :button-texts="['取消', '预选']" target-order="push">
             <template #left-footer>
+                &nbsp;
                 <el-button type="success" size="small" :loading="tempInfoLoading" @click="getTempInfo">查询模板列表</el-button>
                 <el-button type="success" size="small" :loading="tempDataLoading"
-                    @click="getTempData">查询模板详情</el-button><el-input v-model="tempId" style="width:100px" size="small"
-                    placeholder="tempId"></el-input>
+                    @click="getTempData">查询模板详情</el-button>&nbsp;
+                <el-input v-model="tempId" style="width:100px" size="small"
+                    placeholder="tempId"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
+                <el-button type="success" size="small" :loading="tempInfoAllLoading"
+                    @click="getTempInfoAll">查询所有模板列表</el-button>
+                <el-button type="success" size="small" @click="allTempInfo = []">清空</el-button>
             </template>
             <template #right-footer>
-                <el-button type="primary" size="small">确认</el-button>
+                &nbsp;
+                <el-button type="primary" size="small" @click="checkTemp" :loading="tempCheckLoading">确认组装</el-button>&nbsp;
+                <el-input v-model="tempName" style="width:200px" size="small" placeholder="tempName"></el-input>
+                <el-select v-model="projectName" placeholder="选择项目" size="small">
+                    <el-option label="sales" value="sales" />
+                    <el-option label="oms" value="oms" />
+                    <el-option label="site" value="site" />
+                    <el-option label="tms" value="tms" />
+                    <el-option label="wxApp" value="wxapp" />
+                </el-select>
             </template>
         </el-transfer>
     </div>
@@ -17,7 +31,7 @@
 
 <script>
 import { Check } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 export default {
     name: 'MyTransfer',
 
@@ -25,15 +39,73 @@ export default {
         return {
             Check,
             tempId: null,
+            tempName: null,
+            projectName: null,
             allTempInfo: [],
             tempInfoLoading: false,
             tempDataLoading: false,
+            tempCheckLoading: false,
+            tempInfoAllLoading: false,
             value: [],
             infoFlag: false,
             getTempId: []
         }
     },
     methods: {
+        // 保存模板数据
+        async checkTemp() {
+            this.tempCheckLoading = true
+            await this.$http({
+                url: '/template/create/new/temp',
+                method: 'POST',
+                params: {
+                    temp_name: this.tempName,
+                    project_name: this.projectName
+                },
+                data: JSON.stringify(this.value),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '创建成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.tempCheckLoading = false
+        },
+        // 查询所有接口
+        async getTempInfoAll() {
+            this.tempInfoAllLoading = true
+            var tempInfo = []
+            await this.$http.get('/template/temp/all').then(
+                function (response) {
+                    var data = response.data
+                    for (var x in data) {
+                        tempInfo.push({
+                            key: data[x].temp_id + '-' + data[x].number + '-' + data[x].method,
+                            label: data[x].temp_id + '-' + data[x].number + '-' + data[x].path + '_' + data[x].method,
+                            disabled: false
+                        })
+                    }
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+            this.allTempInfo = []
+            for (var x in tempInfo) {
+                this.allTempInfo.push(tempInfo[x])
+            }
+            this.tempInfoAllLoading = false
+            this.getTempId = []
+        },
         // 获取模板信息
         async getTempInfo() {
             this.tempInfoLoading = true
@@ -71,14 +143,9 @@ export default {
                         var data = response.data
                         for (var x in data) {
                             tempInfo.push({
-                                key: data[x].temp_id + '-' + data[x].number,
+                                key: data[x].temp_id + '-' + data[x].number + '-' + data[x].method,
                                 label: data[x].temp_id + '-' + data[x].number + '-' + data[x].method.padEnd(7, '-') + '-' + data[x].path,
-                                disabled: false,
-                                // 以下数据是可用的
-                                temp_id: data[x].temp_id,
-                                number: data[x].number,
-                                method: data[x].method,
-                                path: data[x].path
+                                disabled: false
                             })
                         }
                     }
@@ -101,7 +168,7 @@ export default {
 
 <style scoped>
 .edit_dev>>>.el-transfer-panel {
-    width: 530px;
+    width: 630px;
     height: 600px;
 }
 

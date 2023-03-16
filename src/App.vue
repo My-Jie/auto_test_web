@@ -206,7 +206,7 @@ export default {
         <my-upload v-if="dialogUpload"></my-upload>
       </el-dialog>
       <!-- 模板组装的弹窗 -->
-      <el-dialog v-model="dialogTempSuit" width="70%" title="选择接口组装新模板" :close-on-click-modal=false
+      <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
         <my-transfer v-if="dialogTempSuit"></my-transfer>
       </el-dialog>
