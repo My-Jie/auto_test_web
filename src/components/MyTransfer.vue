@@ -11,7 +11,7 @@
                     placeholder="tempId"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
                 <el-button type="success" size="small" :loading="tempInfoAllLoading"
                     @click="getTempInfoAll">查询所有模板列表</el-button>
-                <el-button type="success" size="small" @click="allTempInfo = []">清空</el-button>
+                <el-button type="success" size="small" @click="closeData">清空</el-button>
             </template>
             <template #right-footer>
                 &nbsp;
@@ -52,6 +52,10 @@ export default {
         }
     },
     methods: {
+        closeData() {
+            this.allTempInfo = []
+            this.getTempId = []
+        },
         // 保存模板数据
         async checkTemp() {
             this.tempCheckLoading = true
@@ -84,27 +88,31 @@ export default {
         // 查询所有接口
         async getTempInfoAll() {
             this.tempInfoAllLoading = true
-            var tempInfo = []
-            await this.$http.get('/template/temp/all').then(
-                function (response) {
-                    var data = response.data
-                    for (var x in data) {
-                        tempInfo.push({
-                            key: data[x].temp_id + '-' + data[x].number + '-' + data[x].method,
-                            label: data[x].temp_id + '-' + data[x].number + '-' + data[x].path + '_' + data[x].method,
-                            disabled: false
-                        })
+            if (!this.getTempId.includes('all')) {
+                var tempInfo = this.allTempInfo
+                await this.$http.get('/template/temp/all').then(
+                    function (response) {
+                        var data = response.data
+                        for (var x in data) {
+                            tempInfo.push({
+                                key: data[x].temp_id + '-' + data[x].number + '-' + data[x].method,
+                                label: data[x].temp_id + '-' + data[x].number + '-' + data[x].path + '_' + data[x].method,
+                                disabled: false
+                            })
+                        }
                     }
+                ).catch(function (error) {
+                    ElMessage.error(error.message)
+                })
+                this.allTempInfo = []
+                for (var x in tempInfo) {
+                    this.allTempInfo.push(tempInfo[x])
                 }
-            ).catch(function (error) {
-                ElMessage.error(error.message)
-            })
-            this.allTempInfo = []
-            for (var x in tempInfo) {
-                this.allTempInfo.push(tempInfo[x])
+                this.getTempId.push('all')
+            } else {
+                ElMessage.warning('列表中已有全部模板的数据列表, 请查询其他模板ID')
             }
             this.tempInfoAllLoading = false
-            this.getTempId = []
         },
         // 获取模板信息
         async getTempInfo() {
