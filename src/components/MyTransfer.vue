@@ -10,7 +10,7 @@
                 <el-input v-model="tempId" style="width:100px" size="small"
                     placeholder="tempId"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
                 <el-button type="success" size="small" :loading="tempInfoAllLoading"
-                    @click="getTempInfoAll">查询所有模板列表</el-button>
+                    @click="getTempInfoAll">查询所有模板详情</el-button>
                 <el-button type="success" size="small" @click="closeData">清空</el-button>
             </template>
             <template #right-footer>
@@ -171,7 +171,7 @@ export default {
                 }
                 this.getTempId.push(this.tempId)
             } else {
-                ElMessage.warning('列表中已有该模板的数据列表, 请查询其他模板ID')
+                ElMessage.warning('列表中已有该模板' + this.tempId + '的数据列表, 请查询其他模板ID')
             }
             this.tempDataLoading = false
         },

@@ -35,7 +35,7 @@
                         size="small" @click="scope.row.percentage = 0" />
                 </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" width="450">
+            <el-table-column label="操作" align="center" width="500">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
                     </el-button>&nbsp;
@@ -54,6 +54,8 @@
                             </template>
                         </el-popconfirm>
                     </el-button-group>&nbsp;
+                    <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
+                    </el-button>&nbsp;
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
                     </el-button>
@@ -89,6 +91,16 @@
         <el-dialog v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog" width="70%">
             <my-gather :gather-data="gatherData" :case-id="caseId"></my-gather>
         </el-dialog>
+        <!-- 删除的窗口 -->
+        <el-dialog v-model="delDialog" title="Tips" width="30%">
+            <span>删除用例 [ {{ caseId }} - {{ caseName }} ]</span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="delDialog = false">取消</el-button>
+                    <el-button type="primary" @click="delCase(caseRow)">确认</el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -123,6 +135,7 @@ export default {
             dataTitle: null,
             dialogVisible: false,
             setCopyDialogVisible: false,
+            delDialog: false,
             caseName: null,
             caseRow: null,
             gatherDialog: false,
@@ -197,6 +210,45 @@ export default {
             this.caseName = row.name
             this.caseId = row.case_id
             this.caseRow = row
+        },
+        // 删除窗口
+        delDialogVisible(row) {
+            this.delDialog = true
+            this.caseName = row.name
+            this.caseId = row.case_id
+            this.caseRow = row
+        },
+        // 删除用例
+        async delCase(row) {
+            var flag = false
+            row.delLoading = true
+            await this.$http({
+                url: '/caseService/del/' + row.case_id,
+                method: 'DELETE',
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '用例[ ' + row.name + ' ] 删除成功',
+                        offset: 200,
+                    })
+                    flag = true
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+
+            if (flag) {
+                for (var x in this.caseInfo) {
+                    if (this.caseInfo[x].case_id == row.case_id) {
+                        this.caseInfo.splice(x, 1)
+                        break
+                    }
+                }
+            }
+
+            row.delLoading = false
+            this.delDialog = false
         },
         // 复制窗口
         copyDialogVisible(row) {

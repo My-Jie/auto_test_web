@@ -76,6 +76,7 @@ export default {
       // 给每个模板加loading属性
       for (var x in this.tempInfo) {
         this.tempInfo[x].runLoading = false
+        this.tempInfo[x].delLoading = false
         this.tempInfo[x].dataLoading = false
         this.tempInfo[x].tempToCaseLoading = false
         this.tempInfo[x].edit = true
@@ -109,6 +110,7 @@ export default {
       // 给每个用例加loading属性
       for (var x in this.caseInfo) {
         this.caseInfo[x].runLoading = false
+        this.caseInfo[x].delLoading = false
         this.caseInfo[x].dataLoading = false
         this.caseInfo[x].gatherLoading = false
         this.caseInfo[x].edit = true
