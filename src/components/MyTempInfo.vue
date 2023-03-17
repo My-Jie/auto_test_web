@@ -22,7 +22,7 @@
             <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="修改时间" prop="updated_at" align="center"></el-table-column>
-            <el-table-column label="操作" align="center">
+            <el-table-column label="操作" align="center" width="300">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading"
                         @click="setDialogVisible(scope.row)">运行</el-button>&nbsp;
@@ -31,7 +31,9 @@
                             :loading="scope.row.dataLoading">详情</el-button>
                         <el-button type="primary" plain @click="tempToCase(scope.row)"
                             :loading="scope.row.tempToCaseLoading">转化</el-button>
-                    </el-button-group>
+                    </el-button-group>&nbsp;
+                    <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -52,6 +54,16 @@
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
                     <el-button type="primary" @click="runCase(tempRow)">确认</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <!-- 删除的窗口 -->
+        <el-dialog v-model="delDialog" title="Tips" width="30%">
+            <span>删除模板 [ {{ tempId }} - {{ tempName }} ]</span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="delDialog = false">取消</el-button>
+                    <el-button type="primary" @click="delTemp(tempRow)">确认</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -138,6 +150,7 @@ export default {
             addCaseInput: '',
             affTempToCaseId: 99999,
             tempToCaseLoading: false,
+            delDialog: false
         }
     },
 
@@ -256,7 +269,46 @@ export default {
             this.radioTempToCase = true
             this.activeStop = true
         },
+        // 删除窗口
+        delDialogVisible(row) {
+            this.delDialog = true
+            this.tempName = row.temp_name
+            this.tempId = row.id
+            this.tempRow = row
+        },
+        // 删除模板
+        async delTemp(row) {
+            var flag = false
+            row.delLoading = true
+            await this.$http({
+                url: '/template/del/all/' + row.id,
+                method: 'DELETE',
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '模板[ ' + row.temp_name + ' ] 删除成功',
+                        offset: 200,
+                    })
+                    flag = true
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
 
+            if (flag) {
+                for (var x in this.tempInfo) {
+                    if (this.tempInfo[x].id == row.id) {
+                        this.tempInfo.splice(x, 1)
+                        break
+                    }
+                }
+            }
+
+            row.delLoading = false
+            this.delDialog = false
+        },
+        // 运行的窗口
         setDialogVisible(row) {
             this.dialogVisible = true
             this.tempName = row.temp_name
