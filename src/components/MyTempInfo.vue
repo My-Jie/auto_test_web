@@ -329,6 +329,12 @@ export default {
                 function (response) {
                     row.dataLoading = false
                     temp_ = response.data
+                    for (var x in temp_) {
+                        temp_[x].edit = false
+                        temp_[x].EditDisabled = false
+                        temp_[x].del = false
+                        temp_[x].delDisabled = false
+                    }
                     dialog_ = true
                 }
             ).catch(function (error) {

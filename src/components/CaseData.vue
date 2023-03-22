@@ -180,8 +180,8 @@
     <el-dialog v-model="dataDialog" width="60%" draggable
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , ' + this.dataTitle + ' 数据'"
         :close-on-click-modal=false :close-on-press-escape=false @close="closeCheckDialog(this.dataTitle)">
-        <el-button type="success" @click="formatData()">格式化</el-button>
         <el-button type="info" @click="initData()">初始化</el-button>
+        <el-button type="success" @click="formatData()">格式化</el-button>
         <el-button type="warning" @click="emptyData()">清空数据</el-button>
         <el-button type="primary" :icon="Check" @click="setParamsData(this.dataTitle)">提交</el-button>
         <br>
