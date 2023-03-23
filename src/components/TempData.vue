@@ -1,5 +1,7 @@
 <template>
-    <el-table v-loading='loading' :data="tempData" stripe fit>
+    <!-- 增加操作 -->
+    <el-button v-if="tempData.length <= 0" :icon="Plus" type="warning" size="small" @click="addOne"></el-button>
+    <el-table v-loading='loading' :data="tempData" stripe fit v-if="tempData.length != 0">
         <el-table-column label="number" prop="number" type="index" :index="indexMethod" width="80px"
             align="center"></el-table-column>
         <el-table-column label="host" prop="host" width="300px"></el-table-column>
@@ -30,28 +32,33 @@
         <el-table-column label="操作" width="150" align="center">
             <template #default="scope">
                 <!-- 编辑操作 -->
-                <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit"
-                    :disabled="scope.row.EditDisabled" @click="editTemp(scope.row)"></el-button>
+                <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit && !scope.row.EditDisabled"
+                    :disabled="scope.row.EditDisabled" @click="editTemp(scope)"></el-button>
                 <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
-                    @click="editTemp(scope.row, 'edit')"></el-button>
+                    @click="editTemp(scope, 'edit')"></el-button>
+                <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
+                    @click="myClose(scope.row)"></el-button>
                 <!-- 增加操作 -->
-                <el-button :icon="Plus" type="warning" size="small" @click="addTemp(scope.row)"></el-button>
+                <el-button :icon="Plus" type="warning" size="small" @click="addTemp(scope)"></el-button>
                 <!-- 删除操作 -->
-                <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del" :disabled="scope.row.delDisabled"
-                    @click="delTemp(scope.row)"></el-button>
+                <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del && !scope.row.delDisabled"
+                    :disabled="scope.row.delDisabled" @click="delTemp(scope)"></el-button>
                 <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
-                    @click="delTemp(scope.row, 'del')"></el-button>
+                    @click="delTemp(scope, 'del')"></el-button>
+                <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
+                    @click="myClose(scope.row)"></el-button>
+
             </template>
         </el-table-column>
     </el-table>
     <!-- 新增修改数据的弹窗 -->
     <el-dialog v-model='tempDialog' width="60%" :title="tempTitle" :close-on-click-modal=false :close-on-press-escape=false
-        @close="closeTempDialog(tempInfo)" draggable>
+        @close="closeTempDialog(tempInfo)" draggable v-if="tempDialog">
         <el-form v-model="tempInfo" label-width="65px">
-            <el-form-item label="Host">
+            <el-form-item label="Host" prop="host">
                 <el-input v-model="tempInfo.host"></el-input>
             </el-form-item>
-            <el-form-item label="Path">
+            <el-form-item label="Path" prop="path">
                 <el-input v-model="tempInfo.path"></el-input>
             </el-form-item>
             <el-form-item label="Method">
@@ -71,18 +78,19 @@
             <el-button type="info" @click="initData()">初始化</el-button>
             <el-button type="success" @click="formatData()">格式化</el-button>
             <el-button type="warning" @click="emptyData()">清空数据</el-button>
+            <el-button type="primary" @click="confirmData()">确定</el-button>
             <el-tabs v-model="activeName">
                 <el-tab-pane label="Params" name="Params">
-                    <el-input type="textarea" v-model="params" :rows="paramsLen"></el-input>
+                    <el-input type="textarea" v-model="params" :rows="paramsLen" spellcheck="false"></el-input>
                 </el-tab-pane>
                 <el-tab-pane label="Data" name="Data">
-                    <el-input type="textarea" v-model="data" :rows="dataLen"></el-input>
+                    <el-input type="textarea" v-model="data" :rows="dataLen" spellcheck="false"></el-input>
                 </el-tab-pane>
                 <el-tab-pane label="Headers" name="Headers">
-                    <el-input type="textarea" v-model="headers" :rows="headersLen"></el-input>
+                    <el-input type="textarea" v-model="headers" :rows="headersLen" spellcheck="false"></el-input>
                 </el-tab-pane>
                 <el-tab-pane label="Response" name="Response">
-                    <el-input type="textarea" v-model="response" :rows="responseLen"></el-input>
+                    <el-input type="textarea" v-model="response" :rows="responseLen" spellcheck="false"></el-input>
                 </el-tab-pane>
             </el-tabs>
         </el-form>
@@ -90,12 +98,14 @@
 </template>
 
 <script>
-import { Edit, Check, Plus, Delete } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { Edit, Check, Plus, Delete, Close } from '@element-plus/icons-vue'
 import _ from 'lodash'
 export default {
     name: 'TempData',
     props: {
-        'tempData': Array
+        'tempData': Array,
+        'tempId': Number
     },
 
     data() {
@@ -104,9 +114,28 @@ export default {
             Check,
             Plus,
             Delete,
+            Close,
             tempDialog: false,
             tempTitle: '',
             tempInfo: {},
+            tempRow: {},
+            tempInit: {
+                temp_id: this.tempId,
+                number: 0,
+                host: '',
+                path: '',
+                method: 'GET',
+                code: 200,
+                json_body: 'body',
+                params: {},
+                data: {},
+                headers: {},
+                response: {},
+                edit: false,
+                EditDisabled: false,
+                del: false,
+                delDisabled: false,
+            },
 
             // json
             activeName: 'Params',
@@ -122,22 +151,43 @@ export default {
     },
 
 
-    methods: {
-        // 新增数据接口
-        addTemp(row) {
 
+    methods: {
+        addOne() {
+            this.tempData.push(_.cloneDeep(this.tempInit))
+        },
+
+        // 新增数据接口
+        addTemp(scope) {
+            var tempInfo = {
+                temp_id: scope.row.temp_id,
+                number: scope.$index + 1,
+                host: '',
+                path: '',
+                method: 'GET',
+                code: 200,
+                json_body: 'body',
+                params: {},
+                data: {},
+                headers: {},
+                response: {},
+                edit: false,
+                EditDisabled: false,
+                del: false,
+                delDisabled: false,
+            }
+            this.tempData.splice(scope.$index + 1, 0, tempInfo)
         },
         // 修改数据接口
-        editTemp(row, type) {
-            this.tempInfo = _.cloneDeep(row)
-            this.params = JSON.stringify(this.tempInfo.params, null, 8);
-            this.data = JSON.stringify(this.tempInfo.data, null, 8);
-            this.headers = JSON.stringify(this.tempInfo.headers, null, 8);
-            this.response = JSON.stringify(this.tempInfo.response, null, 8);
-            // this.paramsLen = Object.keys(this.tempInfo.params).length + 2
-            // this.dataLen = Object.keys(this.tempInfo.data).length + 2
-            // this.headersLen = Object.keys(this.tempInfo.headers).length + 2
-            // this.responseLen = Object.keys(this.tempInfo.response).length + 2
+        editTemp(scope, type) {
+            scope.row.index = scope.$index
+            this.tempRow = scope.row
+            this.tempInfo = _.cloneDeep(scope.row)
+
+            this.params = JSON.stringify(this.tempInfo.params, null, 8)
+            this.data = JSON.stringify(this.tempInfo.data, null, 8)
+            this.headers = JSON.stringify(this.tempInfo.headers, null, 8)
+            this.response = JSON.stringify(this.tempInfo.response, null, 8)
             this.paramsLen = 15
             this.dataLen = 15
             this.headersLen = 15
@@ -147,27 +197,108 @@ export default {
             this.tempTitle = '对模板接口数据查看或编辑'
             if (type == 'edit') {
 
-                row.edit = false
-                row.delDisabled = false
+                scope.row.edit = false
+                scope.row.delDisabled = false
             } else {
                 this.tempDialog = true
-                row.edit = true
-                row.delDisabled = true
+            }
+        },
+        // 确认数据
+        confirmData() {
+            try {
+                this.tempInfo.params = JSON.parse(this.params)
+                this.tempInfo.data = JSON.parse(this.data)
+                this.tempInfo.headers = JSON.parse(this.headers)
+                this.tempInfo.response = JSON.parse(this.response)
+            } catch {
+                ElMessage.error('Json数据格式有误')
+                return
+            }
+
+            this.tempDialog = false
+            if (this.tempInfo.host && this.tempInfo.path) {
+                this.tempInfo.edit = true
+                this.tempInfo.delDisabled = true
+                this.tempData.splice(this.tempInfo.index, 1, this.tempInfo)
+                // 新增成功后，刷新列表
             }
         },
         // 删除数据接口
-        delTemp(row, type) {
+        delTemp(scope, type) {
             if (type == 'del') {
-
-                row.del = false
-                row.EditDisabled = false
+                this.tempData.splice(scope.$index, 1)
+                // 删除成功后，刷新列表
+                scope.row.del = false
+                scope.row.EditDisabled = false
             } else {
-                row.del = true
-                row.EditDisabled = true
+                if (scope.row.host == '' && scope.row.path == '') {
+                    for (var x in this.tempData) {
+                        if (x == scope.$index) {
+                            this.tempData.splice(x, 1)
+                            break
+                        }
+                    }
+                }
+                scope.row.del = true
+                scope.row.EditDisabled = true
+            }
+        },
+        // 初始化数据
+        initData() {
+            try {
+                if (this.activeName == 'Params') {
+                    this.params = JSON.stringify(this.tempInfo.params, null, 8);
+                } else if (this.activeName == 'Data') {
+                    this.data = JSON.stringify(this.tempInfo.data, null, 8);
+                } else if (this.activeName == 'Headers') {
+                    this.headers = JSON.stringify(this.tempInfo.headers, null, 8);
+                } else if (this.activeName == 'Response') {
+                    this.response = JSON.stringify(this.tempInfo.response, null, 8);
+                }
+                ElMessage.success('数据初始化成功')
+            } catch (e) {
+                ElMessage.error('数据初始化失败，格式有误')
+            }
+        },
+        // 格式化数据
+        formatData() {
+            try {
+                if (this.activeName == 'Params') {
+                    this.params = JSON.stringify(JSON.parse(this.params), null, 8);
+                } else if (this.activeName == 'Data') {
+                    this.data = JSON.stringify(JSON.parse(this.data), null, 8);
+                } else if (this.activeName == 'Headers') {
+                    this.headers = JSON.stringify(JSON.parse(this.headers), null, 8);
+                } else if (this.activeName == 'Response') {
+                    this.response = JSON.stringify(JSON.parse(this.response), null, 8);
+                }
+                ElMessage.success('数据格式化成功')
+            } catch (e) {
+                ElMessage.error('数据格式化失败，格式有误')
+            }
+        },
+        // 清空数据
+        emptyData() {
+            this.dataInfo = JSON.stringify({}, null, 8);
+            if (this.activeName == 'Params') {
+                this.params = JSON.stringify({}, null, 8);
+            } else if (this.activeName == 'Data') {
+                this.data = JSON.stringify({}, null, 8);
+            } else if (this.activeName == 'Headers') {
+                this.headers = JSON.stringify({}, null, 8);
+            } else if (this.activeName == 'Response') {
+                this.response = JSON.stringify({}, null, 8);
             }
         },
         // 关闭窗口
         closeTempDialog(row) {
+            row.del = false
+            row.EditDisabled = false
+        },
+        // 取消操作
+        myClose(row) {
+            row.edit = false
+            row.delDisabled = false
             row.del = false
             row.EditDisabled = false
         },

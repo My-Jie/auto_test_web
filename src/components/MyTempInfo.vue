@@ -40,7 +40,7 @@
 
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="tempTitle">
-            <temp-data :temp-data="thisTempData"></temp-data>
+            <temp-data :temp-data="thisTempData" :temp-id="tempId"></temp-data>
         </el-dialog>
         <!-- 运行用例弹窗 -->
         <el-dialog v-model="dialogVisible" title="Tips" width="30%">
@@ -343,6 +343,7 @@ export default {
             })
             this.myDialog = dialog_
             this.thisTempData = temp_
+            this.tempId = row.id
         },
 
         // 模板转用例

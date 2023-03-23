@@ -161,17 +161,21 @@
             <el-table-column label="操作" align="center" width="180px">
                 <template #default="scope">
                     <!-- 编辑操作 -->
-                    <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit"
+                    <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit && !scope.row.EditDisabled"
                         :disabled="scope.row.EditDisabled" @click="myEdit(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
                         @click="checkCheck(scope.row, 'edit')"></el-button>
+                    <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
+                        @click="myClose(scope.row)"></el-button>
                     <!-- 增加操作 -->
                     <el-button :icon="Plus" type="warning" size="small" @click="addRow('check')"></el-button>
                     <!-- 删除操作 -->
-                    <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del"
+                    <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del && !scope.row.delDisabled"
                         :disabled="scope.row.delDisabled" @click="checkDel(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
                         @click="checkCheck(scope.row, 'del')"></el-button>
+                    <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
+                        @click="myClose(scope.row)"></el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -230,17 +234,21 @@
             <el-table-column label="操作" align="center" width="180px">
                 <template #default="scope">
                     <!-- 编辑操作 -->
-                    <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit"
+                    <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit && !scope.row.EditDisabled"
                         :disabled="scope.row.EditDisabled" @click="myEdit(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
                         @click="HeaderCheck(scope.row, 'edit')"></el-button>
+                    <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
+                        @click="myClose(scope.row)"></el-button>
                     <!-- 增加操作 -->
                     <el-button :icon="Plus" type="warning" size="small" @click="addRow('header')"></el-button>
                     <!-- 删除操作 -->
-                    <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del"
+                    <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del && !scope.row.delDisabled"
                         :disabled="scope.row.delDisabled" @click="headerDel(scope.row)"></el-button>
                     <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
                         @click="HeaderCheck(scope.row, 'del')"></el-button>
+                    <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
+                        @click="myClose(scope.row)"></el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -250,7 +258,7 @@
 <script>
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check, Plus, Delete } from '@element-plus/icons-vue'
+import { Edit, Check, Plus, Delete, Close } from '@element-plus/icons-vue'
 import MyReplaceData from './ReplaceData.vue'
 export default {
     name: 'CaseData',
@@ -268,6 +276,7 @@ export default {
             Check,
             Plus,
             Delete,
+            Close,
             checkDialog: false,
             dataDialog: false,
             headerDialog: false,
@@ -544,6 +553,13 @@ export default {
         myEdit(row) {
             row.edit = true
             row.delDisabled = true
+        },
+        // 取消操作
+        myClose(row) {
+            row.edit = false
+            row.delDisabled = false
+            row.del = false
+            row.EditDisabled = false
         },
         // 删除的判断
         checkDel(row) {
