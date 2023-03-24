@@ -37,7 +37,7 @@
                 <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
                     @click="editTemp(scope, 'edit')"></el-button>
                 <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
-                    @click="myClose(scope.row)"></el-button>
+                    @click="myClose(scope)"></el-button>
                 <!-- 增加操作 -->
                 <el-button :icon="Plus" type="warning" size="small" @click="addTemp(scope)"></el-button>
                 <!-- 删除操作 -->
@@ -46,7 +46,7 @@
                 <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
                     @click="delTemp(scope, 'del')"></el-button>
                 <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
-                    @click="myClose(scope.row)"></el-button>
+                    @click="myClose(scope)"></el-button>
 
             </template>
         </el-table-column>
@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import { Edit, Check, Plus, Delete, Close } from '@element-plus/icons-vue'
 import _ from 'lodash'
 export default {
@@ -135,6 +135,7 @@ export default {
                 EditDisabled: false,
                 del: false,
                 delDisabled: false,
+                add: true
             },
 
             // json
@@ -175,6 +176,7 @@ export default {
                 EditDisabled: false,
                 del: false,
                 delDisabled: false,
+                add: true
             }
             this.tempData.splice(scope.$index + 1, 0, tempInfo)
         },
@@ -196,7 +198,68 @@ export default {
 
             this.tempTitle = '对模板接口数据查看或编辑'
             if (type == 'edit') {
-
+                // 发起后端请求，刷新列表
+                var tempInfo = {
+                    temp_id: this.tempId,
+                    number: this.tempInfo.number,
+                    host: this.tempInfo.host,
+                    path: this.tempInfo.path,
+                    code: this.tempInfo.code,
+                    method: this.tempInfo.method,
+                    params: this.tempInfo.params,
+                    json_body: this.tempInfo.json_body,
+                    data: this.tempInfo.data,
+                    file: false,
+                    file_data: [],
+                    headers: this.tempInfo.headers,
+                    response: this.tempInfo.response
+                }
+                if (this.tempInfo.add) {
+                    console.log('新增');
+                    this.$http({
+                        url: '/template/add/api',
+                        method: 'PUT',
+                        data: JSON.stringify(tempInfo),
+                        headers: {
+                            'content-type': "application/json"
+                        }
+                    }).then(
+                        function () {
+                            ElNotification.success({
+                                title: 'Success',
+                                message: '新增成功',
+                                offset: 200,
+                            })
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                } else {
+                    console.log('修改');
+                    this.$http({
+                        url: '/template/edit/api',
+                        method: 'PUT',
+                        data: JSON.stringify(tempInfo),
+                        headers: {
+                            'content-type': "application/json"
+                        }
+                    }).then(
+                        function () {
+                            ElNotification.success({
+                                title: 'Success',
+                                message: '修改成功',
+                                offset: 200,
+                            })
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                }
+                console.log(tempInfo);
                 scope.row.edit = false
                 scope.row.delDisabled = false
             } else {
@@ -219,8 +282,13 @@ export default {
             if (this.tempInfo.host && this.tempInfo.path) {
                 this.tempInfo.edit = true
                 this.tempInfo.delDisabled = true
+                if (this.tempInfo.data) {
+                    this.tempInfo.json_body = 'data'
+                }
+                if (this.tempInfo.params) {
+                    this.tempInfo.json_body = 'body'
+                }
                 this.tempData.splice(this.tempInfo.index, 1, this.tempInfo)
-                // 新增成功后，刷新列表
             }
         },
         // 删除数据接口
@@ -228,6 +296,29 @@ export default {
             if (type == 'del') {
                 this.tempData.splice(scope.$index, 1)
                 // 删除成功后，刷新列表
+                console.log(this.tempId);
+                console.log(scope.$index);
+                this.$http({
+                    url: '/template/del/api',
+                    method: 'DELETE',
+                    params: {
+                        temp_id: this.tempId,
+                        number: scope.$index
+                    }
+                }).then(
+                    function () {
+                        ElNotification.success({
+                            title: 'Success',
+                            message: '删除成功',
+                            offset: 200,
+                        })
+                    }
+                ).catch(
+                    function (error) {
+                        ElMessage.error(error.message)
+                    }
+                )
+
                 scope.row.del = false
                 scope.row.EditDisabled = false
             } else {
@@ -296,11 +387,14 @@ export default {
             row.EditDisabled = false
         },
         // 取消操作
-        myClose(row) {
-            row.edit = false
-            row.delDisabled = false
-            row.del = false
-            row.EditDisabled = false
+        myClose(scope) {
+            if (scope.row.edit) {
+                this.tempData.splice(scope.$index, 1)
+            }
+            scope.row.edit = false
+            scope.row.delDisabled = false
+            scope.row.del = false
+            scope.row.EditDisabled = false
         },
         indexMethod(index) {
             return this.tempData[index]['number']
