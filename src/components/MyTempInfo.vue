@@ -334,6 +334,8 @@ export default {
                         temp_[x].EditDisabled = false
                         temp_[x].del = false
                         temp_[x].delDisabled = false
+                        temp_[x].delLoading = false
+                        temp_[x].checkLoading = false
                     }
                     dialog_ = true
                 }

@@ -34,7 +34,7 @@
                 <!-- 编辑操作 -->
                 <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit && !scope.row.EditDisabled"
                     :disabled="scope.row.EditDisabled" @click="editTemp(scope)"></el-button>
-                <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
+                <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit" :loading="scope.row.checkLoading"
                     @click="editTemp(scope, 'edit')"></el-button>
                 <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
                     @click="myClose(scope)"></el-button>
@@ -43,7 +43,7 @@
                 <!-- 删除操作 -->
                 <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del && !scope.row.delDisabled"
                     :disabled="scope.row.delDisabled" @click="delTemp(scope)"></el-button>
-                <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
+                <el-button :icon="Check" type="success" size="small" v-if="scope.row.del" :loading="scope.row.delLoading"
                     @click="delTemp(scope, 'del')"></el-button>
                 <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
                     @click="myClose(scope)"></el-button>
@@ -181,7 +181,7 @@ export default {
             this.tempData.splice(scope.$index + 1, 0, tempInfo)
         },
         // 修改数据接口
-        editTemp(scope, type) {
+        async editTemp(scope, type) {
             scope.row.index = scope.$index
             this.tempRow = scope.row
             this.tempInfo = _.cloneDeep(scope.row)
@@ -198,7 +198,7 @@ export default {
 
             this.tempTitle = '对模板接口数据查看或编辑'
             if (type == 'edit') {
-                // 发起后端请求，刷新列表
+                scope.row.checkLoading = true
                 var tempInfo = {
                     temp_id: this.tempId,
                     number: this.tempInfo.number,
@@ -215,8 +215,7 @@ export default {
                     response: this.tempInfo.response
                 }
                 if (this.tempInfo.add) {
-                    console.log('新增');
-                    this.$http({
+                    await this.$http({
                         url: '/template/add/api',
                         method: 'PUT',
                         data: JSON.stringify(tempInfo),
@@ -236,9 +235,11 @@ export default {
                             ElMessage.error(error.message)
                         }
                     )
+                    // 刷新列表
+                    this.getTempData()
+
                 } else {
-                    console.log('修改');
-                    this.$http({
+                    await this.$http({
                         url: '/template/edit/api',
                         method: 'PUT',
                         data: JSON.stringify(tempInfo),
@@ -259,9 +260,10 @@ export default {
                         }
                     )
                 }
-                console.log(tempInfo);
+
                 scope.row.edit = false
                 scope.row.delDisabled = false
+                scope.row.checkLoading = true
             } else {
                 this.tempDialog = true
             }
@@ -292,18 +294,15 @@ export default {
             }
         },
         // 删除数据接口
-        delTemp(scope, type) {
+        async delTemp(scope, type) {
             if (type == 'del') {
-                this.tempData.splice(scope.$index, 1)
-                // 删除成功后，刷新列表
-                console.log(this.tempId);
-                console.log(scope.$index);
-                this.$http({
+                scope.row.delLoading = false
+                await this.$http({
                     url: '/template/del/api',
                     method: 'DELETE',
                     params: {
                         temp_id: this.tempId,
-                        number: scope.$index
+                        number: scope.row.number
                     }
                 }).then(
                     function () {
@@ -318,7 +317,9 @@ export default {
                         ElMessage.error(error.message)
                     }
                 )
-
+                scope.row.delLoading = true
+                // 刷新列表
+                this.getTempData()
                 scope.row.del = false
                 scope.row.EditDisabled = false
             } else {
@@ -332,6 +333,28 @@ export default {
                 }
                 scope.row.del = true
                 scope.row.EditDisabled = true
+            }
+        },
+        // 更新列表
+        async getTempData() {
+            console.log('刷新列表');
+            this.tempData.splice(0, this.tempData.length);
+            var temp_ = []
+            await this.$http.get('/template/data/list?temp_id=' + this.tempId).then(
+                function (response) {
+                    temp_ = response.data
+                    for (var x in temp_) {
+                        temp_[x].edit = false
+                        temp_[x].EditDisabled = false
+                        temp_[x].del = false
+                        temp_[x].delDisabled = false
+                    }
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+            for (var x in temp_) {
+                this.tempData.push(temp_[x])
             }
         },
         // 初始化数据
@@ -388,7 +411,7 @@ export default {
         },
         // 取消操作
         myClose(scope) {
-            if (scope.row.edit) {
+            if (scope.row.edit && scope.row.add) {
                 this.tempData.splice(scope.$index, 1)
             }
             scope.row.edit = false

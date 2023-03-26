@@ -222,6 +222,7 @@ export default {
         async delCase(row) {
             var flag = false
             row.delLoading = true
+            this.delDialog = false
             await this.$http({
                 url: '/caseService/del/' + row.case_id,
                 method: 'DELETE',
@@ -248,7 +249,6 @@ export default {
             }
 
             row.delLoading = false
-            this.delDialog = false
         },
         // 复制窗口
         copyDialogVisible(row) {
