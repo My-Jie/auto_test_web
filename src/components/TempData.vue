@@ -296,7 +296,7 @@ export default {
         // 删除数据接口
         async delTemp(scope, type) {
             if (type == 'del') {
-                scope.row.delLoading = false
+                scope.row.delLoading = true
                 await this.$http({
                     url: '/template/del/api',
                     method: 'DELETE',
@@ -317,7 +317,7 @@ export default {
                         ElMessage.error(error.message)
                     }
                 )
-                scope.row.delLoading = true
+                scope.row.delLoading = false
                 // 刷新列表
                 this.getTempData()
                 scope.row.del = false
