@@ -115,7 +115,7 @@ export default {
                 }
                 this.getTempId.push('all')
             } else {
-                ElMessage.warning('列表中已有全部模板的数据列表, 请查询其他模板ID')
+                ElMessage.warning('列表中已有全部模板的数据, 请查询其他模板ID')
             }
             this.tempInfoAllLoading = false
         },
@@ -171,7 +171,7 @@ export default {
                 }
                 this.getTempId.push(this.tempId)
             } else {
-                ElMessage.warning('列表中已有该模板' + this.tempId + '的数据列表, 请查询其他模板ID')
+                ElMessage.warning('列表中已有该模板' + this.tempId + '的数据, 请查询其他模板ID')
             }
             this.tempDataLoading = false
         },

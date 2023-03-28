@@ -55,13 +55,13 @@
     <el-dialog v-model='tempDialog' width="60%" :title="tempTitle" :close-on-click-modal=false :close-on-press-escape=false
         @close="closeTempDialog(tempInfo)" draggable v-if="tempDialog">
         <el-form v-model="tempInfo" label-width="65px">
-            <el-form-item label="Host" prop="host">
+            <el-form-item label="Host" prop="host" :required="true">
                 <el-input v-model="tempInfo.host"></el-input>
             </el-form-item>
-            <el-form-item label="Path" prop="path">
+            <el-form-item label="Path" prop="path" :required="true">
                 <el-input v-model="tempInfo.path"></el-input>
             </el-form-item>
-            <el-form-item label="Method">
+            <el-form-item label="Method" :required="true">
                 <el-select v-model="tempInfo.method" placeholder="Method" style="width: 115px">
                     <el-option label="GET" value="GET" />
                     <el-option label="POST" value="POST" />
@@ -72,7 +72,7 @@
                     <el-option label="PATCH" value="PATCH" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="Code">
+            <el-form-item label="Code" :required="true">
                 <el-input v-model="tempInfo.code" style="width: 115px"></el-input>
             </el-form-item>
             <el-button type="info" @click="initData()">初始化</el-button>

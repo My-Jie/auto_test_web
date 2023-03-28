@@ -1,15 +1,31 @@
 <template>
     <el-radio-group v-model="uploadType">
-        <el-radio-button label='temp' @click="cutFile('temp')">模板</el-radio-button>
+        <el-radio-button label='temp-har' @click="cutFile('temp-har')">模板-har</el-radio-button>
+        <el-radio-button label='temp-swagger' @click="cutFile('temp-swagger')">模板-swagger</el-radio-button>
         <el-radio-button label='case' @click="cutFile('case')">用例</el-radio-button>
         <el-radio-button label='gather' @click="cutFile('gather')">数据集</el-radio-button>
     </el-radio-group>
     <br>
     <br>
-    <!-- 模板 -->
-    <el-form v-if="uploadType == 'temp'">
+    <!-- 模板-har -->
+    <el-form v-if="uploadType == 'temp-har'">
         <el-form-item label="模板名称" label-width="100px" :required="true" placeholder="">
             <el-input v-model="tempName" />
+        </el-form-item>
+        <el-form-item label="项目名称" label-width="100px" :required="true">
+            <el-select v-model="projectName" placeholder="选择项目">
+                <el-option label="sales" value="sales" />
+                <el-option label="oms" value="oms" />
+                <el-option label="site" value="site" />
+                <el-option label="tms" value="tms" />
+                <el-option label="wxApp" value="wxapp" />
+            </el-select>
+        </el-form-item>
+    </el-form>
+    <!-- 模板-swagger -->
+    <el-form v-if="uploadType == 'temp-swagger'">
+        <el-form-item label="Host" label-width="100px" :required="true" placeholder="">
+            <el-input v-model="tempHost" />
         </el-form-item>
         <el-form-item label="项目名称" label-width="100px" :required="true">
             <el-select v-model="projectName" placeholder="选择项目">
@@ -52,22 +68,22 @@
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <div class="el-upload__text">将文件拖拽到此处 或者 <em>点击上传</em></div>
     </el-upload>
-    <el-button class="ml-2" type="success" @click="btnSubmit">上传到服务器</el-button>
+    <el-button class="ml-2" type="success" @click="btnSubmit" :loading="submitLoading">上传到服务器</el-button>
 
     <!-- 成功的弹窗 -->
     <el-dialog v-model='mySuccess' width="50%" title="上传成功">
         <el-form :model="successData">
             <!-- 模板内容 -->
-            <el-form-item label="模板名称 : " v-if="this.uploadType == 'temp'">
+            <el-form-item label="模板名称 : " v-if="this.uploadType == 'temp-har' || this.uploadType == 'temp-swagger'">
                 {{ successData.temp_name }}
             </el-form-item>
-            <el-form-item label="项目名称 : " v-if="this.uploadType == 'temp'">
+            <el-form-item label="项目名称 : " v-if="this.uploadType == 'temp-har' || this.uploadType == 'temp-swagger'">
                 {{ successData.project_name }}
             </el-form-item>
-            <el-form-item label="模板ID : " v-if="this.uploadType == 'temp'">
+            <el-form-item label="模板ID : " v-if="this.uploadType == 'temp-har' || this.uploadType == 'temp-swagger'">
                 {{ successData.id }}
             </el-form-item>
-            <el-form-item label="API数量 : " v-if="this.uploadType == 'temp'">
+            <el-form-item label="API数量 : " v-if="this.uploadType == 'temp-har' || this.uploadType == 'temp-swagger'">
                 {{ successData.api_count }}
             </el-form-item>
             <!-- 用例内容 -->
@@ -101,12 +117,14 @@ export default {
     name: 'MyUpload',
     data() {
         return {
+            submitLoading: false,
             // 模板
             tempName: '',
+            tempHost: '',
             projectName: '',
             // 上传的基本信息
             uploadUrl: '',
-            uploadType: 'temp',
+            uploadType: 'temp-har',
             fileType: '.har',
             // 用例
             tempId: '',
@@ -122,17 +140,20 @@ export default {
     methods: {
         // 切换文件类型
         cutFile(myType) {
-            if (myType == 'temp') {
+            if (myType == 'temp-har') {
                 this.fileType = '.har'
-            } else if (myType == 'case') {
+            } else if (myType == 'case' || myType == 'temp-swagger') {
                 this.fileType = '.json'
             } else if (myType == 'gather') {
                 this.fileType = '.xlsx'
             }
         },
         btnSubmit() {
-            if (this.uploadType == 'temp') {
+            this.submitLoading = true
+            if (this.uploadType == 'temp-har') {
                 this.uploadUrl = '/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName
+            } else if (this.uploadType == 'temp-swagger') {
+                this.uploadUrl = '/template/upload/swagger/json?host=' + this.tempHost + '&project_name=' + this.projectName
             } else if (this.uploadType == 'case') {
                 if (this.cover) {
                     this.uploadUrl = '/caseService/upload/json?temp_id=' + this.tempId + '&cover=' + this.cover + '&case_id=' + this.caseId
@@ -149,11 +170,12 @@ export default {
                 this.successData = response
                 this.mySuccess = true
             }
-
             ElMessage.success('上传成功')
+            this.submitLoading = false
         },
         onError() {
             ElMessage.error('上传失败')
+            this.submitLoading = false
         }
 
     }
