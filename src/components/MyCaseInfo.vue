@@ -62,6 +62,10 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <br>
+        <el-pagination background :page-sizes="[10, 20, 50, 80, 100]" layout="total, jumper, prev, pager, next, sizes"
+            :total=caseTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="caseId + ' ' + dataTitle">
@@ -114,8 +118,11 @@ import { Edit, Check, Download, Close } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
-        'caseInfo': Array
+        'caseInfo': Array,
+        'caseTotal': Number,
     },
+
+    inject: ["get_case"],
 
     components: {
         CaseData,
@@ -144,6 +151,13 @@ export default {
     },
 
     methods: {
+        // 调用父级方法
+        async handleSizeChange(val) {
+            await this.get_case(1, val)
+        },
+        async handleCurrentChange(val) {
+            await this.get_case(val)
+        },
         stopCaseRun(row) {
             this.$http({
                 url: '/runCase/case/status',

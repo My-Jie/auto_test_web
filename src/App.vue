@@ -38,9 +38,17 @@ export default {
       caseInfoLoading: false,
       caseStatus: false,
       isDark: useDark(),
+
+      tempTotal: 0,
+      caseTotal: 0
     }
   },
-
+  provide() {
+    return {
+      'get_temp': this.getTempInfo,
+      'get_case': this.getCaseInfo
+    };
+  },
   methods: {
     // 开启定时器
     start(time) {
@@ -59,19 +67,29 @@ export default {
     },
 
     // 获取模板信息
-    async getTempInfo() {
+    async getTempInfo(page_ = 1, size_ = 10) {
       // 关闭定时器
       this.end()
 
       this.tempInfoLoading = true
-      this.tempInfo = []
       var temp = []
-      await this.$http.get('/template/name/list?outline=false').then(
+      var tempTotal = 0
+      await this.$http({
+        url: '/template/name/list',
+        method: 'GET',
+        params: {
+          outline: false,
+          page: page_,
+          size: size_,
+        }
+      }).then(
         function (response) {
-          temp = response.data
+          temp = response.data.items
+          tempTotal = response.data.total
         }).catch(function (error) {
           ElMessage.error(error.message)
         })
+      this.tempTotal = tempTotal
       this.tempInfo = temp
       // 给每个模板加loading属性
       for (var x in this.tempInfo) {
@@ -96,17 +114,27 @@ export default {
     },
 
     // 获取用例信息
-    async getCaseInfo() {
+    async getCaseInfo(page_ = 1, size_ = 10) {
       this.caseInfoLoading = true
-      this.caseInfo = []
       var case_ = []
-      await this.$http.get('/caseService/data/case/list?outline=false').then(
+      var caseTotal = 0
+      await this.$http({
+        url: '/caseService/data/case/list',
+        method: 'GET',
+        params: {
+          outline: false,
+          page: page_,
+          size: size_,
+        }
+      }).then(
         function (response) {
-          case_ = response.data
+          case_ = response.data.items
+          caseTotal = response.data.total
         }).catch(function (error) {
           ElMessage.error(error.message)
         })
       this.caseInfo = case_
+      this.caseTotal = caseTotal
       // 给每个用例加loading属性
       for (var x in this.caseInfo) {
         this.caseInfo[x].runLoading = false
@@ -180,9 +208,9 @@ export default {
     <el-header>
       <el-affix :offset="10">
         <!-- 模板信息 -->
-        <el-button type="primary" @click="getTempInfo" :loading="tempInfoLoading">获取模板信息</el-button>
+        <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">获取模板信息</el-button>
         <!-- 用例信息 -->
-        <el-button type="primary" @click="getCaseInfo" :loading="caseInfoLoading">获取用例信息</el-button>
+        <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">获取用例信息</el-button>
         <!-- 参数变更 -->
         <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
         <!-- 文件上传 -->
@@ -196,8 +224,8 @@ export default {
       <el-backtop :right="100" :bottom="100" />
     </el-header>
     <el-main>
-      <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo"></my-temp-info>
-      <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo"></my-case-info>
+      <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo" :temp-total="tempTotal"></my-temp-info>
+      <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
       <!-- 字段变更的弹窗 -->
       <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>

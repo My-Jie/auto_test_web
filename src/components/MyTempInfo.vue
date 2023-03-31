@@ -37,6 +37,10 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <br>
+        <el-pagination background :page-sizes="[10, 20, 50, 80, 100]" layout="total, jumper, prev, pager, next, sizes"
+            :total=tempTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="tempTitle">
@@ -126,8 +130,11 @@ export default {
     },
 
     props: {
-        'tempInfo': Array
+        'tempInfo': Array,
+        'tempTotal': Number,
     },
+
+    inject: ["get_temp"],
 
     data() {
         return {
@@ -155,6 +162,13 @@ export default {
     },
 
     methods: {
+        // 调用父级方法
+        async handleSizeChange(val) {
+            await this.get_temp(1, val)
+        },
+        async handleCurrentChange(val) {
+            await this.get_temp(val)
+        },
         async updateName(row) {
             row.checkLoading = true
             await this.$http({
