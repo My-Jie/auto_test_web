@@ -69,7 +69,9 @@
 
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="caseId + ' ' + dataTitle">
+            <!-- <div class="el-dialog-div"> -->
             <case-data :case-data="thisCaseData" :case-id="caseId"></case-data>
+            <!-- </div> -->
         </el-dialog>
         <!-- 运行用例弹窗 -->
         <el-dialog v-model="dialogVisible" title="Tips" width="30%">
@@ -146,17 +148,19 @@ export default {
             caseName: null,
             caseRow: null,
             gatherDialog: false,
-            gatherData: []
+            gatherData: [],
+            size: 10
         }
     },
 
     methods: {
         // 调用父级方法
-        async handleSizeChange(val) {
-            await this.get_case(1, val)
+        async handleSizeChange(size) {
+            this.size = size
+            await this.get_case(1, size)
         },
-        async handleCurrentChange(val) {
-            await this.get_case(val)
+        async handleCurrentChange(page) {
+            await this.get_case(page, this.size)
         },
         stopCaseRun(row) {
             this.$http({
@@ -482,5 +486,10 @@ export default {
 
 .el-link .el-icon--right.el-icon {
     vertical-align: text-bottom;
+}
+
+.el-dialog-div {
+    height: 65vh;
+    overflow: auto;
 }
 </style>

@@ -44,7 +44,9 @@
 
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="tempTitle">
-            <temp-data :temp-data="thisTempData" :temp-id="tempId"></temp-data>
+            <div class="el-dialog-div">
+                <temp-data :temp-data="thisTempData" :temp-id="tempId"></temp-data>
+            </div>
         </el-dialog>
         <!-- 运行用例弹窗 -->
         <el-dialog v-model="dialogVisible" title="Tips" width="30%">
@@ -157,17 +159,19 @@ export default {
             addCaseInput: '',
             affTempToCaseId: 99999,
             tempToCaseLoading: false,
-            delDialog: false
+            delDialog: false,
+            size: 10
         }
     },
 
     methods: {
         // 调用父级方法
-        async handleSizeChange(val) {
-            await this.get_temp(1, val)
+        async handleSizeChange(size) {
+            this.size = size
+            await this.get_temp(1, this.size)
         },
-        async handleCurrentChange(val) {
-            await this.get_temp(val)
+        async handleCurrentChange(page) {
+            await this.get_temp(page, this.size)
         },
         async updateName(row) {
             row.checkLoading = true
@@ -453,5 +457,10 @@ export default {
     margin-top: 30px;
     text-align: center;
     line-height: unset;
+}
+
+.el-dialog-div {
+    height: 65vh;
+    overflow: auto;
 }
 </style>
