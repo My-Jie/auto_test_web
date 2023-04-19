@@ -228,7 +228,7 @@
             <el-table-column label="value" align="center">
                 <template #default="scope">
                     <div v-if="!scope.row.edit">{{ scope.row.value }}</div>
-                    <el-input v-if="scope.row.edit" v-model="scope.row.value" placeholder="headers值" size="small" />
+                    <el-input v-if="scope.row.edit" v-model="scope.row.value" placeholder="header值" size="small" />
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="180px">

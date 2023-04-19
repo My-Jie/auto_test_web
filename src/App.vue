@@ -5,6 +5,7 @@ import MyCaseInfo from "./components/MyCaseInfo.vue"
 import MyChange from './components/MyChange.vue'
 import MyUpload from './components/Upload.vue'
 import MyTransfer from "./components/MyTransfer.vue"
+import MyWholeConf from './components/WholeConf.vue'
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 import { useDark, useToggle } from '@vueuse/core'
@@ -14,7 +15,8 @@ export default {
     MyCaseInfo,
     MyChange,
     MyUpload,
-    MyTransfer
+    MyTransfer,
+    MyWholeConf
   },
   data() {
     return {
@@ -34,13 +36,18 @@ export default {
       dialogUpload: false,
       mySwitch: true,
       dialogTempSuit: false,
+      dialogWholeConf: false,
       tempInfoLoading: false,
       caseInfoLoading: false,
+      confWholeLoading: false,
+      confWholeCheckLoading: false,
       caseStatus: false,
       isDark: useDark(),
 
       tempTotal: 0,
-      caseTotal: 0
+      caseTotal: 0,
+
+      confData: {}
     }
   },
   provide() {
@@ -130,9 +137,10 @@ export default {
         function (response) {
           case_ = response.data.items
           caseTotal = response.data.total
-        }).catch(function (error) {
-          ElMessage.error(error.message)
-        })
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
       this.caseInfo = case_
       this.caseTotal = caseTotal
       // 给每个用例加loading属性
@@ -193,6 +201,42 @@ export default {
         }
       )
     },
+    // 全局配置设置
+    async getWholeConf() {
+      this.confWholeLoading = true
+      var wholeConf
+      await this.$http({
+        url: '/conf/get/setting',
+        method: 'GET'
+      }).then(
+        function (response) {
+          wholeConf = response.data
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.confWholeLoading = false
+      this.dialogWholeConf = true
+      this.confData = wholeConf
+      console.log(this.confData);
+    },
+
+    async setSetting() {
+      this.confWholeCheckLoading = true
+      await this.$http({
+        url: '/conf/set/setting',
+        method: 'PUT',
+        data: JSON.stringify(this.confData),
+        headers: {
+          'content-type': "application/json"
+        }
+      }).then(
+        ElMessage.success('提交成功')
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.confWholeCheckLoading = false
+    },
 
     // 暗黑模式
     toggleDark() {
@@ -211,12 +255,14 @@ export default {
         <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">获取模板信息</el-button>
         <!-- 用例信息 -->
         <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">获取用例信息</el-button>
-        <!-- 参数变更 -->
-        <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
         <!-- 文件上传 -->
         <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
         <!-- 模板组装 -->
         <el-button type="primary" @click="dialogTempSuit = true">模板组装</el-button>
+        <!-- 参数变更 -->
+        <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
+        <!-- 全局配置 -->
+        <el-button type="primary" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
         <!-- 开关灯 -->
         <span @click.stop="toggleDark()"></span>
         <el-switch size="small" v-model="isDark" />
@@ -239,6 +285,16 @@ export default {
       <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
         <my-transfer v-if="dialogTempSuit"></my-transfer>
+      </el-dialog>
+      <!-- 全局配置弹窗 -->
+      <el-dialog v-model="dialogWholeConf" width="50%" title="全局配置项" @close='dialogTempSuit = false' draggable>
+        <my-whole-conf v-if="dialogWholeConf" :conf-info="confData"></my-whole-conf>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogWholeConf = false">取消</el-button>
+            <el-button type="primary" @click="setSetting()" :loading="confWholeCheckLoading">确认</el-button>
+          </span>
+        </template>
       </el-dialog>
     </el-main>
   </el-container>
