@@ -29,7 +29,7 @@
         <el-tab-pane label="项目列表" name="project">
             <!-- 增加操作 -->
             <el-button v-if="confInfo.project.length <= 0" :icon="Plus" type="warning" size="small"
-                @click="addConf('host')"></el-button>
+                @click="addConf('project')"></el-button>
             <el-table :data="confInfo.project" stripe fit empty-text="空">
                 <el-table-column label="名称" align="center" width="120px">
                     <template #default="scope">
@@ -55,7 +55,7 @@
         <el-tab-pane label="统一响应" name="unify_res">
             <!-- 增加操作 -->
             <el-button v-if="confInfo.unify_res.length <= 0" :icon="Plus" type="warning" size="small"
-                @click="addConf('host')"></el-button>
+                @click="addConf('unify_res')"></el-button>
             <el-table :data="confInfo.unify_res" stripe fit empty-text="空">
                 <el-table-column label="key" align="center" width="120px">
                     <template #default="scope">
