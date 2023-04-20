@@ -13,12 +13,8 @@
             <el-input v-model="tempName" />
         </el-form-item>
         <el-form-item label="项目名称" label-width="100px" :required="true">
-            <el-select v-model="projectName" placeholder="选择项目">
-                <el-option label="sales" value="sales" />
-                <el-option label="oms" value="oms" />
-                <el-option label="site" value="site" />
-                <el-option label="tms" value="tms" />
-                <el-option label="wxApp" value="wxapp" />
+            <el-select v-model="projectName" placeholder="选择项目" @visible-change="handleVisibleChange">
+                <el-option v-for="item in projects" :key="item.value" :label="item.value" :value="item.value"></el-option>
             </el-select>
         </el-form-item>
     </el-form>
@@ -28,12 +24,8 @@
             <el-input v-model="tempHost" />
         </el-form-item>
         <el-form-item label="项目名称" label-width="100px" :required="true">
-            <el-select v-model="projectName" placeholder="选择项目">
-                <el-option label="sales" value="sales" />
-                <el-option label="oms" value="oms" />
-                <el-option label="site" value="site" />
-                <el-option label="tms" value="tms" />
-                <el-option label="wxApp" value="wxapp" />
+            <el-select v-model="projectName" placeholder="选择项目" @visible-change="handleVisibleChange">
+                <el-option v-for="item in projects" :key="item.value" :label="item.value" :value="item.value"></el-option>
             </el-select>
         </el-form-item>
     </el-form>
@@ -134,10 +126,31 @@ export default {
 
             // 成功信息
             mySuccess: false,
-            successData: {}
+            successData: {},
+            projects: []
         }
     },
     methods: {
+        // 项目列表
+        async handleVisibleChange(val) {
+            if (!val) {
+                return
+            }
+            var projects = []
+            await this.$http({
+                url: '/conf/get/setting',
+                method: 'GET',
+            }).then(
+                function (response) {
+                    projects = response.data.project
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.projects = projects
+        },
         // 切换文件类型
         cutFile(myType) {
             if (myType == 'temp-har') {
