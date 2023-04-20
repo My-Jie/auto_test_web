@@ -144,7 +144,7 @@ export default {
             var temp = []
             await this.$http.get('/template/name/list?outline=false').then(
                 function (response) {
-                    temp = response.data
+                    temp = response.data.items
                 }).catch(function (error) {
                     ElMessage.error(error.message)
                 })
