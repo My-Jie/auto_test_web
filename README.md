@@ -7,3 +7,5 @@
 * 主页：http://localhost:8000/index.html
 
 * swagger-ui: http://localhost:8000/docs
+
+* 交流群: 599733338
