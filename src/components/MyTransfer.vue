@@ -73,6 +73,7 @@ export default {
         closeData() {
             this.allTempInfo = []
             this.getTempId = []
+            this.tempId = null
         },
         // 保存模板数据
         async checkTemp() {
@@ -169,6 +170,7 @@ export default {
 
             if (!this.getTempId.includes(this.tempId)) {
                 var tempInfo = this.allTempInfo
+                var flag = false
                 await this.$http.get('/template/data/list?temp_id=' + this.tempId).then(
                     function (response) {
                         var data = response.data
@@ -179,15 +181,19 @@ export default {
                                 disabled: false
                             })
                         }
+                        flag = true
                     }
                 ).catch(function (error) {
                     ElMessage.error(error.message)
                 })
-                this.allTempInfo = []
-                for (var x in tempInfo) {
-                    this.allTempInfo.push(tempInfo[x])
+
+                if (flag) {
+                    this.getTempId.push(this.tempId)
+                    this.allTempInfo = []
+                    for (var x in tempInfo) {
+                        this.allTempInfo.push(tempInfo[x])
+                    }
                 }
-                this.getTempId.push(this.tempId)
             } else {
                 ElMessage.warning('列表中已有该模板' + this.tempId + '的数据, 请查询其他模板ID')
             }
