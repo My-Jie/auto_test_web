@@ -217,6 +217,9 @@ export default {
           for (var x in wholeConf.project) {
             wholeConf.project[x].num = x
           }
+          for (var x in wholeConf.unify_res) {
+            wholeConf.unify_res[x].num = x
+          }
         }
       ).catch(function (error) {
         ElMessage.error(error.message)
