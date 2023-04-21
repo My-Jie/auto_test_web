@@ -211,6 +211,12 @@ export default {
       }).then(
         function (response) {
           wholeConf = response.data
+          for (var x in wholeConf.host) {
+            wholeConf.host[x].num = x
+          }
+          for (var x in wholeConf.project) {
+            wholeConf.project[x].num = x
+          }
         }
       ).catch(function (error) {
         ElMessage.error(error.message)
