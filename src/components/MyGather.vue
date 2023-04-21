@@ -60,7 +60,24 @@
         <el-input v-model="Data" type="textarea" spellcheck="false" :rows="dataLength"></el-input>
     </el-dialog>
     <!-- 运行弹窗 -->
-    <el-dialog v-model="runDialog" :title="runTitle" width="30%">
+    <el-dialog v-model="runDialog" :title="runTitle" width="50%">
+        <el-table :data="tempHosts" stripe fit empty-text="空">
+            <el-table-column label="TempHost" prop="temp_host">
+            </el-table-column>
+            <el-table-column label="WholeHost">
+                <template #default="scope">
+                    <el-select v-model="scope.row.whole_host" placeholder="选择域名" @visible-change="handleVisibleChange">
+                        <el-option v-for="item in hosts" :key="item.value" :label="item.value"
+                            :value="item.value"></el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column label="替换" align="center" width="70px">
+                <template #default="scope">
+                    <el-checkbox v-model=scope.row.change />
+                </template>
+            </el-table-column>
+        </el-table>
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="runDialog = false">取消</el-button>
@@ -90,13 +107,34 @@ export default {
             asyncRunLoading: false,
             async_: null,
             runDialog: false,
-            runTitle: ''
+            runTitle: '',
+            tempHosts: [],
+            hosts: []
         }
     },
 
     methods: {
+        async handleVisibleChange(val) {
+            if (!val) {
+                return
+            }
+            var hosts
+            await this.$http({
+                url: '/conf/get/setting',
+                method: 'GET',
+            }).then(
+                function (response) {
+                    hosts = response.data.host
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.hosts = hosts
+        },
         // 确认运行
-        queryRun(type) {
+        async queryRun(type) {
             this.async_ = type
             if (type) {
                 this.runTitle = '异步运行'
@@ -104,6 +142,34 @@ export default {
                 this.runTitle = '同步运行'
             )
             this.runDialog = true
+
+            this.hosts = []
+            this.tempHosts = []
+            var hosts = []
+            await this.$http({
+                url: '/runCase/temp/host?case_id=' + this.caseId,
+                method: 'GET',
+            }).then(
+                function (response) {
+                    for (var x in response.data) {
+                        if (!hosts.includes(response.data[x].host)) {
+                            hosts.push(response.data[x].host)
+                        }
+                    }
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            for (var x in hosts) {
+                this.tempHosts.push({
+                    temp_host: hosts[x],
+                    whole_host: null,
+                    change: false
+                })
+            }
         },
         // 运行用例
         async runCase() {
@@ -137,7 +203,8 @@ export default {
                 data: JSON.stringify({
                     case_id: case_id,
                     suite: suite_list,
-                    async_: this.async_
+                    async_: this.async_,
+                    temp_hosts: this.tempHosts
                 }),
                 headers: {
                     'content-type': "application/json"
