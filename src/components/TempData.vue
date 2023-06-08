@@ -54,6 +54,9 @@
     <!-- 新增修改数据的弹窗 -->
     <el-dialog v-model='tempDialog' width="60%" :title="tempTitle" :close-on-click-modal=false :close-on-press-escape=false
         @close="closeTempDialog(tempInfo)" draggable v-if="tempDialog">
+        <el-button type="success" @click="curlDialog = true">解析CURL</el-button>
+        <br>
+        <br>
         <el-form v-model="tempInfo" label-width="65px">
             <el-form-item label="Host" prop="host" :required="true">
                 <el-input v-model="tempInfo.host"></el-input>
@@ -94,6 +97,16 @@
                 </el-tab-pane>
             </el-tabs>
         </el-form>
+    </el-dialog>
+    <!-- 解析CURL弹窗 -->
+    <el-dialog v-model='curlDialog' width="50%" title="解析CURL" draggable v-if="curlDialog">
+        <el-input type="textarea" v-model="curlData" rows="10" spellcheck="false"></el-input>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="curlDialog = false">取消</el-button>
+                <el-button type="primary" @click="curlHeader()">确认</el-button>
+            </span>
+        </template>
     </el-dialog>
 </template>
 
@@ -148,6 +161,9 @@ export default {
             dataLen: 0,
             headersLen: 0,
             responseLen: 0,
+
+            curlDialog: false,
+            curlData: ''
         }
     },
 
@@ -157,7 +173,20 @@ export default {
         addOne() {
             this.tempData.push(_.cloneDeep(this.tempInit))
         },
+        // 解析curl
+        curlHeader() {
+            var curlList = this.curlData.split("\\")
 
+            for (var x in curlList) {
+                var newStr =curlList[x].trim()
+                if (x == 0) {
+                    console.log(newStr.match(/\'(.*?)\'/g));
+                } else {
+                    console.log(newStr.match(/\-(.*?)\'/g));
+                }
+                // console.log(newStr);
+            }
+        },
         // 新增数据接口
         addTemp(scope) {
             var tempInfo = {
