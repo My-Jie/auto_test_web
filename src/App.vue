@@ -6,6 +6,7 @@ import MyChange from './components/MyChange.vue'
 import MyUpload from './components/Upload.vue'
 import MyTransfer from "./components/MyTransfer.vue"
 import MyWholeConf from './components/WholeConf.vue'
+import MonacoEditor from "./components/MonacoEditor.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 import { useDark, useToggle } from '@vueuse/core'
@@ -16,7 +17,8 @@ export default {
     MyChange,
     MyUpload,
     MyTransfer,
-    MyWholeConf
+    MyWholeConf,
+    MonacoEditor
   },
   data() {
     return {
@@ -34,6 +36,7 @@ export default {
       // 全局参数变更弹窗
       dialogParamsCharge: false,
       dialogUpload: false,
+      dialogMonaco: false,
       mySwitch: true,
       dialogTempSuit: false,
       dialogWholeConf: false,
@@ -272,6 +275,8 @@ export default {
         <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
         <!-- 全局配置 -->
         <el-button type="primary" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
+        <!-- 编辑器 -->
+        <el-button type="primary" @click="dialogMonaco = true">编辑器</el-button>
         <!-- 开关灯 -->
         <span @click.stop="toggleDark()"></span>
         <el-switch size="small" v-model="isDark" />
@@ -305,6 +310,12 @@ export default {
           </span>
         </template>
       </el-dialog>
+      <!-- 编辑器 -->
+      <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
+        :close-on-press-escape=false @close='dialogMonaco = false' draggable>
+        <monaco-editor v-if="dialogMonaco"></monaco-editor>
+      </el-dialog>
+
     </el-main>
   </el-container>
 </template>
