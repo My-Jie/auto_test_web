@@ -7,6 +7,7 @@ import MyUpload from './components/Upload.vue'
 import MyTransfer from "./components/MyTransfer.vue"
 import MyWholeConf from './components/WholeConf.vue'
 import MonacoEditor from "./components/MonacoEditor.vue"
+import MyUiTempInfo from "./components/MyUiTempInfo.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 import { useDark, useToggle } from '@vueuse/core'
@@ -18,7 +19,8 @@ export default {
     MyUpload,
     MyTransfer,
     MyWholeConf,
-    MonacoEditor
+    MonacoEditor,
+    MyUiTempInfo,
   },
   data() {
     return {
@@ -28,10 +30,12 @@ export default {
       clickStatus: {
         isTemp: false,
         isCase: false,
+        isUiTemp: false,
       },
       // 存获取的数据
       tempInfo: [],
       caseInfo: [],
+      uiTempInfo: [],
       timer: null,
       // 全局参数变更弹窗
       dialogParamsCharge: false,
@@ -42,6 +46,7 @@ export default {
       dialogWholeConf: false,
       tempInfoLoading: false,
       caseInfoLoading: false,
+      uiCaseInfoLoading: false,
       confWholeLoading: false,
       confWholeCheckLoading: false,
       caseStatus: false,
@@ -49,6 +54,7 @@ export default {
 
       tempTotal: 0,
       caseTotal: 0,
+      uiTempTotal: 0,
 
       confData: {}
     }
@@ -121,6 +127,59 @@ export default {
       }
       this.tempInfoLoading = false
 
+    },
+
+    async getUiCaseInfo(page_ = 1, size_ = 10) {
+      // 关闭定时器
+      this.end()
+
+      this.uiCaseInfoLoading = true
+
+      var info_ = []
+      var uiTempTotal = 0
+      await this.$http({
+        url: '/caseUi/get/playwright/list',
+        method: 'GET',
+        params: {
+          page: page_,
+          size: size_,
+        }
+      }).then(
+        function (response) {
+          info_ = response.data.items
+          uiTempTotal = response.data.total
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.uiTempInfo = info_
+      this.uiTempTotal = uiTempTotal
+
+      // 给每个用例加loading属性
+      for (var x in this.uiTempInfo) {
+        this.uiTempInfo[x].runLoading = false
+        this.uiTempInfo[x].delLoading = false
+        this.uiTempInfo[x].dataLoading = false
+        // this.caseInfo[x].gatherLoading = false
+        // this.caseInfo[x].edit = true
+        // this.caseInfo[x].checkLoading = false
+        // this.caseInfo[x].percentage = 0
+        // this.caseInfo[x].percentageStatus = 'success'
+        // this.caseInfo[x].key_id = ''
+        // 测试报告地址
+        // this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
+        // this.caseInfo[x].repLoading = false
+      }
+
+      // 所有的状态都改为false
+      for (var x in this.clickStatus) {
+        this.clickStatus[x] = false
+      }
+      // 再改单个状态为true
+      if (!this.isTemp) {
+        this.clickStatus['isUiTemp'] = true
+      }
+      this.uiCaseInfoLoading = false
     },
 
     // 获取用例信息
@@ -263,20 +322,31 @@ export default {
   <el-container>
     <el-header>
       <el-affix :offset="10">
-        <!-- 模板信息 -->
-        <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">获取模板信息</el-button>
-        <!-- 用例信息 -->
-        <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">获取用例信息</el-button>
-        <!-- 文件上传 -->
-        <el-button type="primary" @click="dialogUpload = true">文件上传</el-button>
-        <!-- 模板组装 -->
-        <el-button type="primary" @click="dialogTempSuit = true">模板组装</el-button>
-        <!-- 参数变更 -->
-        <el-button type="primary" @click="dialogParamsCharge = true">全局参数变更</el-button>
-        <!-- 全局配置 -->
-        <el-button type="primary" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
-        <!-- 编辑器 -->
-        <el-button type="primary" @click="dialogMonaco = true">编辑器</el-button>
+        <el-button-group class="ml-4">
+          <!-- 模板信息 -->
+          <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">API模板信息</el-button>
+          <!-- 用例信息 -->
+          <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">API用例信息</el-button>
+          <!-- 文件上传 -->
+          <el-button type="primary" @click="dialogUpload = true">模板用例上传</el-button>
+          <!-- 模板组装 -->
+          <el-button type="primary" @click="dialogTempSuit = true">模板场景组装</el-button>
+        </el-button-group>&nbsp;
+
+        <el-button-group class="ml-4">
+          <!-- UI用例信息 -->
+          <el-button type="success" @click="getUiCaseInfo()" :loading="uiCaseInfoLoading">UI用例信息</el-button>
+          <!-- 编辑器 -->
+          <el-button type="success" @click="dialogMonaco = true">UI脚本编辑</el-button>
+        </el-button-group>&nbsp;
+
+        <el-button-group class="ml-4">
+          <!-- 参数变更 -->
+          <el-button type="info" @click="dialogParamsCharge = true">全局参数变更</el-button>
+          <!-- 全局配置 -->
+          <el-button type="info" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
+        </el-button-group>
+
         <!-- 开关灯 -->
         <span @click.stop="toggleDark()"></span>
         <el-switch size="small" v-model="isDark" />
@@ -286,6 +356,8 @@ export default {
     <el-main>
       <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo" :temp-total="tempTotal"></my-temp-info>
       <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
+      <my-ui-temp-info v-show="clickStatus['isUiTemp']" :ui-temp-info="uiTempInfo"
+        :case-total="uiTempTotal"></my-ui-temp-info>
       <!-- 字段变更的弹窗 -->
       <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>
@@ -296,7 +368,7 @@ export default {
         <my-upload v-if="dialogUpload"></my-upload>
       </el-dialog>
       <!-- 模板组装的弹窗 -->
-      <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板" :close-on-click-modal=false
+      <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
         <my-transfer v-if="dialogTempSuit"></my-transfer>
       </el-dialog>
@@ -313,7 +385,7 @@ export default {
       <!-- 编辑器 -->
       <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogMonaco = false' draggable>
-        <monaco-editor v-if="dialogMonaco"></monaco-editor>
+        <monaco-editor v-if="dialogMonaco" :ui-temp-value="'print(\'hello tester\')'"></monaco-editor>
       </el-dialog>
 
     </el-main>

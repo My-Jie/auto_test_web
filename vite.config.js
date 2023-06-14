@@ -1,16 +1,16 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import monacoEditorPlugin from "vite-plugin-monaco-editor"
+import MonacoWebpackPlugin from "monaco-editor-webpack-plugin"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [vue(), monacoEditorPlugin.default({
-        languageWorkers: ['json', 'editorWorkerService'],
-        customWorkers: [{
-            label: 'graphql',
-            entry: 'monaco-graphql/dist/graphql.worker'
-        }]
-    })],
+    transpileDependencies: true,
+    configureWebpack: {
+        plugins: [new MonacoWebpackPlugin()],
+    },
+    plugins: [
+        vue(),
+    ],
     base: './',
     server: {
         host: "0.0.0.0",
@@ -23,6 +23,4 @@ export default defineConfig({
             }
         }
     },
-
-
 })
