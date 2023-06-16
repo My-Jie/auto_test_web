@@ -9,10 +9,27 @@
             </el-select>
         </el-form-item>
     </el-form>
-    <el-button type="primary" @click="postValue()">提交</el-button>
+    <el-button type="primary" @click="postValue()" :loading="loadingPost">提交</el-button>
+    <el-button type="primary" @click="getCaseData()" :loading="loadingGet">提取数据</el-button>
     <br>
     <br>
-    <div ref="main" style="width: 100%; height: 600px;"></div>
+    <div ref="main" style="width: 100%; height: 500px;"></div>
+
+    <!-- 提取数据的弹窗 -->
+    <el-dialog v-model='dialogPlaywrightData' width="50%" title="获取到的可替换内容" :close-on-click-modal=false
+        :close-on-press-escape=false @close='dialogPlaywrightData = false' draggable>
+        <el-table :data="caseInfo" stripe fit>
+            <el-table-column label="Row" prop="row" type="index" :index="indexMethod" width="50"
+                align="center"></el-table-column>
+            <el-table-column label="原内容" prop="data" align="center"></el-table-column>
+        </el-table>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="dialogPlaywrightData = false">取消</el-button>
+                <el-button type="primary" @click="downExcel()" :loading="downExcelLoading">下载</el-button>
+            </span>
+        </template>
+    </el-dialog>
 </template>
    
 <script>
@@ -38,7 +55,14 @@ export default {
             localUiTempName: this.uiTempName,
             localProjectName: this.projectName,
             localUiTempValue: this.uiTempValue,
-            projects: []
+            projects: [],
+
+            loadingPost: false,
+            loadingGet: false,
+            dialogPlaywrightData: false,
+            downExcelLoading: false,
+
+            caseInfo: []
         };
     },
 
@@ -70,7 +94,9 @@ export default {
                 readOnly: false, //是否只读  取值 true | false
             })
         },
+        // 提交数据
         async postValue() {
+            this.loadingPost = true
             await this.$http({
                 url: '/caseUi/add/playwright',
                 method: 'PUT',
@@ -96,7 +122,31 @@ export default {
                     ElMessage.error(error.message)
                 }
             )
+            this.loadingPost = false
 
+        },
+        // 提取文本中的数据
+        async getCaseData() {
+
+            this.loadingGet = true
+            var flag = this.dialogPlaywrightData
+            var caseData = []
+            await this.$http({
+                url: '/caseUi/get/playwright/case/' + this.localUiTempId,
+                method: 'GET',
+            }).then(
+                function (response) {
+                    flag = true
+                    caseData = response.data.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.dialogPlaywrightData = flag
+            this.loadingGet = false
+            this.caseInfo = caseData
         },
         // 项目列表
         async handleVisibleChange(val) {
@@ -117,6 +167,15 @@ export default {
                 }
             )
             this.projects = projects
+        },
+        // 下载数据excel
+        async downExcel() {
+
+        },
+
+
+        indexMethod(index) {
+            return this.caseInfo[index]['row']
         },
     },
 };

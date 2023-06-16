@@ -160,7 +160,7 @@ export default {
         this.uiTempInfo[x].runLoading = false
         this.uiTempInfo[x].delLoading = false
         this.uiTempInfo[x].dataLoading = false
-        // this.caseInfo[x].gatherLoading = false
+        this.uiTempInfo[x].CaseLoading = false
         // this.caseInfo[x].edit = true
         // this.caseInfo[x].checkLoading = false
         // this.caseInfo[x].percentage = 0
@@ -324,9 +324,9 @@ export default {
       <el-affix :offset="10">
         <el-button-group class="ml-4">
           <!-- 模板信息 -->
-          <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">API模板信息</el-button>
+          <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">API模板列表</el-button>
           <!-- 用例信息 -->
-          <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">API用例信息</el-button>
+          <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">API用例列表</el-button>
           <!-- 文件上传 -->
           <el-button type="primary" @click="dialogUpload = true">模板用例上传</el-button>
           <!-- 模板组装 -->
@@ -335,16 +335,16 @@ export default {
 
         <el-button-group class="ml-4">
           <!-- UI用例信息 -->
-          <el-button type="success" @click="getUiCaseInfo()" :loading="uiCaseInfoLoading">UI用例信息</el-button>
+          <el-button type="success" @click="getUiCaseInfo()" :loading="uiCaseInfoLoading">UI用例列表</el-button>
           <!-- 编辑器 -->
           <el-button type="success" @click="dialogMonaco = true">UI脚本编辑</el-button>
         </el-button-group>&nbsp;
 
         <el-button-group class="ml-4">
           <!-- 参数变更 -->
-          <el-button type="info" @click="dialogParamsCharge = true">全局参数变更</el-button>
+          <el-button type="warning" @click="dialogParamsCharge = true">全局参数变更</el-button>
           <!-- 全局配置 -->
-          <el-button type="info" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
+          <el-button type="warning" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
         </el-button-group>
 
         <!-- 开关灯 -->

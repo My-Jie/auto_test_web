@@ -13,7 +13,8 @@
                     <el-button-group class="ml-4">
                         <el-button type="primary" plain @click="getUiTempData(scope.row)"
                             :loading="scope.row.dataLoading">详情</el-button>
-                        <el-button type="primary" plain :loading="scope.row.tempToCaseLoading">用例</el-button>
+                        <el-button type="primary" plain @click="getUiCaseData(scope.row)"
+                            :loading="scope.row.CaseLoading">数据</el-button>
                     </el-button-group>&nbsp;
                     <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
                     </el-button>
@@ -101,6 +102,10 @@ export default {
             this.uiTempName = temp_.temp_name
             this.projectName = temp_.project_name
             this.uiTempValue = temp_.text
+        },
+        // 测试详情数据
+        async getUiCaseData(row) {
+
         },
 
         // 删除窗口
