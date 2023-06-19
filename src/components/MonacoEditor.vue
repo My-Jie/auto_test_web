@@ -171,8 +171,24 @@ export default {
         // 下载数据excel
         async downExcel() {
 
+            var localUiTempName = this.localUiTempName
+            await this.$http({
+                url: '/caseUi/down/playwright/data/' + this.localUiTempId,
+                method: 'GET',
+                responseType: 'blob'
+            }).then(
+                function (response) {
+                    var blobUrl = window.URL.createObjectURL(new Blob([response.data]))
+                    var link = document.createElement('a')
+                    link.href = blobUrl
+                    link.setAttribute('download', localUiTempName + '.xlsx')
+                    document.body.appendChild(link)
+                    link.click()
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
         },
-
 
         indexMethod(index) {
             return this.caseInfo[index]['row']
