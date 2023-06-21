@@ -547,6 +547,7 @@ export default {
                 for (var x in this.caseInfo) {
                     if (this.caseInfo[x].case_id == row.case_id) {
                         this.caseInfo[x].run_order = run_order
+                        this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + run_order + '/index.html'
                         break
                     }
                 }
