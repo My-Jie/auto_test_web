@@ -1,9 +1,10 @@
 <template>
     <el-radio-group v-model="uploadType">
-        <el-radio-button label='temp-har' @click="cutFile('temp-har')">模板-har</el-radio-button>
-        <el-radio-button label='temp-swagger' @click="cutFile('temp-swagger')">模板-swagger</el-radio-button>
-        <el-radio-button label='case' @click="cutFile('case')">用例</el-radio-button>
-        <el-radio-button label='gather' @click="cutFile('gather')">数据集</el-radio-button>
+        <el-radio-button label='temp-har' @click="cutFile('temp-har')">API模板-har</el-radio-button>
+        <el-radio-button label='temp-swagger' @click="cutFile('temp-swagger')">API模板-swagger</el-radio-button>
+        <el-radio-button label='case' @click="cutFile('case')">API用例</el-radio-button>
+        <el-radio-button label='gather' @click="cutFile('gather')">API数据集</el-radio-button>
+        <el-radio-button label='ui-case' @click="cutFile('ui-case')">UI数据集</el-radio-button>
     </el-radio-group>
     <br>
     <br>
@@ -51,6 +52,12 @@
     <el-form v-if="uploadType == 'gather'">
         <el-form-item label="用例ID" label-width="100px" :required="true">
             <el-input-number v-model="caseId" placeholder="" />
+        </el-form-item>
+    </el-form>
+    <!-- 用例 -->
+    <el-form v-if="uploadType == 'ui-case'">
+        <el-form-item label="绑定模板ID" label-width="100px" :required="true">
+            <el-input-number v-model="uiTempId" placeholder="" />
         </el-form-item>
     </el-form>
 
@@ -107,6 +114,12 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 export default {
     name: 'MyUpload',
+
+    props: {
+        'uploadType': String,
+        'fileType': String
+    },
+
     data() {
         return {
             submitLoading: false,
@@ -116,13 +129,16 @@ export default {
             projectName: '',
             // 上传的基本信息
             uploadUrl: '',
-            uploadType: 'temp-har',
-            fileType: '.har',
+            uploadType: this.uploadType,
+            fileType: this.fileType,
             // 用例
             tempId: '',
             caseId: null,
             caseName: '',
             cover: false,
+            //UI用例
+            uiTempId: null,
+            uiCaseName: '',
 
             // 成功信息
             mySuccess: false,
@@ -159,6 +175,8 @@ export default {
                 this.fileType = '.json'
             } else if (myType == 'gather') {
                 this.fileType = '.xlsx'
+            } else if (myType == 'ui-case') {
+                this.fileType = '.xlsx'
             }
         },
         btnSubmit() {
@@ -175,11 +193,13 @@ export default {
                 }
             } else if ((this.uploadType == 'gather')) {
                 this.uploadUrl = '/caseDdt/upload/data/gather?case_id=' + this.caseId
+            } else if ((this.uploadType == 'ui-case')) {
+                this.uploadUrl = '/caseUi/upload/playwright/data/?temp_id=' + this.uiTempId
             }
             this.$refs.upload.submit()
         },
         onSuccess(response) {
-            if (this.uploadType != 'gather') {
+            if (this.uploadType != 'gather' && this.uploadType != 'ui-case') {
                 this.successData = response
                 this.mySuccess = true
             }

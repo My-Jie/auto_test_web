@@ -56,7 +56,9 @@ export default {
       caseTotal: 0,
       uiTempTotal: 0,
 
-      confData: {}
+      confData: {},
+      uploadFileType: '',
+      fileType: ''
     }
   },
   provide() {
@@ -309,6 +311,12 @@ export default {
       this.confWholeCheckLoading = false
     },
 
+    uploadFile(type_, fileType) {
+      this.dialogUpload = true
+      this.uploadFileType = type_
+      this.fileType = fileType
+    },
+
     // 暗黑模式
     toggleDark() {
       useToggle(this.isDark)
@@ -328,7 +336,7 @@ export default {
           <!-- 用例信息 -->
           <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">API用例列表</el-button>
           <!-- 文件上传 -->
-          <el-button type="primary" @click="dialogUpload = true">模板用例上传</el-button>
+          <el-button type="primary" @click="uploadFile('temp-har', '.har')">模板用例上传</el-button>
           <!-- 模板组装 -->
           <el-button type="primary" @click="dialogTempSuit = true">模板场景组装</el-button>
         </el-button-group>&nbsp;
@@ -338,6 +346,8 @@ export default {
           <el-button type="success" @click="getUiCaseInfo()" :loading="uiCaseInfoLoading">UI用例列表</el-button>
           <!-- 编辑器 -->
           <el-button type="success" @click="dialogMonaco = true">UI脚本编辑</el-button>
+          <!-- 文件上传 -->
+          <el-button type="success" @click="uploadFile('ui-case', '.xlsx')">UI数据上传</el-button>
         </el-button-group>&nbsp;
 
         <el-button-group class="ml-4">
@@ -365,7 +375,7 @@ export default {
       </el-dialog>
       <!-- 文件上传的弹窗 -->
       <el-dialog v-model='dialogUpload' width="40%" title="文件上传" @close='dialogUpload = false' draggable>
-        <my-upload v-if="dialogUpload"></my-upload>
+        <my-upload v-if="dialogUpload" :upload-type="uploadFileType" :file-type="fileType"></my-upload>
       </el-dialog>
       <!-- 模板组装的弹窗 -->
       <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
