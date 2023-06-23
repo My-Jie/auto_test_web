@@ -45,7 +45,7 @@
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="tempTitle">
             <div class="el-dialog-div">
-                <temp-data :temp-data="thisTempData" :temp-id="tempId"></temp-data>
+                <temp-data v-if="myDialog" :temp-data="thisTempData" :temp-id="tempId"></temp-data>
             </div>
         </el-dialog>
         <!-- 运行用例弹窗 -->

@@ -70,7 +70,7 @@
         <!-- 详情弹窗 -->
         <el-dialog v-model='myDialog' width="90%" :title="caseId + ' ' + dataTitle">
             <!-- <div class="el-dialog-div"> -->
-            <case-data :case-data="thisCaseData" :case-id="caseId"></case-data>
+            <case-data v-if="myDialog" :case-data="thisCaseData" :case-id="caseId"></case-data>
             <!-- </div> -->
         </el-dialog>
         <!-- 运行用例弹窗 -->
