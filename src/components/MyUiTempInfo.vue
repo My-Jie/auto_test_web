@@ -26,8 +26,18 @@
             </el-table-column>
         </el-table>
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" title="Tips" width="40%">
+        <el-dialog v-model="dialogVisible" title="Tips" width="40%" @close='browserId = null'>
             <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
+            <br>
+            <br>
+            <el-form>
+                <el-form-item label="远程环境" label-width="100px">
+                    <el-select v-model="browserId" placeholder="选择环境" @visible-change="handleVisibleChange">
+                        <el-option v-for="item in browsers" :key="item.key" :label="item.value"
+                            :value="item.key"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
@@ -86,13 +96,35 @@ export default {
             projectName: '',
             uiTempValue: '',
 
-            dialogVisible: false
+            dialogVisible: false,
+            browsers: [],
+            browserId: null
         }
     },
 
     methods: {
         indexMethod(index) {
             return this.uiTempInfo[index]['id']
+        },
+        // 项目列表
+        async handleVisibleChange(val) {
+            if (!val) {
+                return
+            }
+            var browsers = []
+            await this.$http({
+                url: '/caseUi/get/remote/browsers',
+                method: 'GET',
+            }).then(
+                function (response) {
+                    browsers = response.data.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.browsers = browsers
         },
         // 模板详情数据
         async getUiTempData(row) {
@@ -182,8 +214,13 @@ export default {
                 offset: 200,
             })
             await this.$http({
-                url: '/runCase//ui/temp?temp_id=' + this.uiTempId,
+                url: '/runCase//ui/temp',
                 method: "POST",
+                params: {
+                    temp_id: this.uiTempId,
+                    remote: this.browserId ? true : false ,
+                    remote_id: this.browserId
+                }
             }).then(
                 function (response) {
                     var case_report = response.data.data
