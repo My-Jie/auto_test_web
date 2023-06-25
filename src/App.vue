@@ -58,7 +58,17 @@ export default {
 
       confData: {},
       uploadFileType: '',
-      fileType: ''
+      fileType: '',
+      uiTempValue: 'import allure\n' +
+        'from playwright.sync_api import Playwright, sync_playwright, expect\n' +
+        '# 在虚线框内粘贴录制好的playwright脚本，只需要run函数的内容，包含run函数\n' +
+        '#======================================\n' +
+        '\n\n\n' +
+        '#======================================\n' +
+        '@allure.title("{{case_name}}")  # 这个会自动替换，请勿修改\n' +
+        'def test_ui():\n' +
+        '\twith sync_playwright() as playwright:\n' +
+        '\t\trun(playwright)\n'
     }
   },
   provide() {
@@ -169,7 +179,7 @@ export default {
         // this.caseInfo[x].percentageStatus = 'success'
         // this.caseInfo[x].key_id = ''
         // 测试报告地址
-        // this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
+        this.uiTempInfo[x].allureReport = 'ui/allure/' + this.uiTempInfo[x].id + '/' + this.uiTempInfo[x].run_order + '/index.html'
         // this.caseInfo[x].repLoading = false
       }
 
@@ -395,7 +405,7 @@ export default {
       <!-- 编辑器 -->
       <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogMonaco = false' draggable>
-        <monaco-editor v-if="dialogMonaco" :ui-temp-value="'print(\'hello tester\')'"></monaco-editor>
+        <monaco-editor v-if="dialogMonaco" :ui-temp-value="uiTempValue"></monaco-editor>
       </el-dialog>
 
     </el-main>

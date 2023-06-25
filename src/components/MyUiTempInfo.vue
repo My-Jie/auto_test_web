@@ -7,9 +7,10 @@
             <el-table-column label="模板名称" prop="temp_name" align="center"></el-table-column>
             <el-table-column label="行数" prop="rows" align="center"></el-table-column>
             <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="300">
+            <el-table-column label="操作" align="center" width="400px">
                 <template #default="scope">
-                    <el-button type="success" plain :loading="scope.row.runLoading">运行</el-button>&nbsp;
+                    <el-button type="success" plain :loading="scope.row.runLoading"
+                        @click="getCaseInfo(scope.row)">运行</el-button>&nbsp;
                     <el-button-group class="ml-4">
                         <el-button type="primary" plain @click="getUiTempData(scope.row)"
                             :loading="scope.row.dataLoading">详情</el-button>
@@ -17,10 +18,23 @@
                             :loading="scope.row.CaseLoading">数据</el-button>
                     </el-button-group>&nbsp;
                     <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
+                    </el-button>&nbsp;
+                    <el-button type="Info" plain>
+                        <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
                     </el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 运行用例弹窗 -->
+        <el-dialog v-model="dialogVisible" title="Tips" width="40%">
+            <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="runCase(uiTempRow)">确认</el-button>
+                </span>
+            </template>
+        </el-dialog>
 
         <!-- 详情弹窗 -->
         <el-dialog v-model='dialogUiMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
@@ -70,7 +84,9 @@ export default {
             uiTempId: null,
             uiTempName: '',
             projectName: '',
-            uiTempValue: ''
+            uiTempValue: '',
+
+            dialogVisible: false
         }
     },
 
@@ -147,6 +163,62 @@ export default {
             row.delLoading = false
             this.delDialog = false
         },
+
+        getCaseInfo(row) {
+            this.dialogVisible = true
+            this.uiTempId = row.id
+            this.uiTempName = row.temp_name
+            this.uiTempRow = row
+        },
+
+        async runCase(row) {
+            this.dialogVisible = false
+            row.runLoading = true
+            var flag = false
+            var run_order = null
+            ElNotification.success({
+                title: 'Success',
+                message: '开始执行 用例ID: ' + this.uiTempId,
+                offset: 200,
+            })
+            await this.$http({
+                url: '/runCase//ui/temp?temp_id=' + this.uiTempId,
+                method: "POST",
+            }).then(
+                function (response) {
+                    var case_report = response.data.data
+                    row.runLoading = false
+                    flag = true
+                    run_order = response.data.run_order
+                    ElNotification({
+                        title: '测试报告',
+                        message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.id + ']的报告</a>',
+                        duration: 0,
+                        type: 'success',
+                        position: 'bottom-right',
+                        dangerouslyUseHTMLString: true,
+                    })
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+                ElNotification.error({
+                    title: 'Error',
+                    message: '执行失败 用例ID: ' + row.id,
+                    offset: 200,
+                })
+                row.runLoading = false
+            })
+            // 跟新用例数据
+            if (flag && run_order) {
+                for (var x in this.uiTempInfo) {
+                    if (this.uiTempInfo[x].id == row.id) {
+                        this.uiTempInfo[x].run_order = run_order
+                        this.uiTempInfo[x].allureReport = 'ui/allure/' + this.uiTempInfo[x].id + '/' + run_order + '/index.html'
+                        break
+                    }
+                }
+            }
+        }
     }
 }
 </script>
