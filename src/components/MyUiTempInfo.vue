@@ -26,7 +26,7 @@
             </el-table-column>
         </el-table>
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" title="Tips" width="40%" @close='browserId = null'>
+        <el-dialog v-model="dialogVisible" title="Tips" width="40%" @close='browserId = null, headless = true'>
             <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
             <br>
             <br>
@@ -34,6 +34,12 @@
                 <el-form-item label="远程环境" label-width="100px">
                     <el-select v-model="browserId" placeholder="选择环境" @visible-change="handleVisibleChange">
                         <el-option v-for="item in browsers" :key="item.key" :label="item.value"
+                            :value="item.key"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="无头运行" label-width="100px">
+                    <el-select v-model="headless" placeholder="选择环境" @visible-change="handleVisibleChange">
+                        <el-option v-for="item in headlessList" :key="item.key" :label="item.value"
                             :value="item.key"></el-option>
                     </el-select>
                 </el-form-item>
@@ -98,7 +104,9 @@ export default {
 
             dialogVisible: false,
             browsers: [],
-            browserId: null
+            browserId: null,
+            headless: true,
+            headlessList: [{ key: 'true', value: 'true' }, { key: 'false', value: 'false' }]
         }
     },
 
@@ -218,8 +226,9 @@ export default {
                 method: "POST",
                 params: {
                     temp_id: this.uiTempId,
-                    remote: this.browserId ? true : false ,
-                    remote_id: this.browserId
+                    remote: this.browserId ? true : false,
+                    remote_id: this.browserId,
+                    headless: this.headless
                 }
             }).then(
                 function (response) {
