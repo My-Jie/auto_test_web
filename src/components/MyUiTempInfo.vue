@@ -222,7 +222,7 @@ export default {
                 offset: 200,
             })
             await this.$http({
-                url: '/runCase//ui/temp',
+                url: '/runCase/ui/temp',
                 method: "POST",
                 params: {
                     temp_id: this.uiTempId,

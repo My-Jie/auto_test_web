@@ -179,7 +179,7 @@ export default {
         // this.caseInfo[x].percentageStatus = 'success'
         // this.caseInfo[x].key_id = ''
         // 测试报告地址
-        this.uiTempInfo[x].allureReport = 'ui/allure/' + this.uiTempInfo[x].id + '/' + this.uiTempInfo[x].run_order + '/index.html'
+        this.uiTempInfo[x].allureReport = '/ui/allure/' + this.uiTempInfo[x].id + '/' + this.uiTempInfo[x].run_order + '/index.html'
         // this.caseInfo[x].repLoading = false
       }
 
