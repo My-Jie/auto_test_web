@@ -74,7 +74,8 @@ export default {
   provide() {
     return {
       'get_temp': this.getTempInfo,
-      'get_case': this.getCaseInfo
+      'get_case': this.getCaseInfo,
+      'get_ui_case': this.getUiCaseInfo
     };
   },
   methods: {
@@ -374,10 +375,10 @@ export default {
       <el-backtop :right="100" :bottom="100" />
     </el-header>
     <el-main>
-      <my-temp-info v-show="clickStatus['isTemp']" :temp-info="tempInfo" :temp-total="tempTotal"></my-temp-info>
-      <my-case-info v-show="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
-      <my-ui-temp-info v-show="clickStatus['isUiTemp']" :ui-temp-info="uiTempInfo"
-        :case-total="uiTempTotal"></my-ui-temp-info>
+      <my-temp-info v-if="clickStatus['isTemp']" :temp-info="tempInfo" :temp-total="tempTotal"></my-temp-info>
+      <my-case-info v-if="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
+      <my-ui-temp-info v-if="clickStatus['isUiTemp']" :ui-temp-info="uiTempInfo"
+        :ui-temp-total="uiTempTotal"></my-ui-temp-info>
       <!-- 字段变更的弹窗 -->
       <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
         :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>

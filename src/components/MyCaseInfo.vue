@@ -168,6 +168,7 @@ export default {
             caseRow: null,
             gatherDialog: false,
             gatherData: [],
+            page: 1,
             size: 10,
             tempHosts: [],
             hosts: []
@@ -197,10 +198,11 @@ export default {
         // 调用父级方法
         async handleSizeChange(size) {
             this.size = size
-            await this.get_case(1, size)
+            await this.get_case(this.page, this.size)
         },
         async handleCurrentChange(page) {
-            await this.get_case(page, this.size)
+            this.page = page
+            await this.get_case(this.page, this.size)
         },
         stopCaseRun(row) {
             this.$http({

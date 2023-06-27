@@ -25,6 +25,11 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <br>
+        <el-pagination background :page-sizes="[10, 20, 50, 80, 100]" layout="total, jumper, prev, pager, next, sizes"
+            :total=uiTempTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+
         <!-- 运行用例弹窗 -->
         <el-dialog v-model="dialogVisible" title="Tips" width="40%" @close='browserId = null, headless = true'>
             <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
@@ -88,6 +93,8 @@ export default {
         'uiTempTotal': Number,
     },
 
+    inject: ["get_ui_case"],
+
     data() {
         return {
             loading: !this.uiTempInfo ? true : false,
@@ -106,13 +113,25 @@ export default {
             browsers: [],
             browserId: null,
             headless: true,
-            headlessList: [{ key: 'true', value: 'true' }, { key: 'false', value: 'false' }]
+            headlessList: [{ key: 'true', value: 'true' }, { key: 'false', value: 'false' }],
+
+            size: 10,
+            page: 1
         }
     },
 
     methods: {
         indexMethod(index) {
             return this.uiTempInfo[index]['id']
+        },
+        // 调用父级方法
+        async handleSizeChange(size) {
+            this.size = size
+            await this.get_ui_case(this.page, this.size)
+        },
+        async handleCurrentChange(page) {
+            this.page = page
+            await this.get_ui_case(this.page, this.size)
         },
         // 项目列表
         async handleVisibleChange(val) {

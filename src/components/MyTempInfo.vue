@@ -160,7 +160,8 @@ export default {
             affTempToCaseId: 99999,
             tempToCaseLoading: false,
             delDialog: false,
-            size: 10
+            size: 10,
+            page: 1
         }
     },
 
@@ -168,10 +169,11 @@ export default {
         // 调用父级方法
         async handleSizeChange(size) {
             this.size = size
-            await this.get_temp(1, this.size)
+            await this.get_temp(this.page, this.size)
         },
         async handleCurrentChange(page) {
-            await this.get_temp(page, this.size)
+            this.page = page
+            await this.get_temp(this.page, this.size)
         },
         async updateName(row) {
             row.checkLoading = true
