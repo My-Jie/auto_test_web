@@ -362,7 +362,7 @@ export default {
                 if (operate == 'add') {
                     row.loadingParamsAdd = true
                     await this.$http({
-                        url: 'ownRep/params/add',
+                        url: '/ownRep/params/add',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -397,7 +397,7 @@ export default {
                 } else if (operate == 'edit') {
                     row.loadingParamsEdit = true
                     await this.$http({
-                        url: 'ownRep/params/edit',
+                        url: '/ownRep/params/edit',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -441,7 +441,7 @@ export default {
                 } else if (operate == 'del') {
                     row.loadingParamsDel = true
                     await this.$http({
-                        url: 'ownRep/params/del',
+                        url: '/ownRep/params/del',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -477,7 +477,7 @@ export default {
                 if (operate == 'add') {
                     row.loadingDataAdd = true
                     await this.$http({
-                        url: 'ownRep/data/add',
+                        url: '/ownRep/data/add',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -512,7 +512,7 @@ export default {
                 } else if (operate == 'edit') {
                     row.loadingDataDel = true
                     await this.$http({
-                        url: 'ownRep/data/edit',
+                        url: '/ownRep/data/edit',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
@@ -556,7 +556,7 @@ export default {
                 } else if (operate == 'del') {
                     row.loadingDataDel = true
                     await this.$http({
-                        url: 'ownRep/data/del',
+                        url: '/ownRep/data/del',
                         method: 'PUT',
                         data: JSON.stringify({
                             temp_id: row.temp_id,
