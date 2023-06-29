@@ -13,8 +13,8 @@
                         @click="getCaseInfo(scope.row)">运行</el-button>&nbsp;
                     <el-button-group class="ml-4">
                         <el-button type="primary" plain @click="getUiTempData(scope.row)"
-                            :loading="scope.row.dataLoading">详情</el-button>
-                        <el-button type="primary" plain @click="getUiCaseData(scope.row)"
+                            :loading="scope.row.dataLoading">编辑</el-button>
+                        <el-button type="primary" plain @click="getUiCaseData(scope.row.id)"
                             :loading="scope.row.CaseLoading">数据</el-button>
                     </el-button-group>&nbsp;
                     <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
@@ -31,7 +31,8 @@
             :total=uiTempTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" title="Tips" width="40%" @close='browserId = null, headless = true'>
+        <el-dialog v-model="dialogVisible" title="Tips" width="40%"
+            @close='browserId = null, headless = true, gatherId = null'>
             <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
             <br>
             <br>
@@ -43,8 +44,14 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="无头运行" label-width="100px">
-                    <el-select v-model="headless" placeholder="选择环境" @visible-change="handleVisibleChange">
+                    <el-select v-model="headless" placeholder="无头运行">
                         <el-option v-for="item in headlessList" :key="item.key" :label="item.value"
+                            :value="item.key"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="选择用例" label-width="100px">
+                    <el-select v-model="gatherId" placeholder="选择用例" @visible-change="getUiCaseName">
+                        <el-option v-for="item in gathers" :key="item.key" :label="item.value"
                             :value="item.key"></el-option>
                     </el-select>
                 </el-form-item>
@@ -57,11 +64,34 @@
             </template>
         </el-dialog>
 
-        <!-- 详情弹窗 -->
+        <!-- 编辑器弹窗 -->
         <el-dialog v-model='dialogUiMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
             :close-on-press-escape=false @close='dialogUiMonaco = false' draggable>
             <monaco-editor v-if="dialogUiMonaco" :ui-temp-id="uiTempId" :ui-temp-name="uiTempName"
                 :project-name="projectName" :ui-temp-value="uiTempValue"></monaco-editor>
+        </el-dialog>
+
+        <!-- 数据详情的弹窗 -->
+        <el-dialog v-model="dialogGather" title="Tips" width="60%" @close='dialogGather = false' :close-on-click-modal=false
+            :close-on-press-escape=false>
+            <el-table v-loading='loading' :data="gatherInfo" row-key="case_id" stripe fit>
+                <el-table-column label="CaseId" prop="id" type="index" :index="indexMethodGather" width="100%"
+                    align="center"></el-table-column>
+                <el-table-column label="用例名称" prop="case_name" width="150px">
+                </el-table-column>
+                <el-table-column label="Gather" prop="rows_data" show-overflow-tooltip='true'>
+                    <template #default="scope">
+                        <div>{{ JSON.stringify(scope.row.rows_data, null, 1) }}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建时间" prop="created_at" align="center" width="200px"></el-table-column>
+            </el-table>
+
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogGather = false">关闭</el-button>
+                </span>
+            </template>
         </el-dialog>
 
         <!-- 删除的窗口 -->
@@ -110,11 +140,15 @@ export default {
             uiTempValue: '',
 
             dialogVisible: false,
+            dialogGather: false,
             browsers: [],
             browserId: null,
             headless: true,
             headlessList: [{ key: 'true', value: 'true' }, { key: 'false', value: 'false' }],
+            gathers: [],
+            gatherId: null,
 
+            gatherInfo: [],
             size: 10,
             page: 1
         }
@@ -123,6 +157,10 @@ export default {
     methods: {
         indexMethod(index) {
             return this.uiTempInfo[index]['id']
+        },
+
+        indexMethodGather(index) {
+            return this.gatherInfo[index]['id']
         },
         // 调用父级方法
         async handleSizeChange(size) {
@@ -179,8 +217,51 @@ export default {
             this.uiTempValue = temp_.text
         },
         // 测试详情数据
-        async getUiCaseData(row) {
+        async getUiCaseData(row_id) {
+            var flag = false
+            var gather = []
+            await this.$http({
+                url: '/caseUi/get/playwright/gather/' + row_id,
+                method: 'GET',
+            }).then(
+                function (response) {
+                    gather = response.data
+                    flag = true
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
 
+            if (flag) {
+                this.gatherInfo = gather
+                this.dialogGather = true
+            }
+        },
+
+        async getUiCaseName(val) {
+            if (!val) {
+                return
+            }
+            var flag = false
+            var gather = []
+            await this.$http({
+                url: '/caseUi/get/playwright/gather/' + this.uiTempId,
+                method: 'GET',
+            }).then(
+                function (response) {
+                    gather = response.data
+                    flag = true
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+
+            if (flag) {
+                this.gathers = []
+                for (var x in gather) {
+                    this.gathers.push({ "key": gather[x].id, "value": gather[x].case_name })
+                }
+            }
         },
 
         // 删除窗口
@@ -243,11 +324,15 @@ export default {
             await this.$http({
                 url: '/runCase/ui/temp',
                 method: "POST",
-                params: {
+                data: JSON.stringify({
                     temp_id: this.uiTempId,
                     remote: this.browserId ? true : false,
                     remote_id: this.browserId,
-                    headless: this.headless
+                    headless: this.headless,
+                    gather_id: this.gatherId
+                }),
+                headers: {
+                    'content-type': "application/json"
                 }
             }).then(
                 function (response) {
