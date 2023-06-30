@@ -14,7 +14,7 @@
                     <el-button-group class="ml-4">
                         <el-button type="primary" plain @click="getUiTempData(scope.row)"
                             :loading="scope.row.dataLoading">编辑</el-button>
-                        <el-button type="primary" plain @click="getUiCaseData(scope.row.id)"
+                        <el-button type="primary" plain @click="getUiCaseData(scope.row)"
                             :loading="scope.row.CaseLoading">数据</el-button>
                     </el-button-group>&nbsp;
                     <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
@@ -90,6 +90,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogGather = false">关闭</el-button>
+                    <el-button type="primary" @click="downExcel()" :loading="downExcelLoading">下载</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -150,7 +151,8 @@ export default {
 
             gatherInfo: [],
             size: 10,
-            page: 1
+            page: 1,
+            downExcelLoading: false,
         }
     },
 
@@ -217,11 +219,13 @@ export default {
             this.uiTempValue = temp_.text
         },
         // 测试详情数据
-        async getUiCaseData(row_id) {
+        async getUiCaseData(row) {
+            this.uiTempId = row.id
+            this.uiTempName = row.temp_name
             var flag = false
             var gather = []
             await this.$http({
-                url: '/caseUi/get/playwright/gather/' + row_id,
+                url: '/caseUi/get/playwright/gather/' + row.id,
                 method: 'GET',
             }).then(
                 function (response) {
@@ -368,7 +372,28 @@ export default {
                     }
                 }
             }
-        }
+        },
+        // 下载数据excel
+        async downExcel() {
+
+            var localUiTempName = this.uiTempName
+            await this.$http({
+                url: '/caseUi/down/playwright/data/' + this.uiTempId,
+                method: 'GET',
+                responseType: 'blob'
+            }).then(
+                function (response) {
+                    var blobUrl = window.URL.createObjectURL(new Blob([response.data]))
+                    var link = document.createElement('a')
+                    link.href = blobUrl
+                    link.setAttribute('download', localUiTempName + '.xlsx')
+                    document.body.appendChild(link)
+                    link.click()
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+            })
+        },
     }
 }
 </script>
