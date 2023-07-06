@@ -5,6 +5,7 @@
         <el-table-column label="number" prop="number" type="index" :index="indexMethod" width="80px"
             align="center"></el-table-column>
         <el-table-column label="host" prop="host" width="300px"></el-table-column>
+        <el-table-column label="description" prop="description" width="300px"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <el-table-column label="method" prop="method" width="100%" align="center"></el-table-column>
         <el-table-column label="code" prop="code" width="100%" align="center"></el-table-column>
@@ -29,7 +30,7 @@
                 <div>{{ JSON.stringify(scope.row.response, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" align="center">
+        <el-table-column label="操作" width="150" align="center" fixed="right">
             <template #default="scope">
                 <!-- 编辑操作 -->
                 <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit && !scope.row.EditDisabled"
@@ -57,7 +58,7 @@
         <el-button type="success" @click="curlDialog = true">解析CURL</el-button>
         <br>
         <br>
-        <el-form v-model="tempInfo" label-width="65px">
+        <el-form v-model="tempInfo" label-width="75px">
             <el-form-item label="Host" prop="host" :required="true">
                 <el-input v-model="tempInfo.host"></el-input>
             </el-form-item>
@@ -77,6 +78,9 @@
             </el-form-item>
             <el-form-item label="Code" :required="true">
                 <el-input v-model="tempInfo.code" style="width: 115px"></el-input>
+            </el-form-item>
+            <el-form-item label="Description" prop="description" >
+                <el-input v-model="tempInfo.description"></el-input>
             </el-form-item>
             <el-button type="info" @click="initData()">初始化</el-button>
             <el-button type="success" @click="formatData()">格式化</el-button>
@@ -178,7 +182,7 @@ export default {
             var curlList = this.curlData.split("\\")
 
             for (var x in curlList) {
-                var newStr =curlList[x].trim()
+                var newStr = curlList[x].trim()
                 if (x == 0) {
                     console.log(newStr.match(/\'(.*?)\'/g));
                 } else {
@@ -201,6 +205,7 @@ export default {
                 data: {},
                 headers: {},
                 response: {},
+                description: '',
                 edit: false,
                 EditDisabled: false,
                 del: false,
@@ -241,7 +246,8 @@ export default {
                     file: false,
                     file_data: [],
                     headers: this.tempInfo.headers,
-                    response: this.tempInfo.response
+                    response: this.tempInfo.response,
+                    description: this.tempInfo.description
                 }
                 if (this.tempInfo.add) {
                     await this.$http({
@@ -292,7 +298,7 @@ export default {
 
                 scope.row.edit = false
                 scope.row.delDisabled = false
-                scope.row.checkLoading = true
+                scope.row.checkLoading = false
             } else {
                 this.tempDialog = true
             }
