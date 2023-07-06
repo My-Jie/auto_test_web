@@ -65,7 +65,7 @@ export default {
         '#======================================\n' +
         '\n\n\n' +
         '#======================================\n' +
-        '@allure.title("{{case_name}}")  # 这个会自动替换，请勿修改\n' +
+        '@allure.title("case_name")  # 这个会自动替换，请勿修改\n' +
         'def test_ui():\n' +
         '\twith sync_playwright() as playwright:\n' +
         '\t\trun(playwright)\n'
@@ -96,7 +96,7 @@ export default {
     },
 
     // 获取模板信息
-    async getTempInfo(page_ = 1, size_ = 10) {
+    async getTempInfo(page_ = 1, size_ = 10, temp_name_ = null) {
       // 关闭定时器
       this.end()
 
@@ -110,6 +110,7 @@ export default {
           outline: false,
           page: page_,
           size: size_,
+          temp_name: temp_name_
         }
       }).then(
         function (response) {
@@ -142,7 +143,7 @@ export default {
 
     },
 
-    async getUiCaseInfo(page_ = 1, size_ = 10) {
+    async getUiCaseInfo(page_ = 1, size_ = 10, temp_name_ = null) {
       // 关闭定时器
       this.end()
 
@@ -156,6 +157,7 @@ export default {
         params: {
           page: page_,
           size: size_,
+          temp_name: temp_name_,
         }
       }).then(
         function (response) {
@@ -196,7 +198,7 @@ export default {
     },
 
     // 获取用例信息
-    async getCaseInfo(page_ = 1, size_ = 10) {
+    async getCaseInfo(page_ = 1, size_ = 10, case_name_ = null) {
       this.caseInfoLoading = true
       var case_ = []
       var caseTotal = 0
@@ -207,6 +209,7 @@ export default {
           outline: false,
           page: page_,
           size: size_,
+          case_name: case_name_,
         }
       }).then(
         function (response) {

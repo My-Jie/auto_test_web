@@ -1,5 +1,14 @@
 <template>
     <div>
+        <el-input v-model="likeCaseName" placeholder="按用例名称模糊查询" @keyup.enter.native="get_case(page, size, likeCaseName)">
+            <template #prepend>模板名称</template>
+            <template #append>
+                <el-button plain @click="get_case(page, size, likeCaseName)">搜索</el-button>
+            </template>
+        </el-input>
+        <br>
+        <br>
+
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
             <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
@@ -11,7 +20,9 @@
             </el-table-column>
             <el-table-column label="用例名称" prop="name" width="500px">
                 <template #default="scope">
-                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-{{ scope.row.case_name }}</div>
+                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#3375b9">{{
+                        scope.row.case_name }}</font>
+                    </div>
                     <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"
                         @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
@@ -170,6 +181,7 @@ export default {
             gatherData: [],
             page: 1,
             size: 10,
+            likeCaseName: null,
             tempHosts: [],
             hosts: []
         }

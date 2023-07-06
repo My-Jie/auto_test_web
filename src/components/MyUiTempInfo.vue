@@ -1,5 +1,15 @@
 <template>
     <div>
+        <el-input v-model="likeTempName" placeholder="按模板名称模糊查询"
+            @keyup.enter.native="get_ui_case(page, size, likeTempName)">
+            <template #prepend>模板名称</template>
+            <template #append>
+                <el-button plain @click="get_ui_case(page, size, likeTempName)">搜索</el-button>
+            </template>
+        </el-input>
+        <br>
+        <br>
+
         <el-table v-loading='loading' :data="uiTempInfo" stripe fit>
             <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
@@ -152,6 +162,7 @@ export default {
             gatherInfo: [],
             size: 10,
             page: 1,
+            likeTempName: null,
             downExcelLoading: false,
         }
     },

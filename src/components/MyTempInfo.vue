@@ -1,9 +1,18 @@
 <template>
     <div>
+        <el-input v-model="likeTempName" placeholder="按模板名称模糊查询" @keyup.enter.native="get_temp(page, size, likeTempName)">
+            <template #prepend>模板名称</template>
+            <template #append>
+                <el-button plain @click="get_temp(page, size, likeTempName)">搜索</el-button>
+            </template>
+        </el-input>
+        <br>
+        <br>
         <!-- 模板列表 -->
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
             <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
+            <el-table-column label="项目名称" prop="project_name" align="center" width="100"></el-table-column>
             <el-table-column label="" width="40" align="center">
                 <template #default="scope">
                     <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
@@ -17,7 +26,7 @@
                         @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>
+
             <el-table-column label="API数量" prop="api_count" align="center"></el-table-column>
             <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
@@ -161,7 +170,8 @@ export default {
             tempToCaseLoading: false,
             delDialog: false,
             size: 10,
-            page: 1
+            page: 1,
+            likeTempName: null
         }
     },
 
