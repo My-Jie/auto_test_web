@@ -179,11 +179,11 @@ export default {
         // 调用父级方法
         async handleSizeChange(size) {
             this.size = size
-            await this.get_temp(this.page, this.size)
+            await this.get_temp(this.page, this.size, this.likeTempName)
         },
         async handleCurrentChange(page) {
             this.page = page
-            await this.get_temp(this.page, this.size)
+            await this.get_temp(this.page, this.size, this.likeTempName)
         },
         async updateName(row) {
             row.checkLoading = true

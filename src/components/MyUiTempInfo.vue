@@ -1,7 +1,6 @@
 <template>
     <div>
-        <el-input v-model="likeTempName" placeholder="按模板名称模糊查询"
-            @keyup.enter.native="get_ui_case(page, size, likeTempName)">
+        <el-input v-model="likeTempName" placeholder="按模板名称模糊查询" @keyup.enter.native="get_ui_case(page, size, likeTempName)">
             <template #prepend>模板名称</template>
             <template #append>
                 <el-button plain @click="get_ui_case(page, size, likeTempName)">搜索</el-button>
@@ -178,11 +177,11 @@ export default {
         // 调用父级方法
         async handleSizeChange(size) {
             this.size = size
-            await this.get_ui_case(this.page, this.size)
+            await this.get_ui_case(this.page, this.size, this.likeTempName)
         },
         async handleCurrentChange(page) {
             this.page = page
-            await this.get_ui_case(this.page, this.size)
+            await this.get_ui_case(this.page, this.size, this.likeTempName)
         },
         // 项目列表
         async handleVisibleChange(val) {
