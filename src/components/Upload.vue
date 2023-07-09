@@ -214,3 +214,56 @@ export default {
     }
 }
 </script>
+
+<style>
+/* 弹窗的 */
+.el-dialog__body {
+    background: url('../assets/upload.png');
+    background-size: cover;
+}
+
+.el-radio-group {
+    --el-color-primary: rgba(225, 57, 110, 1);
+    color: black;
+}
+
+.el-upload-dragger {
+    opacity: 0.8;
+}
+
+.el-form-item.is-required.asterisk-left {
+    opacity: 0.8;
+}
+
+.el-form-item.asterisk-left {
+    opacity: 0.8;
+}
+
+.el-radio-button {
+    opacity: 0.8;
+}
+
+.el-tabs__content {
+    opacity: 0.8;
+}
+
+.el-textarea__inner {
+    opacity: 0.8;
+}
+
+.el-transfer-panel {
+    opacity: 0.8;
+}
+
+.el-input.el-input-group.el-input-group--prepend {
+    opacity: 0.8;
+}
+
+.monaco-editor.no-user-select.showUnused.showDeprecated.vs-dark {
+    opacity: 0.8;
+}
+
+.demo-collapse {
+    opacity: 0.8;
+}
+</style>

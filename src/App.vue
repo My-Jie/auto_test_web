@@ -10,7 +10,7 @@ import MonacoEditor from "./components/MonacoEditor.vue"
 import MyUiTempInfo from "./components/MyUiTempInfo.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
-import { useDark, useToggle } from '@vueuse/core'
+// import { useDark, useToggle } from '@vueuse/core'
 export default {
   components: {
     MyTempInfo,
@@ -50,7 +50,7 @@ export default {
       confWholeLoading: false,
       confWholeCheckLoading: false,
       caseStatus: false,
-      isDark: useDark(),
+      // isDark: useDark(),
 
       tempTotal: 0,
       caseTotal: 0,
@@ -332,9 +332,9 @@ export default {
     },
 
     // 暗黑模式
-    toggleDark() {
-      useToggle(this.isDark)
-    },
+    // toggleDark() {
+    //   useToggle(this.isDark)
+    // },
   }
 }
 </script>
@@ -344,7 +344,7 @@ export default {
   <el-container>
     <el-header>
       <el-affix :offset="10">
-        <el-button-group class="ml-4">
+        <el-button-group>
           <!-- 模板信息 -->
           <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">API模板列表</el-button>
           <!-- 用例信息 -->
@@ -372,12 +372,12 @@ export default {
         </el-button-group>
 
         <!-- 开关灯 -->
-        <span @click.stop="toggleDark()"></span>
-        <el-switch size="small" v-model="isDark" />
+        <!-- <span @click.stop="toggleDark()"></span>
+        <el-switch size="small" v-model="isDark" /> -->
       </el-affix>
       <el-backtop :right="100" :bottom="100" />
     </el-header>
-    <el-main>
+    <el-main class="main">
       <my-temp-info v-if="clickStatus['isTemp']" :temp-info="tempInfo" :temp-total="tempTotal"></my-temp-info>
       <my-case-info v-if="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
       <my-ui-temp-info v-if="clickStatus['isUiTemp']" :ui-temp-info="uiTempInfo"
@@ -422,6 +422,51 @@ export default {
   position: absolute;
   right: 80px;
 }
+
+main {
+  background-color: rgba(192, 192, 192, 0.6);
+  border-radius: 20px
+}
+
+.el-button--primary {
+  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
+  --el-button-bg-color: rgba(225, 57, 110, 1);
+  --el-button-hover-bg-color: rgba(225, 57, 110, 1);
+  --el-button-active-border-color: rgba(225, 57, 110, 1);
+  --el-button-active-bg-color: rgba(225, 57, 110, 1);
+  --el-button-border-color: none;
+  color: rgb(13, 1, 28);
+}
+
+.el-button--success {
+  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
+  --el-button-bg-color: rgba(72, 121, 135, 1);
+  --el-button-hover-bg-color: rgba(72, 121, 135, 1);
+  --el-button-active-border-color: rgba(72, 121, 135, 1);
+  --el-button-active-bg-color: rgba(72, 121, 135, 1);
+  --el-button-border-color: none;
+  color: rgb(13, 1, 28);
+}
+
+.el-button--warning {
+  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
+  --el-button-bg-color: rgba(178, 118, 130, 1);
+  --el-button-hover-bg-color: rgba(178, 118, 130, 1);
+  --el-button-active-border-color: rgba(178, 118, 130, 1);
+  --el-button-active-bg-color: rgba(178, 118, 130, 1);
+  --el-button-border-color: none;
+  color: rgb(13, 1, 28);
+}
+
+
+
+
+
+
+/* .el-button--primary:hover {
+  --el-button-hover-bg-color: rgba(225, 57, 110, 1);
+} */
+
 
 /* .logo {
   height: 6em;

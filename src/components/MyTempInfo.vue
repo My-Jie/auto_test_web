@@ -454,7 +454,7 @@ export default {
 </script>
 
 
-<style>
+<style sc>
 .el-upload-demo {
     height: 220px;
     width: 100%;
@@ -474,5 +474,63 @@ export default {
 .el-dialog-div {
     height: 65vh;
     overflow: auto;
+}
+
+.el-upload-dragger {
+    opacity: 0.8;
+}
+
+.el-form-item.is-required.asterisk-left {
+    opacity: 0.8;
+}
+
+
+.el-button.el-button--success.is-plain {
+    background-color: rgba(72, 121, 135, 1);
+    color: black;
+}
+
+.el-button.el-button--success.ml-2 {
+    background-color: rgba(72, 121, 135, 1);
+    color: black;
+}
+
+.el-button.el-button--success.el-button--small {
+    background-color: rgba(72, 121, 135, 1);
+    color: black;
+}
+
+.el-button.el-button--primary.is-plain {
+    background-color: rgba(225, 57, 110, 1);
+    color: black;
+}
+
+.el-button.el-button--primary.is-disabled.el-transfer__button.is-with-texts {
+    background-color: rgba(225, 57, 110, 1);
+    color: black;
+}
+
+
+
+.el-button.el-button--primary {
+    --el-button-bg-color: rgba(225, 57, 110, 1);
+    --el-button-hover-bg-color: rgba(225, 57, 110, 1);
+    --el-button-active-border-color: rgba(225, 57, 110, 1);
+    --el-button-active-bg-color: rgba(225, 57, 110, 1);
+    --el-button-border-color: none;
+    color: rgb(13, 1, 28);
+}
+
+.el-table,
+.el-table__expanded-cell {
+    /* background-color: rgba(209, 18, 69, 0.5); */
+    opacity: 0.8;
+}
+
+.el-table th,
+.el-table tr,
+.el-table td {
+    /* background-color: rgba(155, 17, 54, 0.5); */
+    opacity: 0.8;
 }
 </style>
