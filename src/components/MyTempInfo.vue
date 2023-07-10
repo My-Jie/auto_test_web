@@ -571,14 +571,12 @@ export default {
 
 .el-table,
 .el-table__expanded-cell {
-    /* background-color: rgba(209, 18, 69, 0.5); */
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
-.el-table th,
+/* .el-table th,
 .el-table tr,
 .el-table td {
-    /* background-color: rgba(155, 17, 54, 0.5); */
     opacity: 0.8;
-}
+} */
 </style>

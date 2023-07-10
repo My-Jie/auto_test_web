@@ -266,4 +266,9 @@ export default {
 .demo-collapse {
     opacity: 0.8;
 }
+
+.el-pagination.is-background {
+    opacity: 0.8;
+    color: black;
+}
 </style>
