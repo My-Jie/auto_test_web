@@ -1,15 +1,10 @@
 ### 随便测测
 
-* 博客：https://blog.csdn.net/yangj507/article/details/129739836
-
-* 使用说明：https://docs.qq.com/doc/DZkJySHlzWEJnWWds
-
+* 博客：https://blog.csdn.net/yangj507/category_12359965.html
 * 后端：https://gitee.com/myjiee/fast-api_auto_test
-
+* 后端：https://github.com/My-Jie/FastApi_auto_test
 * 主页：http://localhost:8000/index.html
-
 * swagger-ui: http://localhost:8000/docs
-
 
 ### 来点图片
 ![image](img/1688977498157.jpg)
