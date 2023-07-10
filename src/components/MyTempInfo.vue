@@ -485,6 +485,7 @@ export default {
 }
 
 
+
 .el-button.el-button--success.is-plain {
     background-color: rgba(72, 121, 135, 1);
     color: black;
@@ -519,6 +520,53 @@ export default {
     --el-button-active-bg-color: rgba(225, 57, 110, 1);
     --el-button-border-color: none;
     color: rgb(13, 1, 28);
+}
+
+
+.el-button.el-button--success {
+    --el-button-hover-bg-color: rgba(72, 121, 135, 1);
+    --el-button-active-border-color: rgba(72, 121, 135, 1);
+    --el-button-active-bg-color: rgba(72, 121, 135, 1);
+    --el-button-border-color: none;
+    background-color: rgba(72, 121, 135, 1);
+    color: black;
+
+}
+
+.el-button.el-button--warning {
+    --el-button-hover-bg-color: rgba(178, 118, 130, 1);
+    --el-button-active-border-color: rgba(178, 118, 130, 1);
+    --el-button-active-bg-color: rgba(178, 118, 130, 1);
+    --el-button-border-color: none;
+    background-color: rgba(178, 118, 130, 1);
+    color: black;
+}
+
+.el-button.el-button--info {
+    --el-button-hover-bg-color: rgba(150, 145, 146, 1);
+    --el-button-active-border-color: rgba(150, 145, 146, 1);
+    --el-button-active-bg-color: rgba(150, 145, 146, 1);
+    --el-button-border-color: none;
+    background-color: rgba(150, 145, 146, 1);
+    color: black;
+}
+
+
+.el-button.el-button--danger {
+    --el-button-hover-bg-color: rgba(114, 4, 26, 1);
+    --el-button-active-border-color: rgba(114, 4, 26, 1);
+    --el-button-active-bg-color: rgba(114, 4, 26, 1);
+    --el-button-border-color: none;
+    background-color: rgba(114, 4, 26, 1);
+    color: #ffffff;
+}
+
+
+
+.el-notification.right {
+    background: url('../assets/xp.png');
+    background-size: cover;
+    /* color: #fff; */
 }
 
 .el-table,
