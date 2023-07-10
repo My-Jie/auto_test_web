@@ -11,6 +11,15 @@
 * swagger-ui: http://localhost:8000/docs
 
 
+### 来点图片
+[image](img/1688977498157.jpg)
+[image](img/1688977578863.jpg)
+[image](img/1688977598877.jpg)
+[image](img/1688977622112.jpg)
+[image](img/1688977709859.jpg)
+[image](img/1688977872578.jpg)
+
+
 ### 部署方式
 
 #### Python 后端
