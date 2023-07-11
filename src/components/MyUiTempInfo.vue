@@ -14,8 +14,11 @@
                 align="center"></el-table-column>
             <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>
             <el-table-column label="模板名称" prop="temp_name" align="center"></el-table-column>
-            <el-table-column label="行数" prop="rows" align="center"></el-table-column>
-            <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
+            <el-table-column label="行数" prop="rows" width="50px" align="center"></el-table-column>
+            <el-table-column label="运行" prop="run_order" width="50px" align="center"></el-table-column>
+            <el-table-column label="成功" prop="success" width="50px" align="center"></el-table-column>
+            <el-table-column label="失败" prop="fail" width="50px" align="center"></el-table-column>
+            <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="操作" align="center" width="400px">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading"
@@ -330,6 +333,8 @@ export default {
             row.runLoading = true
             var flag = false
             var run_order = null
+            var success = null 
+            var fail = null
             ElNotification.success({
                 title: 'Success',
                 message: '开始执行 用例ID: ' + this.uiTempId,
@@ -353,7 +358,10 @@ export default {
                     var case_report = response.data.data
                     row.runLoading = false
                     flag = true
-                    run_order = response.data.run_order
+                    run_order = case_report.run_order
+                    success = case_report.success
+                    fail = case_report.fail
+                    console.log(run_order);
                     ElNotification({
                         title: '测试报告',
                         message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.id + ']的报告</a>',
@@ -377,6 +385,8 @@ export default {
                 for (var x in this.uiTempInfo) {
                     if (this.uiTempInfo[x].id == row.id) {
                         this.uiTempInfo[x].run_order = run_order
+                        this.uiTempInfo[x].success = success
+                        this.uiTempInfo[x].fail = fail
                         this.uiTempInfo[x].allureReport = 'ui/allure/' + this.uiTempInfo[x].id + '/' + run_order + '/index.html'
                         break
                     }

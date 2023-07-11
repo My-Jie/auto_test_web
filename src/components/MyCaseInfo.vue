@@ -18,7 +18,7 @@
                     <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
                 </template>
             </el-table-column>
-            <el-table-column label="用例名称" prop="name" width="500px">
+            <el-table-column label="用例名称" prop="name" width="450px">
                 <template #default="scope">
                     <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#3375b9">{{
                         scope.row.case_name }}</font>
@@ -27,8 +27,10 @@
                         @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="API数量" prop="api_count" width="100%" align="center"></el-table-column>
-            <el-table-column label="运行次数" prop="run_order" align="center"></el-table-column>
+            <el-table-column label="API数量" prop="api_count" width="60px" align="center"></el-table-column>
+            <el-table-column label="运行" prop="run_order" width="50px" align="center"></el-table-column>
+            <el-table-column label="成功" prop="success" width="50px" align="center"></el-table-column>
+            <el-table-column label="失败" prop="fail" width="50px" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="进度">
                 <template #default="scope">
@@ -497,6 +499,8 @@ export default {
             row.runLoading = true
             var flag = false
             var run_order = null
+            var success = null 
+            var fail = null
             ElNotification.success({
                 title: 'Success',
                 message: '开始执行 用例ID: ' + row.case_id,
@@ -538,6 +542,8 @@ export default {
                         }
                         flag = true
                         run_order = case_report.run_order
+                        success = case_report.success
+                        fail = case_report.fail
 
                     } else {
                         ElNotification.error({
@@ -561,6 +567,8 @@ export default {
                 for (var x in this.caseInfo) {
                     if (this.caseInfo[x].case_id == row.case_id) {
                         this.caseInfo[x].run_order = run_order
+                        this.caseInfo[x].success = success
+                        this.caseInfo[x].fail = fail
                         this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + run_order + '/index.html'
                         break
                     }
