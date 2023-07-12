@@ -116,8 +116,8 @@ export default {
     name: 'MyUpload',
 
     props: {
-        'uploadType': String,
-        'fileType': String
+        'uploadType_': String,
+        'fileType_': String
     },
 
     data() {
@@ -129,8 +129,8 @@ export default {
             projectName: '',
             // 上传的基本信息
             uploadUrl: '',
-            uploadType: this.uploadType,
-            fileType: this.fileType,
+            uploadType: this.uploadType_,
+            fileType: this.fileType_,
             // 用例
             tempId: '',
             caseId: null,
@@ -270,5 +270,25 @@ export default {
 .el-pagination.is-background {
     opacity: 0.8;
     color: black;
+}
+
+.el-collapse-item__header {
+    opacity: 0.8;
+}
+
+.el-collapse-item__wrap {
+    opacity: 0.8;
+}
+
+.el-table__body-wrapper {
+    color: black;
+}
+
+.el-pagination__total.is-first {
+    color: #fff
+}
+
+.el-pagination__goto {
+    color: #fff
 }
 </style>

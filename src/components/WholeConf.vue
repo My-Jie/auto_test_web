@@ -194,3 +194,17 @@ export default {
 }
 </script>
 
+<style>
+.el-input__inner {
+    color: black;
+}
+
+.el-form-item__label {
+    color: black;
+}
+
+.el-table__body-wrapper {
+    color: black;
+}
+
+</style>

@@ -14,10 +14,10 @@
                 align="center"></el-table-column>
             <el-table-column label="项目名称" prop="project_name" align="center"></el-table-column>
             <el-table-column label="模板名称" prop="temp_name" align="center"></el-table-column>
-            <el-table-column label="行数" prop="rows" width="50px" align="center"></el-table-column>
-            <el-table-column label="运行" prop="run_order" width="50px" align="center"></el-table-column>
-            <el-table-column label="成功" prop="success" width="50px" align="center"></el-table-column>
-            <el-table-column label="失败" prop="fail" width="50px" align="center"></el-table-column>
+            <el-table-column label="行数" prop="rows" width="60px" align="center"></el-table-column>
+            <el-table-column label="运行" prop="run_order" width="60px" align="center"></el-table-column>
+            <el-table-column label="成功" prop="success" width="60px" align="center"></el-table-column>
+            <el-table-column label="失败" prop="fail" width="60px" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="操作" align="center" width="400px">
                 <template #default="scope">

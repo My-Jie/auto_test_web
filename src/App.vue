@@ -8,6 +8,9 @@ import MyTransfer from "./components/MyTransfer.vue"
 import MyWholeConf from './components/WholeConf.vue'
 import MonacoEditor from "./components/MonacoEditor.vue"
 import MyUiTempInfo from "./components/MyUiTempInfo.vue"
+import MyEcharts from "./components/MyEcharts.vue"
+import MyEchartsFree from "./components/MyEchartsFree.vue"
+import MyStatistic from "./components/MyStatistic.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 // import { useDark, useToggle } from '@vueuse/core'
@@ -21,6 +24,9 @@ export default {
     MyWholeConf,
     MonacoEditor,
     MyUiTempInfo,
+    MyEcharts,
+    MyEchartsFree,
+    MyStatistic
   },
   data() {
     return {
@@ -68,7 +74,16 @@ export default {
         '@allure.title("case_name")  # 这个会自动替换，请勿修改\n' +
         'def test_ui():\n' +
         '\twith sync_playwright() as playwright:\n' +
-        '\t\trun(playwright)\n'
+        '\t\trun(playwright)\n',
+      echarts: false,
+      freeEcharts: false,
+      echartsLoading: false,
+      freeEchartsLoading: false,
+      apiEcharts: [],
+      uiEcharts: [],
+      apiFree: null,
+      uiFree: null,
+      ifMain: false
     }
   },
   provide() {
@@ -95,10 +110,110 @@ export default {
       this.timer = null
     },
 
+    //获取计数图
+    async getECharts() {
+      this.freeEcharts = false
+      this.echartsLoading = true
+      // 请求api统计数据
+      var apiEcharts = []
+      await this.$http({
+        url: '/statistic/data/case/echarts',
+        method: 'GET',
+        params: {
+          page: 1,
+          size: 1000
+        }
+      }).then(
+        function (response) {
+          apiEcharts = response.data
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.apiEcharts = apiEcharts
+
+      // 请求ui统计数据
+      var uiEcharts = []
+      await this.$http({
+        url: '/statistic/get/playwright/echarts',
+        method: 'GET',
+        params: {
+          page: 1,
+          size: 1000
+        }
+      }).then(
+        function (response) {
+          uiEcharts = response.data
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.uiEcharts = uiEcharts
+      this.echartsLoading = false
+
+      // 所有的状态都改为false
+      for (var x in this.clickStatus) {
+        this.clickStatus[x] = false
+      }
+      this.echarts = true
+      this.ifMain = true
+    },
+
+    async getEChartsFree() {
+      this.echarts = false
+      this.freeEchartsLoading = true
+
+      // 请求api树形数据
+      var apiEcharts = []
+      await this.$http({
+        url: '/statistic/api/charts/free',
+        method: 'GET',
+        params: {
+          page: 1,
+          size: 1000
+        }
+      }).then(
+        function (response) {
+          apiEcharts = response.data
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.apiFree = apiEcharts
+
+      // 请求ui树形数据
+      var uiEcharts = []
+      await this.$http({
+        url: '/statistic/ui/charts/free',
+        method: 'GET',
+        params: {
+          page: 1,
+          size: 1000
+        }
+      }).then(
+        function (response) {
+          uiEcharts = response.data
+        }
+      ).catch(function (error) {
+        ElMessage.error(error.message)
+      })
+      this.uiFree = uiEcharts
+
+      // 所有的状态都改为false
+      for (var x in this.clickStatus) {
+        this.clickStatus[x] = false
+      }
+      this.freeEcharts = true
+      this.freeEchartsLoading = false
+      this.ifMain = true
+    },
+
     // 获取模板信息
     async getTempInfo(page_ = 1, size_ = 10, temp_name_ = null) {
       // 关闭定时器
       this.end()
+      this.echarts = false
+      this.freeEcharts = false
 
       this.tempInfoLoading = true
       var temp = []
@@ -140,13 +255,14 @@ export default {
         this.clickStatus['isTemp'] = true
       }
       this.tempInfoLoading = false
-
+      this.ifMain = true
     },
 
     async getUiCaseInfo(page_ = 1, size_ = 10, temp_name_ = null) {
       // 关闭定时器
       this.end()
-
+      this.echarts = false
+      this.freeEcharts = false
       this.uiCaseInfoLoading = true
 
       var info_ = []
@@ -195,10 +311,13 @@ export default {
         this.clickStatus['isUiTemp'] = true
       }
       this.uiCaseInfoLoading = false
+      this.ifMain = true
     },
 
     // 获取用例信息
     async getCaseInfo(page_ = 1, size_ = 10, case_name_ = null) {
+      this.echarts = false
+      this.freeEcharts = false
       this.caseInfoLoading = true
       var case_ = []
       var caseTotal = 0
@@ -245,6 +364,7 @@ export default {
         this.clickStatus['isCase'] = true
       }
       this.caseInfoLoading = false
+      this.ifMain = true
 
       // 启动定时器
       this.start(5000)
@@ -344,6 +464,13 @@ export default {
   <el-container>
     <el-header>
       <el-affix :offset="10">
+        <el-button-group class="ml-4">
+          <!-- 计数 -->
+          <el-button type="default" @click="getECharts()" :loading="echartsLoading">计数</el-button>
+          <!-- 关系 -->
+          <el-button type="default" @click="getEChartsFree()" :loading="freeEchartsLoading">关系</el-button>
+        </el-button-group>&nbsp;
+
         <el-button-group>
           <!-- 模板信息 -->
           <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">API模板列表</el-button>
@@ -377,42 +504,45 @@ export default {
       </el-affix>
       <el-backtop :right="100" :bottom="100" />
     </el-header>
-    <el-main class="main">
+    <el-main class="main" v-if="ifMain">
       <my-temp-info v-if="clickStatus['isTemp']" :temp-info="tempInfo" :temp-total="tempTotal"></my-temp-info>
       <my-case-info v-if="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
       <my-ui-temp-info v-if="clickStatus['isUiTemp']" :ui-temp-info="uiTempInfo"
         :ui-temp-total="uiTempTotal"></my-ui-temp-info>
-      <!-- 字段变更的弹窗 -->
-      <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
-        :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>
-        <my-change v-if="dialogParamsCharge"></my-change>
-      </el-dialog>
-      <!-- 文件上传的弹窗 -->
-      <el-dialog v-model='dialogUpload' width="40%" title="文件上传" @close='dialogUpload = false' draggable>
-        <my-upload v-if="dialogUpload" :upload-type="uploadFileType" :file-type="fileType"></my-upload>
-      </el-dialog>
-      <!-- 模板组装的弹窗 -->
-      <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
-        :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
-        <my-transfer v-if="dialogTempSuit"></my-transfer>
-      </el-dialog>
-      <!-- 全局配置弹窗 -->
-      <el-dialog v-model="dialogWholeConf" width="50%" title="全局配置项" @close='dialogTempSuit = false' draggable>
-        <my-whole-conf v-if="dialogWholeConf" :conf-info="confData"></my-whole-conf>
-        <template #footer>
-          <span class="dialog-footer">
-            <el-button @click="dialogWholeConf = false">取消</el-button>
-            <el-button type="primary" @click="setSetting()" :loading="confWholeCheckLoading">确认</el-button>
-          </span>
-        </template>
-      </el-dialog>
-      <!-- 编辑器 -->
-      <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
-        :close-on-press-escape=false @close='dialogMonaco = false' draggable>
-        <monaco-editor v-if="dialogMonaco" :ui-temp-value="uiTempValue"></monaco-editor>
-      </el-dialog>
-
+      <my-statistic v-if="echarts || freeEcharts"></my-statistic>
+      <br>
+      <my-echarts v-if="echarts" :api-echarts="apiEcharts" :ui-echarts="uiEcharts"></my-echarts>
+      <my-echarts-free v-if="freeEcharts" :api-free="apiFree" :ui-free="uiFree"></my-echarts-free>
     </el-main>
+    <!-- 字段变更的弹窗 -->
+    <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
+      :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>
+      <my-change v-if="dialogParamsCharge"></my-change>
+    </el-dialog>
+    <!-- 文件上传的弹窗 -->
+    <el-dialog v-model='dialogUpload' width="40%" title="文件上传" @close='dialogUpload = false' draggable>
+      <my-upload v-if="dialogUpload" :upload-type_="uploadFileType" :file-type_="fileType"></my-upload>
+    </el-dialog>
+    <!-- 模板组装的弹窗 -->
+    <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
+      :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
+      <my-transfer v-if="dialogTempSuit"></my-transfer>
+    </el-dialog>
+    <!-- 全局配置弹窗 -->
+    <el-dialog v-model="dialogWholeConf" width="50%" title="全局配置项" @close='dialogTempSuit = false' draggable>
+      <my-whole-conf v-if="dialogWholeConf" :conf-info="confData"></my-whole-conf>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogWholeConf = false">取消</el-button>
+          <el-button type="primary" @click="setSetting()" :loading="confWholeCheckLoading">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <!-- 编辑器 -->
+    <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
+      :close-on-press-escape=false @close='dialogMonaco = false' draggable>
+      <monaco-editor v-if="dialogMonaco" :ui-temp-value="uiTempValue"></monaco-editor>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -424,7 +554,7 @@ export default {
 }
 
 main {
-  background-color: rgba(192, 192, 192, 0.6);
+  background-color: rgba(192, 192, 192, 0.4);
   border-radius: 20px
 }
 
@@ -454,6 +584,18 @@ main {
   --el-button-hover-bg-color: rgba(178, 118, 130, 1);
   --el-button-active-border-color: rgba(178, 118, 130, 1);
   --el-button-active-bg-color: rgba(178, 118, 130, 1);
+  --el-button-border-color: none;
+  color: rgb(13, 1, 28);
+}
+
+
+.el-button--default {
+  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
+  --el-button-bg-color: rgba(221, 160, 104, 1);
+  --el-button-hover-bg-color: rgba(221, 160, 104, 1);
+  --el-button-active-border-color: rgba(221, 160, 104, 1);
+  --el-button-active-bg-color: rgba(221, 160, 104, 1);
+  --el-button-hover-text-color: rgb(255, 255, 255);
   --el-button-border-color: none;
   color: rgb(13, 1, 28);
 }

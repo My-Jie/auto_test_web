@@ -27,10 +27,10 @@
                         @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="API数量" prop="api_count" width="60px" align="center"></el-table-column>
-            <el-table-column label="运行" prop="run_order" width="50px" align="center"></el-table-column>
-            <el-table-column label="成功" prop="success" width="50px" align="center"></el-table-column>
-            <el-table-column label="失败" prop="fail" width="50px" align="center"></el-table-column>
+            <el-table-column label="API数量" prop="api_count" width="80px" align="center"></el-table-column>
+            <el-table-column label="运行" prop="run_order" width="60px" align="center"></el-table-column>
+            <el-table-column label="成功" prop="success" width="60px" align="center"></el-table-column>
+            <el-table-column label="失败" prop="fail" width="60px" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="进度">
                 <template #default="scope">
@@ -48,7 +48,7 @@
                         size="small" @click="scope.row.percentage = 0" />
                 </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" width="500">
+            <el-table-column label="操作" align="center" width="520">
                 <template #default="scope">
                     <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
                     </el-button>&nbsp;
@@ -499,7 +499,7 @@ export default {
             row.runLoading = true
             var flag = false
             var run_order = null
-            var success = null 
+            var success = null
             var fail = null
             ElNotification.success({
                 title: 'Success',

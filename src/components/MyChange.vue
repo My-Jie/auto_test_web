@@ -742,6 +742,17 @@ export default {
     background: rgb(129, 103, 54);
 }
 
+.el-input__inner {
+    color: black;
+}
+
+.el-input__suffix {
+    color: black;
+}
+
+.el-input-group__prepend {
+    color: black;
+}
 
 /* .el-input__wrapper {
     background-color: #283443 !important;
