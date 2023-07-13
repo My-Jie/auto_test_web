@@ -38,7 +38,7 @@
             width="60"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <!-- 描述的按钮和内容框 -->
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
                 <el-button :icon="Check" size="small" v-if="!scope.row.edit"
@@ -53,7 +53,7 @@
             </template>
         </el-table-column>
         <!-- params的按钮和内容框 -->
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="Edit" size="small" @click="setData(scope.row, 'Params')"></el-button>
             </template>
@@ -64,7 +64,7 @@
             </template>
         </el-table-column>
         <!-- data的按钮和内容框 -->
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="Edit" size="small" @click="setData(scope.row, 'Data')"></el-button>
             </template>
@@ -75,7 +75,7 @@
             </template>
         </el-table-column>
         <!-- 校验的按钮和内容框 -->
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="Edit" size="small" @click=setCheck(scope.row)></el-button>
             </template>
@@ -86,7 +86,7 @@
             </template>
         </el-table-column>
         <!-- headers的按钮和内容框 -->
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="Edit" size="small" @click=setHeader(scope.row)></el-button>
             </template>

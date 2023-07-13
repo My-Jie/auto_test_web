@@ -30,7 +30,7 @@
                 <div>{{ JSON.stringify(scope.row.response, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" align="center" fixed="right">
+        <el-table-column label="操作" width="180" align="center" fixed="right">
             <template #default="scope">
                 <!-- 编辑操作 -->
                 <el-button :icon="Edit" type="primary" size="small" v-if="!scope.row.edit && !scope.row.EditDisabled"
@@ -79,8 +79,14 @@
             <el-form-item label="Code" :required="true">
                 <el-input v-model="tempInfo.code" style="width: 115px"></el-input>
             </el-form-item>
-            <el-form-item label="Description" prop="description" >
+            <el-form-item label="Description" prop="description">
                 <el-input v-model="tempInfo.description"></el-input>
+            </el-form-item>
+            <el-form-item label="JsonBody" :required="true">
+                <el-select v-model="tempInfo.json_body" placeholder="body" style="width: 115px">
+                    <el-option label="body" value="body" />
+                    <el-option label="json" value="json" />
+                </el-select>
             </el-form-item>
             <el-button type="info" @click="initData()">初始化</el-button>
             <el-button type="success" @click="formatData()">格式化</el-button>
@@ -159,6 +165,7 @@ export default {
             activeName: 'Params',
             params: {},
             data: {},
+            jsonBody: '',
             headers: {},
             response: {},
             paramsLen: 0,
@@ -224,6 +231,7 @@ export default {
             this.data = JSON.stringify(this.tempInfo.data, null, 8)
             this.headers = JSON.stringify(this.tempInfo.headers, null, 8)
             this.response = JSON.stringify(this.tempInfo.response, null, 8)
+            this.jsonBody = this.tempInfo.json_body
             this.paramsLen = 15
             this.dataLen = 15
             this.headersLen = 15
@@ -233,6 +241,7 @@ export default {
             this.tempTitle = '对模板接口数据查看或编辑'
             if (type == 'edit') {
                 scope.row.checkLoading = true
+
                 var tempInfo = {
                     temp_id: this.tempId,
                     number: this.tempInfo.number,
@@ -319,12 +328,17 @@ export default {
             if (this.tempInfo.host && this.tempInfo.path) {
                 this.tempInfo.edit = true
                 this.tempInfo.delDisabled = true
-                if (this.tempInfo.data) {
-                    this.tempInfo.json_body = 'data'
-                }
-                if (this.tempInfo.params) {
-                    this.tempInfo.json_body = 'body'
-                }
+
+                // var len = 0
+                // for (var i in this.tempInfo.data) {
+                //     len++
+                // }
+
+                // if (len > 0) {
+                //     this.tempInfo.json_body = 'json'
+                // } else {
+                //     this.tempInfo.json_body = 'body'
+                // }
                 this.tempData.splice(this.tempInfo.index, 1, this.tempInfo)
             }
         },

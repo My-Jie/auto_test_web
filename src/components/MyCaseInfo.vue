@@ -12,13 +12,13 @@
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
             <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
-            <el-table-column label="" width="40" align="center">
+            <el-table-column label="" width="55px" align="center">
                 <template #default="scope">
                     <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
                     <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
                 </template>
             </el-table-column>
-            <el-table-column label="用例名称" prop="name" width="450px">
+            <el-table-column label="用例名称" prop="name" width="420px">
                 <template #default="scope">
                     <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#3375b9">{{
                         scope.row.case_name }}</font>
@@ -39,7 +39,7 @@
                     <div v-if="scope.row.percentage == 0">未开始</div>
                 </template>
             </el-table-column>
-            <el-table-column label="" width="25">
+            <el-table-column label="" width="55px">
                 <template #default="scope">
                     <el-button :type=scope.row.percentageStatus :icon="Close" circle
                         v-if="scope.row.percentage > 0 && scope.row.percentage <= 99" size="small"

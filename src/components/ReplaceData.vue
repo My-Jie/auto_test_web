@@ -84,7 +84,7 @@
         <el-table-column label="通过这个表达式" prop="jsonpath"></el-table-column>
         <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
         <el-table-column label="替换成这样" prop="new_data"></el-table-column>
-        <el-table-column label="操作" width="65px">
+        <el-table-column label="操作" width="75px">
             <template #default="scope">
                 <el-switch v-model="scope.row.rep" active-text="替换" inactive-text="未替换" :loading="scope.row.urlLoading"
                     style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'url')" inline-prompt></el-switch>
@@ -99,7 +99,7 @@
         <el-table-column label="通过这个表达式从params取值" prop="jsonpath"></el-table-column>
         <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
         <el-table-column label="替换成这样" prop="new_data"></el-table-column>
-        <el-table-column label="操作" width="65px">
+        <el-table-column label="操作" width="75px">
             <template #default="scope">
                 <el-switch v-model="scope.row.rep" active-text="替换" inactive-text="未替换" :loading="scope.row.paramsLoading"
                     style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'params')"
@@ -115,7 +115,7 @@
         <el-table-column label="通过这个表达式从data取值" prop="jsonpath"></el-table-column>
         <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
         <el-table-column label="替换成这样" prop="new_data"></el-table-column>
-        <el-table-column label="操作" width="65px">
+        <el-table-column label="操作" width="75px">
             <template #default="scope">
                 <el-switch v-model="scope.row.rep" active-text="替换" inactive-text="未替换" :loading="scope.row.caseDataLoading"
                     style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'data')"

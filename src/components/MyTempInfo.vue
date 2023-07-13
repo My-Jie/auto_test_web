@@ -13,7 +13,7 @@
             <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"
                 align="center"></el-table-column>
             <el-table-column label="项目名称" prop="project_name" align="center" width="100"></el-table-column>
-            <el-table-column label="" width="40" align="center">
+            <el-table-column label="" width="55" align="center">
                 <template #default="scope">
                     <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
                     <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>

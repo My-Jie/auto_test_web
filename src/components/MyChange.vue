@@ -24,7 +24,7 @@
         <el-table-column label="Url" prop="path" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column label="TempId" prop="temp_id" width="100px" align="center"></el-table-column>
         <el-table-column label="Number" prop="number" width="100px" align="center"></el-table-column>
-        <el-table-column label="多选" width="70px">
+        <el-table-column label="多选" width="70px" align="center">
             <template #default="scope">
                 <el-checkbox v-model=scope.row.checkbox @click.prevent="changeBoxClick(scope.row)" />
             </template>
@@ -53,7 +53,7 @@
             <el-table-column label="temp_id" prop="temp_id" width="100px" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" width="100px" align="center"></el-table-column>
             <el-table-column label="number" prop="number" width="100px" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repUrl" active-text="变更" inactive-text="未变更"
                         :loading="scope.row.loadingUrlEdit" style="--el-switch-on-color: #67C23A;"
@@ -112,7 +112,7 @@
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
             <el-table-column label="number" prop="number" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsAdd" active-text="插入" inactive-text="未插入"
                         :loading="scope.row.loadingParamsAdd" style="--el-switch-on-color: #67C23A;"
@@ -139,7 +139,7 @@
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
             <el-table-column label="number" prop="number" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsEdit" active-text="修改" inactive-text="未修改"
                         :loading="scope.row.loadingParamsEdit" style="--el-switch-on-color: #67C23A;"
@@ -160,7 +160,7 @@
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
             <el-table-column label="number" prop="number" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repParamsDel" active-text="删除" inactive-text="未删除"
                         :loading="scope.row.loadingParamsDel" style="--el-switch-on-color: #67C23A;"
@@ -217,7 +217,7 @@
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
             <el-table-column label="number" prop="number" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataAdd" active-text="插入" inactive-text="未插入"
                         :loading="scope.row.loadingDataAdd" style="--el-switch-on-color: #67C23A;"
@@ -244,7 +244,7 @@
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
             <el-table-column label="number" prop="number" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataEdit" active-text="修改" inactive-text="未修改"
                         :loading="scope.row.loadingDataEdit" style="--el-switch-on-color: #67C23A;"
@@ -265,7 +265,7 @@
             <el-table-column label="temp_id" prop="temp_id" align="center"></el-table-column>
             <el-table-column label="case_id" prop="case_id" align="center"></el-table-column>
             <el-table-column label="number" prop="number" align="center"></el-table-column>
-            <el-table-column label="操作" width="65px">
+            <el-table-column label="操作" width="75px">
                 <template #default="scope">
                     <el-switch v-model="scope.row.repDataDel" active-text="删除" inactive-text="未删除"
                         :loading="scope.row.loadingDataDel" style="--el-switch-on-color: #67C23A;"
