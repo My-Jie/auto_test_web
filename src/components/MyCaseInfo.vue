@@ -20,7 +20,7 @@
             </el-table-column>
             <el-table-column label="用例名称" prop="name" width="420px">
                 <template #default="scope">
-                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#3375b9">{{
+                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#E1396E">{{
                         scope.row.case_name }}</font>
                     </div>
                     <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"

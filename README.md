@@ -1,3 +1,66 @@
+[![License](https://img.shields.io/badge/License-MulanPSL_2.0-red.svg "License")](LICENSE "License")
+[![Python](https://img.shields.io/badge/Python-v3.8.6-red.svg)]()
+[![FastApi](https://img.shields.io/badge/FastApi-v0.9.5-red.svg)]()
+[![Vue](https://img.shields.io/badge/Vue-v3.2-red.svg)]()
+[![Element_Plus](https://img.shields.io/badge/Element_Plus-v2.3.7-red.svg)]()
+
+
+# 随便测测平台
+**随心、随意、随景**
+
+* api和ui自动化测试综合测试平台
+* 非传统测试平台设计，无全局变量、环境变量、临时变量的设定
+* 使用接口运行时自带的Number，进行上下级数据关联
+* 操作简便、平铺式展开api所有内容，方便查看和预览
+* 使用Playwright录制ui用例，可选的Selenoid远程浏览器，python在线代码编辑器
+* allure测试报告
+* 二次元Saber (二次元就是第一生产力！)
+
+>自动化用例如何快速成型，呐！就是这个。
+>
+>在继续阅读前，心理上请预先接受2个设定：
+
+    1.api自动化 倾向于业务流程
+    2.ui自动化  倾向于界面交互
+    
+>在用例快速成型的目标前提下，我们需要约束好它们各自能力的范围
+>
+>“快速编写用例”，这正是这个平台设计的初衷。从测试人员的角度出发，使测试人员用的舒畅，写的舒服，不对软件使用的复杂度而望而生畏，
+>以此为目的再去完善周边功能
+>
+>让编写自动化用例，赶得上测试用例设计
+
+
+
+## api测试用例流程
+![image](img/api_test.jpg)
+* 有模板-用例-数据集的概念，1个模板可以生成N个用例，1个用例可以挂载N个数据集
+* 数据源来源于Swagger、charles.har (数据来源是可扩展的，按模板格式存入即可)
+
+>数据来源的扩展：只需要针对性的去解析不同格式的文件，按统一的数据模板保存即可
+> 
+>如postman, jmeter，yapi 等
+> 
+>模板是可以任意组装的，数据来源只是收录api的不同方式
+
+[随便测测-做接口测试](https://blog.csdn.net/yangj507/article/details/131395093)
+
+
+## ui测试用例流程
+![image](img/playwright.jpg)
+* 有模板-数据集的概念，1个模板挂载N个数据集
+* 没有采用POM设计 （我们确定了ui的测试范围：页面交互）
+
+>为什么没有采用POM设计，在这里不需要
+>
+>界面交互通常情况下是点对点的测试，没有复杂的业务背景，也就不需要分层设计、数据剥离
+
+    当改动较小，在线编辑修改脚本内容即可
+    当改动较大，删除文本内容重新录制即可
+    
+[随便测测-做UI测试](https://blog.csdn.net/yangj507/article/details/131579327)
+
+
 ### 随便测测
 
 * 博客：https://blog.csdn.net/yangj507/category_12359965.html
