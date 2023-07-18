@@ -10,7 +10,7 @@
 
 * api和ui自动化测试综合测试平台
 * 非传统测试平台设计，无全局变量、环境变量、临时变量的设定
-* 使用接口运行时自带的Number，进行上下级数据关联
+* 半自动一键关联数据上下级关系
 * 操作简便、平铺式展开api所有内容，方便查看和预览
 * 使用Playwright录制ui用例，可选的Selenoid远程浏览器，python在线代码编辑器
 * allure测试报告
@@ -25,7 +25,7 @@
     
 >在用例快速成型的目标前提下，我们需要约束好它们各自能力的范围
 >
->“快速编写用例”，这正是这个平台设计的初衷。从测试人员的角度出发，使测试人员用的舒畅，写的舒服，不对软件使用的复杂度而望而生畏，
+>“快速编写用例”，这正是这个平台设计的初衷。从测试人员的角度出发，使测试人员用的舒畅，写的舒服，不对软件使用的复杂度望而生畏，
 >以此为目的再去完善周边功能
 >
 >让编写自动化用例，赶得上测试用例设计
@@ -39,9 +39,17 @@
 
 >数据来源的扩展：只需要针对性的去解析不同格式的文件，按统一的数据模板保存即可
 > 
->如postman, jmeter，yapi 等
+>如postman, jmeter, yapi 等
 > 
 >模板是可以任意组装的，数据来源只是收录api的不同方式
+
+### 核心功能
+![image](img/1689642391577.jpg)
+>**参数提取和使用的核心操作页面，也仅有这个页面**
+>
+>红色为正确的阅读顺序，绿色为实际的操作步骤从上到下1.2.3步(你可能需要切换tab标签来查看不同参数位置的数据)，即可完成数据关联及参数替换
+>
+>无需记录变量值，抠破脑袋的想变量名；无需为参数应用于哪些接口而发愁；一切交给程序自动处理，只需要告诉它：你想替换什么
 
 [随便测测-做接口测试](https://blog.csdn.net/yangj507/article/details/131395093)
 
@@ -58,18 +66,30 @@
     当改动较小，在线编辑修改脚本内容即可
     当改动较大，删除文本内容重新录制即可
     
+### 核心功能
+![image](img/1689643175120.jpg)
+>**一个python在线编辑器，仅此而已**
+>
+>将录制好的playwright文本内容复制到在线编辑器中，提交保存，一份ui测试的脚本就完成了。已经是极致的便捷
+>
+>可以在页面上二次编辑二次开发脚本，为了让脚本更好的完成ui测试工作
+>
+>你甚至可以只打印 hello world 而不做任何事
+
+    
 [随便测测-做UI测试](https://blog.csdn.net/yangj507/article/details/131579327)
 
 
-### 随便测测
+## 一些文档地址
 
 * 博客：https://blog.csdn.net/yangj507/category_12359965.html
-* 后端：https://gitee.com/myjiee/fast-api_auto_test
-* 后端：https://github.com/My-Jie/FastApi_auto_test
+* 前端：https://gitee.com/myjiee/auto_test_web
+* 前端：https://github.com/My-Jie/auto_test_web
 * 主页：http://localhost:8000/index.html
 * swagger-ui: http://localhost:8000/docs
 
-### 来点图片
+
+## 一些截图
 ![image](img/1689178463172.jpg)
 ![image](img/1689178210973.jpg)
 ![image](img/1689178307393.jpg)
@@ -81,9 +101,9 @@
 ![image](img/1688977872578.jpg)
 
 
-### 部署方式
+## 部署方式
 
-#### Python 后端
+### Python 后端
 * 未采用docker容器部署，可自行尝试
 * 建议使用Python3.8以上版本
 * 环境安装：pip install -r requirements.txt 或 pip3 install -r requirements.txt
@@ -94,7 +114,7 @@
 * setting.py 文件夹需要设置：ALLURE_PATH(allure报告存放路径)、LOG_PATH(日志路径)、HOST(allure访问路径)
 * 接口文档：http://ip:port/docs
 
-#### vue3 前端
+### vue3 前端
 * 前端编译环境：vite+vue3+element-plus
 * 建议使用vscode编辑器，vite构建工具可自行搜索下载
 * npm install 安装第三方库
@@ -104,4 +124,4 @@
 * 将 dist 文件夹内的3个文件，拷贝到 static 目录下
 * 主页：http://ip:port/index.html
 
-#### 交流群: 599733338
+# QQ交流群: 599733338
