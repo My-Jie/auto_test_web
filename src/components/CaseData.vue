@@ -9,6 +9,7 @@
         draggable :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>
         <my-replace-data :case-id="caseId"></my-replace-data>
     </el-dialog>
+    <br>
     <!-- 表格 -->
     <el-table :data="caseData" stripe fit>
         <el-table-column fixed="left" label="config" prop="config" width="250%">
@@ -35,7 +36,7 @@
             </template>
         </el-table-column>
         <el-table-column fixed="left" label="number" prop="number" type="index" :index="indexMethod"
-            width="60"></el-table-column>
+            width="80px"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <!-- 描述的按钮和内容框 -->
         <el-table-column label="" width="55" align="center">

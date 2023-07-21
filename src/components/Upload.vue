@@ -180,7 +180,6 @@ export default {
             }
         },
         btnSubmit() {
-            this.submitLoading = true
             if (this.uploadType == 'temp-har') {
                 this.uploadUrl = '/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName
             } else if (this.uploadType == 'temp-swagger') {
@@ -197,6 +196,7 @@ export default {
                 this.uploadUrl = '/caseUi/upload/playwright/data/?temp_id=' + this.uiTempId
             }
             this.$refs.upload.submit()
+            this.submitLoading = true
         },
         onSuccess(response) {
             if (this.uploadType != 'gather' && this.uploadType != 'ui-case') {
@@ -211,6 +211,7 @@ export default {
             this.submitLoading = false
         }
 
+
     }
 }
 </script>
@@ -218,7 +219,7 @@ export default {
 <style>
 /* 弹窗的 */
 .el-dialog__body {
-    background: url('../assets/upload.png');
+    background: url('../assets/upload4.png');
     background-size: cover;
 }
 
@@ -228,56 +229,56 @@ export default {
 }
 
 .el-upload-dragger {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-form-item.is-required.asterisk-left {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-form-item.asterisk-left {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-radio-button {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-tabs__content {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-textarea__inner {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-transfer-panel {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-input.el-input-group.el-input-group--prepend {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .monaco-editor.no-user-select.showUnused.showDeprecated.vs-dark {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .demo-collapse {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-pagination.is-background {
-    opacity: 0.8;
+    opacity: 0.9;
     color: black;
 }
 
 .el-collapse-item__header {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-collapse-item__wrap {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-table__body-wrapper {

@@ -477,11 +477,11 @@ export default {
 }
 
 .el-upload-dragger {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .el-form-item.is-required.asterisk-left {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 
@@ -571,7 +571,7 @@ export default {
 
 .el-table,
 .el-table__expanded-cell {
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 /* .el-table th,

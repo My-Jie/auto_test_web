@@ -40,7 +40,7 @@
             <template #prepend>预选表达式</template>
             <template #append>
                 <el-button @click="getTestDataJsonpath">
-                    使用[ {{ selectResponse }} ]->[ {{ responseValueInput }} ]从测试数据的 url.params.data 预览查询
+                    使用[ {{ selectResponse }} ]->[ {{ responseValueInput }} ]从测试数据的 url.params.data.headers 预览查询
                 </el-button>
             </template>
         </el-input>
@@ -69,13 +69,17 @@
             </el-collapse-item>
         </el-collapse>
     </div>
+    <br>
 
     <!-- 复选框的按钮 -->
     <el-radio-group v-model="tableLayout">
         <el-radio-button label="url" v-show="urlJsonpath.length > 0 ? true : false" />
         <el-radio-button label="params" v-show="parmaJsonpath.length > 0 ? true : false" />
         <el-radio-button label="data" v-show="dataJsonpath.length > 0 ? true : false" />
+        <el-radio-button label="headers" v-show="headersJsonpath.length > 0 ? true : false" />
     </el-radio-group>
+    <br>
+    <br>
 
     <!-- url的表格 -->
     <el-table v-show="tableLayout == 'url'" :data="urlJsonpath" stripe fit>
@@ -123,6 +127,22 @@
             </template>
         </el-table-column>
     </el-table>
+
+    <!-- headers的表格 -->
+    <el-table v-show="tableLayout == 'headers'" :data="headersJsonpath" stripe fit>
+        <el-table-column type="index"></el-table-column>
+        <el-table-column label="把这个数据" prop="old_data" show-overflow-tooltip='true'></el-table-column>
+        <el-table-column label="通过这个表达式从data取值" prop="jsonpath"></el-table-column>
+        <el-table-column label="查询序号" prop="number" width="100%" align="center"></el-table-column>
+        <el-table-column label="替换成这样" prop="new_data"></el-table-column>
+        <el-table-column label="操作" width="75px">
+            <template #default="scope">
+                <el-switch v-model="scope.row.rep" active-text="替换" inactive-text="未替换" :loading="scope.row.headersLoading"
+                    style="--el-switch-on-color: #67C23A;" @click="repCaseData(scope.row, 'headers')"
+                    inline-prompt></el-switch>
+            </template>
+        </el-table-column>
+    </el-table>
 </template>
 
 <script>
@@ -143,6 +163,7 @@ export default {
             urlJsonpath: [],
             parmaJsonpath: [],
             dataJsonpath: [],
+            headersJsonpath: [],
             tableLayout: '',
             activeName: null,
         }
@@ -207,6 +228,8 @@ export default {
                 row.paramsLoading = true
             } else if (rep == 'data') {
                 row.caseDataLoading = true
+            } else if (rep == 'headers') {
+                row.headersLoading = true
             }
             var case_id = this.caseId
             await this.$http({
@@ -249,6 +272,8 @@ export default {
                 row.paramsLoading = false
             } else if (rep == 'data') {
                 row.caseDataLoading = false
+            } else if (rep == 'headers') {
+                row.headersLoading = false
             }
         },
 
@@ -261,10 +286,12 @@ export default {
             this.urlJsonpath = []
             this.parmaJsonpath = []
             this.dataJsonpath = []
+            this.headersJsonpath = []
 
             var urlStr = []
             var paramStr = []
             var dataStr = []
+            var headersStr = []
             await this.$http({
                 url: '/caseService/casedata/jsonpath/list',
                 method: "GET",
@@ -292,6 +319,11 @@ export default {
                         dataStr[x]['rep'] = false
                         dataStr[x]['caseDataLoading'] = false
                     }
+                    headersStr = response.data['data']['headers_list']['extract_contents']
+                    for (var x in headersStr) {
+                        headersStr[x]['rep'] = false
+                        headersStr[x]['headersLoading'] = false
+                    }
                 }
             ).catch(
                 function (error) {
@@ -301,6 +333,7 @@ export default {
             this.urlJsonpath = urlStr
             this.parmaJsonpath = paramStr
             this.dataJsonpath = dataStr
+            this.headersJsonpath = headersStr
 
             // 给复选框绑定上值
             if (this.urlJsonpath.length > 0) {
@@ -309,6 +342,8 @@ export default {
                 this.tableLayout = 'params'
             } else if (this.dataJsonpath.length > 0) {
                 this.tableLayout = 'data'
+            } else if (this.headersJsonpath.length > 0) {
+                this.tableLayout = 'headers'
             }
         }
     }
