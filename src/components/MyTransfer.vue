@@ -17,9 +17,9 @@
                 &nbsp;
                 <el-button type="primary" size="small" @click="checkTemp" :loading="tempCheckLoading">确认组装</el-button>&nbsp;
                 <el-input v-model="tempName" style="width:200px" size="small" placeholder="tempName"></el-input>
-                <el-select v-model="projectName" placeholder="选择项目" size="small" @visible-change="handleVisibleChange">
-                    <el-option v-for="item in projects" :key="item.value" :label="item.value"
-                        :value="item.value"></el-option>
+                <el-select v-model="projectName" placeholder="选择系统" size="small" @visible-change="handleVisibleChange">
+                    <el-option v-for="item in projects" :key="item.code" :label="item.code"
+                        :value="item.code"></el-option>
                 </el-select>
             </template>
         </el-transfer>
@@ -57,11 +57,11 @@ export default {
             }
             var projects = []
             await this.$http({
-                url: '/conf/get/setting',
+                url: '/conf/get/project',
                 method: 'GET',
             }).then(
                 function (response) {
-                    projects = response.data.project
+                    projects = response.data
                 }
             ).catch(
                 function (error) {

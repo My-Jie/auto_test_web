@@ -10,22 +10,22 @@
         <el-table-column label="method" prop="method" width="100%" align="center"></el-table-column>
         <el-table-column label="code" prop="code" width="100%" align="center"></el-table-column>
         <el-table-column label="json_body" prop="json_body" width="100%" align="center"></el-table-column>
-        <el-table-column label="params" prop="params" show-overflow-tooltip='true'>
+        <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="100%">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="data" prop="data" show-overflow-tooltip='true'>
+        <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="100%">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="headers" prop="headers" show-overflow-tooltip='true'>
+        <el-table-column label="headers" prop="headers" show-overflow-tooltip='true' width="100%">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="response" prop="response" show-overflow-tooltip='true'>
+        <el-table-column label="response" prop="response" show-overflow-tooltip='true' width="100%">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.response, null, 1) }}</div>
             </template>

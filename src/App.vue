@@ -53,8 +53,6 @@ export default {
       tempInfoLoading: false,
       caseInfoLoading: false,
       uiCaseInfoLoading: false,
-      confWholeLoading: false,
-      confWholeCheckLoading: false,
       caseStatus: false,
       // isDark: useDark(),
 
@@ -399,52 +397,6 @@ export default {
         }
       )
     },
-    // 全局配置设置
-    async getWholeConf() {
-      this.confWholeLoading = true
-      var wholeConf
-      await this.$http({
-        url: '/conf/get/setting',
-        method: 'GET'
-      }).then(
-        function (response) {
-          wholeConf = response.data
-          for (var x in wholeConf.host) {
-            wholeConf.host[x].num = x
-          }
-          for (var x in wholeConf.project) {
-            wholeConf.project[x].num = x
-          }
-          for (var x in wholeConf.unify_res) {
-            wholeConf.unify_res[x].num = x
-          }
-        }
-      ).catch(function (error) {
-        ElMessage.error(error.message)
-      })
-      this.confWholeLoading = false
-      this.dialogWholeConf = true
-      this.confData = wholeConf
-      console.log(this.confData);
-    },
-
-    async setSetting() {
-      this.confWholeCheckLoading = true
-      await this.$http({
-        url: '/conf/set/setting',
-        method: 'PUT',
-        data: JSON.stringify(this.confData),
-        headers: {
-          'content-type': "application/json"
-        }
-      }).then(
-        ElMessage.success('提交成功')
-      ).catch(function (error) {
-        ElMessage.error(error.message)
-      })
-      this.confWholeCheckLoading = false
-    },
-
     uploadFile(type_, fileType) {
       this.dialogUpload = true
       this.uploadFileType = type_
@@ -493,9 +445,9 @@ export default {
 
         <el-button-group class="ml-4">
           <!-- 参数变更 -->
-          <el-button type="warning" @click="dialogParamsCharge = true">全局参数变更</el-button>
+          <el-button type="warning" @click="dialogParamsCharge = true">参数变更</el-button>
           <!-- 全局配置 -->
-          <el-button type="warning" @click="getWholeConf()" :loading="confWholeLoading">全局配置</el-button>
+          <el-button type="warning" @click="dialogWholeConf = true">全局配置</el-button>
         </el-button-group>
 
         <!-- 开关灯 -->
@@ -529,14 +481,8 @@ export default {
       <my-transfer v-if="dialogTempSuit"></my-transfer>
     </el-dialog>
     <!-- 全局配置弹窗 -->
-    <el-dialog v-model="dialogWholeConf" width="50%" title="全局配置项" @close='dialogTempSuit = false' draggable>
-      <my-whole-conf v-if="dialogWholeConf" :conf-info="confData"></my-whole-conf>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogWholeConf = false">取消</el-button>
-          <el-button type="primary" @click="setSetting()" :loading="confWholeCheckLoading">确认</el-button>
-        </span>
-      </template>
+    <el-dialog v-model="dialogWholeConf" width="50%" title="全局配置项" draggable>
+      <my-whole-conf v-if="dialogWholeConf"></my-whole-conf>
     </el-dialog>
     <!-- 编辑器 -->
     <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false

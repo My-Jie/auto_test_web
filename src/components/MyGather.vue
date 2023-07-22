@@ -67,8 +67,8 @@
             <el-table-column label="WholeHost">
                 <template #default="scope">
                     <el-select v-model="scope.row.whole_host" placeholder="选择域名" @visible-change="handleVisibleChange">
-                        <el-option v-for="item in hosts" :key="item.value" :label="item.value"
-                            :value="item.value"></el-option>
+                        <el-option v-for="item in hosts" :key="item.host" :label="item.host"
+                            :value="item.host"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
@@ -120,11 +120,11 @@ export default {
             }
             var hosts
             await this.$http({
-                url: '/conf/get/setting',
+                url: '/conf/get/host',
                 method: 'GET',
             }).then(
                 function (response) {
-                    hosts = response.data.host
+                    hosts = response.data
                 }
             ).catch(
                 function (error) {

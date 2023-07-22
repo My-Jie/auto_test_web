@@ -13,9 +13,9 @@
         <el-form-item label="模板名称" label-width="100px" :required="true" placeholder="">
             <el-input v-model="tempName" />
         </el-form-item>
-        <el-form-item label="项目名称" label-width="100px" :required="true">
-            <el-select v-model="projectName" placeholder="选择项目" @visible-change="handleVisibleChange">
-                <el-option v-for="item in projects" :key="item.value" :label="item.value" :value="item.value"></el-option>
+        <el-form-item label="系统名称" label-width="100px" :required="true">
+            <el-select v-model="projectName" placeholder="选择系统" @visible-change="handleVisibleChange">
+                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.code"></el-option>
             </el-select>
         </el-form-item>
     </el-form>
@@ -24,9 +24,9 @@
         <el-form-item label="Host" label-width="100px" :required="true" placeholder="">
             <el-input v-model="tempHost" />
         </el-form-item>
-        <el-form-item label="项目名称" label-width="100px" :required="true">
-            <el-select v-model="projectName" placeholder="选择项目" @visible-change="handleVisibleChange">
-                <el-option v-for="item in projects" :key="item.value" :label="item.value" :value="item.value"></el-option>
+        <el-form-item label="系统名称" label-width="100px" :required="true">
+            <el-select v-model="projectName" placeholder="选择系统" @visible-change="handleVisibleChange">
+                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.code"></el-option>
             </el-select>
         </el-form-item>
     </el-form>
@@ -154,11 +154,11 @@ export default {
             }
             var projects = []
             await this.$http({
-                url: '/conf/get/setting',
+                url: '/conf/get/project',
                 method: 'GET',
             }).then(
                 function (response) {
-                    projects = response.data.project
+                    projects = response.data
                 }
             ).catch(
                 function (error) {
