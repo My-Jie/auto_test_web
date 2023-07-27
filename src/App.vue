@@ -11,6 +11,7 @@ import MyUiTempInfo from "./components/MyUiTempInfo.vue"
 import MyEcharts from "./components/MyEcharts.vue"
 import MyEchartsFree from "./components/MyEchartsFree.vue"
 import MyStatistic from "./components/MyStatistic.vue"
+import MySettingSet from "./components/MySettingSet.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close } from '@element-plus/icons-vue'
 // import { useDark, useToggle } from '@vueuse/core'
@@ -26,7 +27,8 @@ export default {
     MyUiTempInfo,
     MyEcharts,
     MyEchartsFree,
-    MyStatistic
+    MyStatistic,
+    MySettingSet
   },
   data() {
     return {
@@ -37,11 +39,13 @@ export default {
         isTemp: false,
         isCase: false,
         isUiTemp: false,
+        isSetting: false,
       },
       // 存获取的数据
       tempInfo: [],
       caseInfo: [],
       uiTempInfo: [],
+      settingInfo: [],
       timer: null,
       // 全局参数变更弹窗
       dialogParamsCharge: false,
@@ -52,8 +56,10 @@ export default {
       dialogWholeConf: false,
       tempInfoLoading: false,
       caseInfoLoading: false,
+      settingLoading: false,
       uiCaseInfoLoading: false,
       caseStatus: false,
+      dialogSettingSet: false,
       // isDark: useDark(),
 
       tempTotal: 0,
@@ -88,7 +94,8 @@ export default {
     return {
       'get_temp': this.getTempInfo,
       'get_case': this.getCaseInfo,
-      'get_ui_case': this.getUiCaseInfo
+      'get_ui_case': this.getUiCaseInfo,
+      'get_setting': this.getSettingSet
     };
   },
   methods: {
@@ -249,9 +256,8 @@ export default {
         this.clickStatus[x] = false
       }
       // 再改单个状态为true
-      if (!this.isTemp) {
-        this.clickStatus['isTemp'] = true
-      }
+      this.clickStatus['isTemp'] = true
+
       this.tempInfoLoading = false
       this.ifMain = true
     },
@@ -305,9 +311,8 @@ export default {
         this.clickStatus[x] = false
       }
       // 再改单个状态为true
-      if (!this.isTemp) {
-        this.clickStatus['isUiTemp'] = true
-      }
+      this.clickStatus['isUiTemp'] = true
+
       this.uiCaseInfoLoading = false
       this.ifMain = true
     },
@@ -358,9 +363,8 @@ export default {
         this.clickStatus[x] = false
       }
       // 再改单个状态为true
-      if (!this.isTemp) {
-        this.clickStatus['isCase'] = true
-      }
+      this.clickStatus['isCase'] = true
+      
       this.caseInfoLoading = false
       this.ifMain = true
 
@@ -368,6 +372,48 @@ export default {
       this.start(5000)
 
     },
+    async getSettingSet() {
+      // 关闭定时器
+      this.end()
+      this.echarts = false
+      this.freeEcharts = false
+
+      this.settingLoading = true
+      var setting = []
+      await this.$http({
+        url: '/setting/get/setting',
+        method: 'GET',
+      }).then(
+        function (response) {
+          setting = response.data
+          for (var x in setting) {
+            setting[x].edit = false
+            setting[x].del = false
+            setting[x].delDisabled = false
+            setting[x].EditDisabled = false
+          }
+        }
+      ).catch(
+        function (error) {
+          ElMessage.error(error.message)
+
+        }
+      )
+      this.settingLoading = false
+      this.settingInfo = setting
+
+
+      // 所有的状态都改为false
+      for (var x in this.clickStatus) {
+        this.clickStatus[x] = false
+      }
+      // 再改单个状态为true
+      this.clickStatus['isSettingSet'] = true
+
+      this.ifMain = true
+    },
+
+
     getCaseStatus(key_id = null) {
       var caseInfo = this.caseInfo
       this.$http({
@@ -432,6 +478,8 @@ export default {
           <el-button type="primary" @click="uploadFile('temp-har', '.har')">模板用例上传</el-button>
           <!-- 模板组装 -->
           <el-button type="primary" @click="dialogTempSuit = true">模板场景组装</el-button>
+          <!-- 参数变更 -->
+          <el-button type="primary" @click="dialogParamsCharge = true">接口参数变更</el-button>
         </el-button-group>&nbsp;
 
         <el-button-group class="ml-4">
@@ -444,8 +492,8 @@ export default {
         </el-button-group>&nbsp;
 
         <el-button-group class="ml-4">
-          <!-- 参数变更 -->
-          <el-button type="warning" @click="dialogParamsCharge = true">参数变更</el-button>
+          <!-- 环境组装 -->
+          <el-button type="warning" @click="getSettingSet()" :loading="settingLoading">环境组合</el-button>
           <!-- 全局配置 -->
           <el-button type="warning" @click="dialogWholeConf = true">全局配置</el-button>
         </el-button-group>
@@ -461,13 +509,15 @@ export default {
       <my-case-info v-if="clickStatus['isCase']" :case-info="caseInfo" :case-total="caseTotal"></my-case-info>
       <my-ui-temp-info v-if="clickStatus['isUiTemp']" :ui-temp-info="uiTempInfo"
         :ui-temp-total="uiTempTotal"></my-ui-temp-info>
+      <my-setting-set v-if="clickStatus['isSettingSet']" :setting-info="settingInfo"></my-setting-set>
+
       <my-statistic v-if="echarts || freeEcharts"></my-statistic>
       <br>
       <my-echarts v-if="echarts" :api-echarts="apiEcharts" :ui-echarts="uiEcharts"></my-echarts>
       <my-echarts-free v-if="freeEcharts" :api-free="apiFree" :ui-free="uiFree"></my-echarts-free>
     </el-main>
-    <!-- 字段变更的弹窗 -->
-    <el-dialog v-model='dialogParamsCharge' width="70%" title="全局参数变更" :close-on-click-modal=false
+    <!-- 参数变更的弹窗 -->
+    <el-dialog v-model='dialogParamsCharge' width="70%" title="参数变更" :close-on-click-modal=false
       :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>
       <my-change v-if="dialogParamsCharge"></my-change>
     </el-dialog>
@@ -480,8 +530,8 @@ export default {
       :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
       <my-transfer v-if="dialogTempSuit"></my-transfer>
     </el-dialog>
-    <!-- 全局配置弹窗 -->
-    <el-dialog v-model="dialogWholeConf" width="50%" title="全局配置项" draggable>
+    <!-- 配置弹窗 -->
+    <el-dialog v-model="dialogWholeConf" width="60%" title="配置项" draggable>
       <my-whole-conf v-if="dialogWholeConf"></my-whole-conf>
     </el-dialog>
     <!-- 编辑器 -->

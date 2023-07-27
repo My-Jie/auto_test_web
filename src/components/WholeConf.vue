@@ -1,5 +1,5 @@
 <template>
-    <el-tabs v-model="activeName" :tab-position="'left'" @tab-click="handleTabClick">
+    <el-tabs v-model="activeName" :tab-position="'top'" type="border-card" @tab-click="handleTabClick">
         <el-tab-pane label="系统列表" name="project">
             <!-- 增加操作 -->
             <el-button v-if="project.length <= 0" :icon="Plus" type="warning" size="small"
@@ -190,7 +190,7 @@
             </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="数据库" name="db">
+        <el-tab-pane label="数据库表" name="db">
             <el-button v-if="db.length <= 0" :icon="Plus" type="warning" size="small" @click="addConf('db')"></el-button>
             <el-table :data="db" stripe fit empty-text="空">
                 <el-table-column label="名称" align="center" width="150px">
@@ -266,8 +266,8 @@ export default {
             Plus,
             Delete,
             Close,
-            activeName: '',
-            tabName: { props: { name: '' } },
+            activeName: 'project',
+            tabName: { props: { name: 'project' } },
             host: [],
             project: [],
             db: [],
@@ -275,6 +275,10 @@ export default {
             customize: [],
         }
     },
+    mounted() {
+        this.handleTabClick(this.tabName)
+    },
+
     methods: {
         // 切换tab触发
         async handleTabClick(tab) {
@@ -288,7 +292,7 @@ export default {
                     }).then(
                         function (response) {
                             host = response.data
-                            for (var x in customize) {
+                            for (var x in host) {
                                 host[x].edit = false
                                 host[x].del = false
                                 host[x].delDisabled = false
@@ -310,7 +314,7 @@ export default {
                     }).then(
                         function (response) {
                             project = response.data
-                            for (var x in customize) {
+                            for (var x in project) {
                                 project[x].edit = false
                                 project[x].del = false
                                 project[x].delDisabled = false
@@ -333,7 +337,7 @@ export default {
                     }).then(
                         function (response) {
                             db = response.data
-                            for (var x in customize) {
+                            for (var x in db) {
                                 db[x].edit = false
                                 db[x].del = false
                                 db[x].delDisabled = false
@@ -356,7 +360,7 @@ export default {
                     }).then(
                         function (response) {
                             unify_res = response.data
-                            for (var x in customize) {
+                            for (var x in unify_res) {
                                 unify_res[x].edit = false
                                 unify_res[x].del = false
                                 unify_res[x].delDisabled = false
@@ -945,6 +949,19 @@ export default {
 }
 
 .el-table__body-wrapper {
+    color: black;
+}
+
+.el-tabs__active-bar.is-top {
+    --el-color-primary: rgba(225, 57, 110, 1);
+}
+
+.el-tabs__item.is-top.is-active {
+    --el-color-primary: rgba(225, 57, 110, 1);
+}
+
+.el-tabs--border-card {
+    opacity: 0.9;
     color: black;
 }
 </style>
