@@ -88,22 +88,6 @@
             </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="统一响应" name="unify_res">
-            <el-table :data="unify_res" stripe fit empty-text="空">
-                <el-table-column label="名称" prop="name" align="center" width="150px"></el-table-column>
-                <el-table-column label="key" prop="key" align="center"></el-table-column>
-                <el-table-column label="value" prop="value" align="center"></el-table-column>
-                <el-table-column label="type" prop="type" align="center"></el-table-column>
-                <el-table-column label="操作" align="center" width="180px">
-                    <template #default="scope">
-                        <el-switch v-model="scope.row.bind" active-text="绑定" inactive-text="未绑定"
-                            :loading="scope.row.caseDataLoading" style="--el-switch-on-color: #E6A23C;"
-                            @click="settingBind(scope.row, 'unify_res')" inline-prompt></el-switch>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-tab-pane>
-
     </el-tabs>
 </template>
 
@@ -124,7 +108,6 @@ export default {
             host: [],
             customize: [],
             db: [],
-            unify_res: [],
             settingName_: this.settingName,
             activeName: 'api_case',
             tabName: { props: { name: 'api_case' } },
@@ -155,9 +138,7 @@ export default {
                 case 'db':
                     var db = row.id
                     break
-                case 'unify_res':
-                    var unify_res = row.id
-                    break
+
             }
             await this.$http({
                 url: '/setting/update/bind',
@@ -169,7 +150,6 @@ export default {
                     host: host,
                     customize: customize,
                     db_: db,
-                    unify_res: unify_res,
                     bind: row.bind
                 }
             }).then(
@@ -303,28 +283,6 @@ export default {
                     this.db = db
                     break
 
-                case 'unify_res':
-                    var unify_res = []
-                    await this.$http({
-                        url: '/setting/get/unify',
-                        method: 'GET',
-                        params: {
-                            setting_id: this.settingId,
-                        }
-                    }).then(
-                        function (response) {
-                            unify_res = response.data
-                            for (var x in unify_res) {
-                                unify_res[x].loading = false
-                            }
-                        }
-                    ).catch(
-                        function (error) {
-                            ElMessage.error(error.message)
-                        }
-                    )
-                    this.unify_res = unify_res
-                    break
 
                 case 'customize':
                     var customize = []

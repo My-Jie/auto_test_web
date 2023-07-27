@@ -32,11 +32,6 @@
                 <div>{{ scope.row.db_ids.length }} 个</div>
             </template>
         </el-table-column>
-        <el-table-column label="统一响应" prop="unify_ids" align="center">
-            <template #default="scope">
-                <div>{{ scope.row.unify_ids.length }}</div>
-            </template>
-        </el-table-column>
         <el-table-column label="操作" align="center" width="200px">
             <template #default="scope">
                 <!-- 编辑操作 -->
@@ -98,11 +93,11 @@ export default {
         addSettingSet() {
             this.settingInfo.push({
                 name: null,
-                host: null,
-                unify: null,
-                customize: null,
-                db: null,
-                case: null,
+                api_case_ids: [],
+                ui_case_ids: [],
+                host_ids: [],
+                customize_ids: [],
+                db_ids: [],
 
                 edit: true,
                 delDisabled: true,

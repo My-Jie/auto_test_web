@@ -78,61 +78,7 @@
             </el-table>
         </el-tab-pane>
 
-        <el-tab-pane label="统一响应" name="unify_res">
-            <!-- 增加操作 -->
-            <el-button v-if="unify_res.length <= 0" :icon="Plus" type="warning" size="small"
-                @click="addConf('unify')"></el-button>
-            <el-table :data="unify_res" stripe fit empty-text="空">
-                <el-table-column label="名称" align="center" width="150px">
-                    <template #default="scope">
-                        <el-input v-model="scope.row.name" placeholder="名称" />
-                    </template>
-                </el-table-column>
-                <el-table-column label="key" align="center">
-                    <template #default="scope">
-                        <el-input v-model="scope.row.key" placeholder="键" />
-                    </template>
-                </el-table-column>
-                <el-table-column label="value" align="center">
-                    <template #default="scope">
-                        <el-input v-model="scope.row.value" placeholder="值" />
-                    </template>
-                </el-table-column>
-                <el-table-column label="type" align="center">
-                    <template #default="scope">
-                        <el-select v-model="scope.row.type" :placeholder="scope.row.type">
-                            <el-option label="string" value='string' />
-                            <el-option label="number" value='number' />
-                            <el-option label="int" value='int' />
-                            <el-option label="float" value='float' />
-                            <el-option label="boolean" value='boolean' />
-                            <el-option label="null" value='null' />
-                        </el-select>
-                    </template>
-                </el-table-column>
-                <el-table-column label="操作" align="center" width="180px">
-                    <template #default="scope">
-                        <!-- 编辑操作 -->
-                        <el-button :icon="Edit" type="primary" size="small"
-                            v-if="!scope.row.edit && !scope.row.EditDisabled" :disabled="scope.row.EditDisabled"
-                            @click="myEdit(scope.row)"></el-button>
-                        <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
-                            @click="unifyCheck(scope.row)"></el-button>
-                        <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
-                            @click="myClose(scope.row)"></el-button>
-                        <!-- 增加操作 -->
-                        <el-button :icon="Plus" type="warning" size="small" @click="addConf('unify')"></el-button>
-                        <!-- 删除操作 -->
-                        <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del && !scope.row.delDisabled"
-                            :disabled="scope.row.delDisabled" @click="myDel(scope.row)"></el-button>
-                        <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
-                            @click="unifyDel(scope.row)"></el-button>
-                        <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
-                            @click="myClose(scope.row)"></el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-tab-pane>
+
 
         <el-tab-pane label="自定参数" name="customize">
             <!-- 增加操作 -->
@@ -251,6 +197,63 @@
                 </el-table-column>
             </el-table>
         </el-tab-pane>
+
+        <el-tab-pane label="统一响应" name="unify_res">
+            <!-- 增加操作 -->
+            <el-button v-if="unify_res.length <= 0" :icon="Plus" type="warning" size="small"
+                @click="addConf('unify')"></el-button>
+            <el-table :data="unify_res" stripe fit empty-text="空">
+                <el-table-column label="名称" align="center" width="150px">
+                    <template #default="scope">
+                        <el-input v-model="scope.row.name" placeholder="名称" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="key" align="center">
+                    <template #default="scope">
+                        <el-input v-model="scope.row.key" placeholder="键" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="value" align="center">
+                    <template #default="scope">
+                        <el-input v-model="scope.row.value" placeholder="值" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="type" align="center">
+                    <template #default="scope">
+                        <el-select v-model="scope.row.type" :placeholder="scope.row.type">
+                            <el-option label="string" value='string' />
+                            <el-option label="number" value='number' />
+                            <el-option label="int" value='int' />
+                            <el-option label="float" value='float' />
+                            <el-option label="boolean" value='boolean' />
+                            <el-option label="null" value='null' />
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center" width="180px">
+                    <template #default="scope">
+                        <!-- 编辑操作 -->
+                        <el-button :icon="Edit" type="primary" size="small"
+                            v-if="!scope.row.edit && !scope.row.EditDisabled" :disabled="scope.row.EditDisabled"
+                            @click="myEdit(scope.row)"></el-button>
+                        <el-button :icon="Check" type="success" size="small" v-if="scope.row.edit"
+                            @click="unifyCheck(scope.row)"></el-button>
+                        <el-button :icon="Close" type="success" size="small" v-if="scope.row.EditDisabled"
+                            @click="myClose(scope.row)"></el-button>
+                        <!-- 增加操作 -->
+                        <el-button :icon="Plus" type="warning" size="small" @click="addConf('unify')"></el-button>
+                        <!-- 删除操作 -->
+                        <el-button :icon="Delete" type="danger" size="small" v-if="!scope.row.del && !scope.row.delDisabled"
+                            :disabled="scope.row.delDisabled" @click="myDel(scope.row)"></el-button>
+                        <el-button :icon="Check" type="success" size="small" v-if="scope.row.del"
+                            @click="unifyDel(scope.row)"></el-button>
+                        <el-button :icon="Close" type="success" size="small" v-if="scope.row.delDisabled"
+                            @click="myClose(scope.row)"></el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-tab-pane>
+
     </el-tabs>
 </template>
 
