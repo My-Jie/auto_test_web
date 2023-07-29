@@ -3,14 +3,15 @@
         <el-button type="success" :loading="runLoading" @click="queryRun(false)">同步运行</el-button>
         <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)">异步运行</el-button>
     </el-affix>
+    <br>
     <el-table :data="gatherData" stripe fit :cell-class-name="onTableRowClassName">
-        <el-table-column label="选择" width="50px" align="center" size="small" fixed="left">
+        <el-table-column label="选择" width="60px" align="center" size="small" fixed="left">
             <template #default="scope">
                 <el-checkbox v-model=scope.row.checkbox @click.prevent="suiteCheck(scope.row)" />
             </template>
         </el-table-column>
-        <el-table-column label="序号" prop="suite" width="30px" align="center" fixed="left"></el-table-column>
-        <el-table-column label="Number" prop="number" width="80px" align="center" fixed="left"></el-table-column>
+        <el-table-column label="序号" prop="suite" width="60px" align="center" fixed="left"></el-table-column>
+        <el-table-column label="Number" prop="number" width="90px" align="center" fixed="left"></el-table-column>
         <el-table-column label="数据集名称" prop="name" width="150px" align="center"></el-table-column>
         <el-table-column label="Path" prop="path" show-overflow-tooltip='true' width="300px"></el-table-column>
 
@@ -59,39 +60,35 @@
     <el-dialog v-model='dataDialog' width="50%" draggable :title="dataTitle + '-详情'">
         <el-input v-model="Data" type="textarea" spellcheck="false" :rows="dataLength"></el-input>
     </el-dialog>
-    <!-- 运行弹窗 -->
-    <el-dialog v-model="runDialog" :title="runTitle" width="50%">
-        <el-table :data="tempHosts" stripe fit empty-text="空">
-            <el-table-column label="TempHost" prop="temp_host">
-            </el-table-column>
-            <el-table-column label="WholeHost">
-                <template #default="scope">
-                    <el-select v-model="scope.row.whole_host" placeholder="选择域名" @visible-change="handleVisibleChange">
-                        <el-option v-for="item in hosts" :key="item.host" :label="item.host"
-                            :value="item.host"></el-option>
-                    </el-select>
-                </template>
-            </el-table-column>
-            <el-table-column label="替换" align="center" width="70px">
-                <template #default="scope">
-                    <el-checkbox v-model=scope.row.change />
-                </template>
-            </el-table-column>
-        </el-table>
+    <!-- 运行用例弹窗 -->
+    <el-dialog v-model="dialogVisible" :title="runTitle" width="60%" @close="closeRunCase">
+        <el-select v-model="settingVirtualId" placeholder="选择环境" @visible-change="selectSetting">
+            <el-option v-for="item in settingInfoList" :key="item.setting_name" :label="item.setting_name"
+                :value="item.virtual_id"></el-option>
+        </el-select>
+        <br>
+        <br>
+        <run-api-case v-if="dialogVisible" :setting-info="settingInfo"></run-api-case>
         <template #footer>
             <span class="dialog-footer">
-                <el-button @click="runDialog = false">取消</el-button>
-                <el-button type="primary" @click="runCase">确认</el-button>
+                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="runCase()">确认</el-button>
             </span>
         </template>
     </el-dialog>
 </template>
 
 <script>
+import RunApiCase from './runApiCase.vue'
 import { View } from '@element-plus/icons-vue'
 import { ElMessage, ElNotification } from 'element-plus'
 export default {
     name: 'MyGather',
+
+    components: {
+        RunApiCase
+    },
+
     props: {
         'gatherData': Array,
         'caseId': Number
@@ -109,53 +106,70 @@ export default {
             runDialog: false,
             runTitle: '',
             tempHosts: [],
-            hosts: []
+            hosts: [],
+            dialogVisible: false,
+            settingInfo: {},
+            settingInfoList: [],
+            settingVirtualId: null
         }
     },
 
     methods: {
-        async handleVisibleChange(val) {
-            if (!val) {
+        // 选择环境
+        async selectSetting(val) {
+            if (val) {
                 return
             }
-            var hosts
-            await this.$http({
-                url: '/conf/get/host',
-                method: 'GET',
-            }).then(
-                function (response) {
-                    hosts = response.data
+
+
+            for (var x in this.settingInfoList) {
+                if (this.settingInfoList[x].virtual_id == this.settingVirtualId) {
+                    this.settingInfo = JSON.parse(JSON.stringify(this.settingInfoList[x]))
                 }
+            }
+
+            await this.$http({
+                url: '/runCase/set/api/setting/info',
+                method: 'PUT',
+                params: {
+                    setting_list_id: this.settingInfo.setting_list_id,
+                    id_card: this.settingInfo.id_card,
+                }
+            }).then(
+                // function (response) {
+                //     projects = response.data
+                // }
             ).catch(
                 function (error) {
                     ElMessage.error(error.message)
                 }
             )
-            this.hosts = hosts
         },
+        // 关闭弹窗
+        closeRunCase() {
+            this.settingVirtualId = null
+            this.settingInfo = {}
+            this.settingInfoList = []
+        },
+
         // 确认运行
         async queryRun(type) {
+            this.dialogVisible = true
+
             this.async_ = type
             if (type) {
                 this.runTitle = '异步运行'
             } else (
                 this.runTitle = '同步运行'
             )
-            this.runDialog = true
 
-            this.hosts = []
-            this.tempHosts = []
-            var hosts = []
+            var settingInfoList = []
             await this.$http({
-                url: '/runCase/temp/host?case_id=' + this.caseId,
+                url: '/runCase/get/api/setting/info?case_id=' + this.caseId,
                 method: 'GET',
             }).then(
                 function (response) {
-                    for (var x in response.data) {
-                        if (!hosts.includes(response.data[x].host)) {
-                            hosts.push(response.data[x].host)
-                        }
-                    }
+                    settingInfoList = response.data
                 }
             ).catch(
                 function (error) {
@@ -163,17 +177,10 @@ export default {
                 }
             )
 
-            for (var x in hosts) {
-                this.tempHosts.push({
-                    temp_host: hosts[x],
-                    whole_host: null,
-                    change: false
-                })
-            }
+            this.settingInfoList = settingInfoList
         },
         // 运行用例
         async runCase() {
-            this.runDialog = false
             if (this.async_) {
                 this.asyncRunLoading = true
             } else {
@@ -204,7 +211,7 @@ export default {
                     case_id: case_id,
                     suite: suite_list,
                     async_: this.async_,
-                    temp_hosts: this.tempHosts
+                    setting_list_id: this.settingInfo.setting_list_id
                 }),
                 headers: {
                     'content-type': "application/json"

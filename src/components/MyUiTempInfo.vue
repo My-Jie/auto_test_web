@@ -321,11 +321,25 @@ export default {
             this.delDialog = false
         },
 
-        getCaseInfo(row) {
+        async getCaseInfo(row) {
             this.dialogVisible = true
             this.uiTempId = row.id
             this.uiTempName = row.temp_name
             this.uiTempRow = row
+            
+            var settingInfoList = []
+            await this.$http({
+                url: '/runCase/get/ui/setting/info?case_id=' + this.uiTempId,
+                method: 'GET',
+            }).then(
+                function (response) {
+                    settingInfoList = response.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
         },
 
         async runCase(row) {
