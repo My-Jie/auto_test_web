@@ -77,7 +77,7 @@
                 <el-table-column label="password" prop="password" align="center" width="120px"></el-table-column>
                 <el-table-column label="database" prop="database" align="center" width="120px"></el-table-column>
                 <el-table-column label="port" prop="port" align="center" width="120px"></el-table-column>
-                <el-table-column label="charset" prop="charset" align="center" width="120px"></el-table-column>
+                <el-table-column label="charset" prop="charset" align="center"></el-table-column>
                 <el-table-column label="操作" align="center" width="180px" fixed="right">
                     <template #default="scope">
                         <el-switch v-model="scope.row.bind" active-text="绑定" inactive-text="未绑定"

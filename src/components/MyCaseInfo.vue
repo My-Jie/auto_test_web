@@ -87,27 +87,14 @@
             <!-- </div> -->
         </el-dialog>
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" title="Tips" width="50%">
-            <span>执行用例 [ {{ caseId }} - {{ caseName }} ]</span>
+        <el-dialog v-model="dialogVisible" :title="'执行用例' + caseId + '-' + caseName" width="60%" @close="closeRunCase">
+            <el-select v-model="settingVirtualId" placeholder="选择环境" @visible-change="selectSetting">
+                <el-option v-for="item in settingInfoList" :key="item.setting_name" :label="item.setting_name"
+                    :value="item.virtual_id"></el-option>
+            </el-select>
             <br>
             <br>
-            <el-table :data="tempHosts" stripe fit empty-text="空">
-                <el-table-column label="TempHost" prop="temp_host">
-                </el-table-column>
-                <el-table-column label="WholeHost">
-                    <template #default="scope">
-                        <el-select v-model="scope.row.whole_host" placeholder="选择域名" @visible-change="handleVisibleChange">
-                            <el-option v-for="item in hosts" :key="item.host" :label="item.host"
-                                :value="item.host"></el-option>
-                        </el-select>
-                    </template>
-                </el-table-column>
-                <el-table-column label="替换" align="center" width="70px">
-                    <template #default="scope">
-                        <el-checkbox v-model=scope.row.change />
-                    </template>
-                </el-table-column>
-            </el-table>
+            <run-api-case v-if="dialogVisible" :setting-info="settingInfo"></run-api-case>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
@@ -146,6 +133,7 @@
 
 import CaseData from './CaseData.vue'
 import MyGather from './MyGather.vue'
+import RunApiCase from './runApiCase.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Edit, Check, Download, Close } from '@element-plus/icons-vue'
@@ -160,7 +148,8 @@ export default {
 
     components: {
         CaseData,
-        MyGather
+        MyGather,
+        RunApiCase
     },
 
     data() {
@@ -184,31 +173,49 @@ export default {
             page: 1,
             size: 10,
             likeCaseName: null,
-            tempHosts: [],
-            hosts: []
+            settingInfo: {},
+            settingInfoList: [],
+            settingVirtualId: null
         }
     },
 
     methods: {
-        async handleVisibleChange(val) {
-            if (!val) {
+        // 选择环境
+        async selectSetting(val) {
+            if (val) {
                 return
             }
-            var hosts
-            await this.$http({
-                url: '/conf/get/host',
-                method: 'GET',
-            }).then(
-                function (response) {
-                    hosts = response.data
+
+            for (var x in this.settingInfoList) {
+                if (this.settingInfoList[x].virtual_id == this.settingVirtualId) {
+                    this.settingInfo = JSON.parse(JSON.stringify(this.settingInfoList[x]))
                 }
+            }
+
+            await this.$http({
+                url: '/runCase/set/api/setting/info',
+                method: 'PUT',
+                params: {
+                    setting_list_id: this.settingInfo.setting_list_id,
+                    id_card: this.settingInfo.id_card,
+                }
+            }).then(
+                // function (response) {
+                //     projects = response.data
+                // }
             ).catch(
                 function (error) {
                     ElMessage.error(error.message)
                 }
             )
-            this.hosts = hosts
         },
+        // 关闭弹窗
+        closeRunCase() {
+            this.settingVirtualId = null
+            this.settingInfo = {}
+            this.settingInfoList = []
+        },
+
         // 调用父级方法
         async handleSizeChange(size) {
             this.size = size
@@ -285,19 +292,13 @@ export default {
             this.caseId = row.case_id
             this.caseRow = row
 
-            this.hosts = []
-            this.tempHosts = []
-            var hosts = []
+            var settingInfoList = []
             await this.$http({
-                url: '/runCase/temp/host?case_id=' + this.caseId,
+                url: '/runCase/get/api/setting/info?case_id=' + this.caseId,
                 method: 'GET',
             }).then(
                 function (response) {
-                    for (var x in response.data) {
-                        if (!hosts.includes(response.data[x].host)) {
-                            hosts.push(response.data[x].host)
-                        }
-                    }
+                    settingInfoList = response.data
                 }
             ).catch(
                 function (error) {
@@ -305,13 +306,7 @@ export default {
                 }
             )
 
-            for (var x in hosts) {
-                this.tempHosts.push({
-                    temp_host: hosts[x],
-                    whole_host: null,
-                    change: false
-                })
-            }
+            this.settingInfoList = settingInfoList
         },
         // 删除窗口
         delDialogVisible(row) {
@@ -511,7 +506,7 @@ export default {
                 method: "POST",
                 data: JSON.stringify({
                     case_ids: [row.case_id],
-                    temp_hosts: this.tempHosts
+                    setting_list_id: this.settingInfo.setting_list_id
                 }),
                 headers: {
                     'content-type': "application/json"
