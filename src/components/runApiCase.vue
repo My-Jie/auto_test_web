@@ -23,8 +23,23 @@
             <el-table :data="settingInfo.customize" stripe fit empty-text="空">
                 <el-table-column label="名称" prop="name" align="center" width="150px"></el-table-column>
                 <el-table-column label="key" prop="key" align="center"></el-table-column>
-                <el-table-column label="value" prop="value" align="center"></el-table-column>
-                <el-table-column label="type" prop="type" align="center"></el-table-column>
+                <el-table-column label="value" prop="value" align="center">
+                    <template #default="scope">
+                        <el-input v-model="scope.row.value" :placeholder="scope.row.value"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="type" prop="type" align="center">
+                    <template #default="scope">
+                        <el-select v-model="scope.row.type" :placeholder="scope.row.type">
+                            <el-option label="string" value='string' />
+                            <el-option label="number" value='number' />
+                            <el-option label="int" value='int' />
+                            <el-option label="float" value='float' />
+                            <el-option label="boolean" value='boolean' />
+                            <el-option label="null" value='null' />
+                        </el-select>
+                    </template>
+                </el-table-column>
                 <el-table-column label="使用" align="center" width="70px">
                     <template #default="scope">
                         <el-checkbox v-model=scope.row.change @change="setSetting(scope.row, 'customize')" />
