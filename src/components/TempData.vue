@@ -55,9 +55,9 @@
     <!-- 新增修改数据的弹窗 -->
     <el-dialog v-model='tempDialog' width="60%" :title="tempTitle" :close-on-click-modal=false :close-on-press-escape=false
         @close="closeTempDialog(tempInfo)" draggable v-if="tempDialog">
-        <el-button type="success" @click="curlDialog = true">解析CURL</el-button>
+        <!-- <el-button type="success" @click="curlDialog = true">解析CURL</el-button>
         <br>
-        <br>
+        <br> -->
         <el-form v-model="tempInfo" label-width="75px">
             <el-form-item label="Host" prop="host" :required="true">
                 <el-input v-model="tempInfo.host"></el-input>
@@ -91,7 +91,41 @@
             <el-button type="info" @click="initData()">初始化</el-button>
             <el-button type="success" @click="formatData()">格式化</el-button>
             <el-button type="warning" @click="emptyData()">清空数据</el-button>
-            <el-button type="primary" @click="confirmData()">确定</el-button>
+            <el-button type="primary" @click="confirmData()">保存</el-button>
+            <el-checkbox v-model="getCookie" label="提取Cookie" border :style="{ float: 'right' }" />
+            <el-button type="primary" @click="sendData()" :loading="sendLoading" :style="{ float: 'right' }">发送</el-button>
+            <br>
+            <br>
+            <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3"
+                @keyup.enter.native="getResponseJsonPath">
+                <template #prepend>
+                    <el-select v-model="type_" placeholder="response" style="width: 110px">
+                        <!-- <el-option label="params" value="params" />
+                        <el-option label="data" value="data" /> -->
+                        <el-option label="headers" value="headers" />
+                        <el-option label="response" value="response" />
+                    </el-select>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <el-select v-model="key_value" placeholder="value" style="width: 100px">
+                            <el-option label="key" value="key" />
+                            <el-option label="value" value="value" />
+                        </el-select>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <el-select v-model="ext_type" placeholder="==" style="width: 70px">
+                            <el-option label="==" value="==" />
+                            <el-option label="in" value="in" />
+                        </el-select>
+                    </div>
+                </template>
+                <template #append>
+                    <el-button plain @click="getResponseJsonPath" style="width: 100px">查询</el-button>
+                </template>
+            </el-input>
+            <el-input v-model="jsonPath" placeholder="jsonpath" clearable></el-input>
+
             <el-tabs v-model="activeName">
                 <el-tab-pane label="Params" name="Params">
                     <el-input type="textarea" v-model="params" :rows="paramsLen" spellcheck="false"></el-input>
@@ -104,6 +138,9 @@
                 </el-tab-pane>
                 <el-tab-pane label="Response" name="Response">
                     <el-input type="textarea" v-model="response" :rows="responseLen" spellcheck="false"></el-input>
+                </el-tab-pane>
+                <el-tab-pane label="Cookie" name="Cookie" v-if="getCookie">
+                    <el-input type="textarea" v-model="cookie" rows="15" spellcheck="false"></el-input>
                 </el-tab-pane>
             </el-tabs>
         </el-form>
@@ -168,19 +205,58 @@ export default {
             jsonBody: '',
             headers: {},
             response: {},
+            cookie: '',
             paramsLen: 0,
             dataLen: 0,
             headersLen: 0,
             responseLen: 0,
 
             curlDialog: false,
-            curlData: ''
+            curlData: '',
+            sendLoading: false,
+            getCookie: false,
+
+            type_: 'response',
+            key_value: 'value',
+            ext_type: '==',
+            responseValueInput: '',
+            jsonPath: ''
         }
     },
 
 
-
     methods: {
+        // 获取jsonpath接口
+        async getResponseJsonPath() {
+            if (this.responseValueInput.length < 3) {
+                ElMessage.warning('最小长度: 3')
+                return
+            }
+
+            var jsonPath = ''
+            await this.$http({
+                url: '/template/response/jsonpath/list',
+                method: 'GET',
+                params: {
+                    temp_id: this.tempId,
+                    extract_contents: this.responseValueInput,
+                    type_: this.type_,
+                    key_value: this.key_value,
+                    ext_type: this.ext_type
+                }
+            }).then(
+                function (response) {
+                    if (response.data != '{}' && response.data.extract_contents.length > 0) {
+                        jsonPath = response.data.extract_contents[0].jsonpath
+                    }
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.jsonPath = jsonPath
+        },
         addOne() {
             this.tempData.push(_.cloneDeep(this.tempInit))
         },
@@ -453,10 +529,79 @@ export default {
                 this.response = JSON.stringify({}, null, 8);
             }
         },
+        // 发送数据
+        async sendData() {
+            var flag = false
+            var resP = null
+            var cookie = ''
+
+            try {
+                this.tempInfo.params = JSON.parse(this.params)
+                this.tempInfo.data = JSON.parse(this.data)
+                this.tempInfo.headers = JSON.parse(this.headers)
+                this.tempInfo.response = JSON.parse(this.response)
+                this.tempInfo.get_cookie = this.getCookie
+            } catch {
+                ElMessage.error('Json数据格式有误')
+                return
+            }
+            this.sendLoading = true
+
+            await this.$http({
+                url: '/template/send/api',
+                method: 'POST',
+                params: {
+                    get_cookie: this.tempInfo.get_cookie
+                },
+                data: JSON.stringify(this.tempInfo),
+                headers: {
+                    'content-type': "application/json"
+                }
+            }).then(
+                function (response) {
+                    flag = true
+                    resP = response.data.data.response
+                    cookie = response.data.data.cookie
+                    if (response.data.data.status <= 400) {
+                        ElNotification.success({
+                            title: 'Success',
+                            message: '请求成功',
+                            offset: 200,
+                        })
+                    } else {
+                        ElNotification.warning({
+                            title: 'Warning',
+                            message: '请求失败, status: ' + response.data.data.status,
+                            offset: 200,
+                        })
+                    }
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            if (flag) {
+                this.response = JSON.stringify(resP, null, 8)
+                this.activeName = 'Response'
+                this.cookie = cookie
+            }
+
+            this.sendLoading = false
+        },
+
         // 关闭窗口
         closeTempDialog(row) {
             row.del = false
             row.EditDisabled = false
+            this.getCookie = false
+            this.activeName = 'Params'
+            this.type_ = 'response'
+            this.key_value = 'value'
+            this.ext_type = '=='
+            this.responseValueInput = ''
+            this.jsonPath = ''
         },
         // 取消操作
         myClose(scope) {
@@ -475,3 +620,27 @@ export default {
 }
 
 </script>
+
+<style>
+.container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* .el-checkbox.is-bordered {
+    color: rgb(255, 255, 255);
+} */
+
+.el-checkbox__label {
+    --el-checkbox-checked-text-color: rgba(225, 57, 110, 1);
+}
+
+.el-checkbox__inner {
+    --el-checkbox-checked-input-border-color: rgba(225, 57, 110, 1);
+    --el-checkbox-checked-bg-color: rgba(225, 57, 110, 1);
+}
+
+.el-checkbox.is-bordered.is-checked {
+    --el-color-primary: rgba(225, 57, 110, 1);
+}
+</style>

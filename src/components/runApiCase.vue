@@ -113,9 +113,8 @@ export default {
                     break
             }
 
-            console.log(this.settingInfo);
             await this.$http({
-                url: 'runCase/set/api/setting/info',
+                url: '/runCase/set/api/setting/info',
                 method: 'PUT',
                 params: {
                     setting_list_id: this.settingInfo.setting_list_id,

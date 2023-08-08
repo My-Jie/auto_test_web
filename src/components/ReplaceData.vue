@@ -47,6 +47,9 @@
     </el-form-item>
     <div class="demo-collapse">
         <el-collapse v-model="activeName" accordion>
+            <el-collapse-item title="自定参数表达式(*双花括号)" name="1">
+                <p>1.直接提取: %{key}</p>
+            </el-collapse-item>
             <el-collapse-item title="JsonPath表达式实例(*双花括号)" name="1">
                 <p>1.直接提取: {number.$.jsonPath表达式}</p>
                 <p>2.索引切片: {number.$.jsonPath表达式|index:index}</p>
