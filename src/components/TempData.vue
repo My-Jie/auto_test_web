@@ -210,6 +210,7 @@ export default {
             dataLen: 0,
             headersLen: 0,
             responseLen: 0,
+            tempNumber: null,
 
             curlDialog: false,
             curlData: '',
@@ -239,6 +240,7 @@ export default {
                 method: 'GET',
                 params: {
                     temp_id: this.tempId,
+                    number: this.tempNumber,
                     extract_contents: this.responseValueInput,
                     type_: this.type_,
                     key_value: this.key_value,
@@ -300,6 +302,7 @@ export default {
         // 修改数据接口
         async editTemp(scope, type) {
             scope.row.index = scope.$index
+            this.tempNumber = scope.row.number
             this.tempRow = scope.row
             this.tempInfo = _.cloneDeep(scope.row)
 
@@ -312,7 +315,6 @@ export default {
             this.dataLen = 15
             this.headersLen = 15
             this.responseLen = 15
-
 
             this.tempTitle = '对模板接口数据查看或编辑'
             if (type == 'edit') {
