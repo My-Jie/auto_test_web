@@ -92,8 +92,13 @@
             <el-button type="success" @click="formatData()">格式化</el-button>
             <el-button type="warning" @click="emptyData()">清空数据</el-button>
             <el-button type="primary" @click="confirmData()">保存</el-button>
-            <el-checkbox v-model="getCookie" label="提取Cookie" border :style="{ float: 'right' }" />
-            <el-button type="primary" @click="sendData()" :loading="sendLoading" :style="{ float: 'right' }">发送</el-button>
+            <div class="debugInfo">
+                <el-button type="warning" @click="delData()" :loading="delLoading"
+                    :style="{ float: 'right' }">清空缓存</el-button>
+                <el-button type="primary" @click="sendData()" :loading="sendLoading"
+                    :style="{ float: 'right' }">发送</el-button>
+                <el-checkbox v-model="getCookie" label="提取Cookie" border :style="{ float: 'right' }" />
+            </div>
             <br>
             <br>
             <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3"
@@ -215,6 +220,7 @@ export default {
             curlDialog: false,
             curlData: '',
             sendLoading: false,
+            delLoading: false,
             getCookie: false,
 
             type_: 'response',
@@ -531,6 +537,30 @@ export default {
                 this.response = JSON.stringify({}, null, 8);
             }
         },
+        // 清空缓存
+        async delData() {
+            this.delLoading = true
+            await this.$http({
+                url: '/template/del/debug/info',
+                method: 'DELETE',
+                params: {
+                    temp_id: this.tempId
+                },
+            }).then(
+                function () {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '清楚成功',
+                        offset: 200,
+                    })
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            this.delLoading = false
+        },
         // 发送数据
         async sendData() {
             var flag = false
@@ -632,6 +662,14 @@ export default {
 /* .el-checkbox.is-bordered {
     color: rgb(255, 255, 255);
 } */
+
+.debugInfo {
+    background-color: rgba(192, 192, 192, 0.4);
+    border-radius: 20px;
+    display: inline;
+    /* width: 300px;
+    height: 300px; */
+}
 
 .el-checkbox__label {
     --el-checkbox-checked-text-color: rgba(225, 57, 110, 1);
