@@ -31,18 +31,30 @@
             <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="修改时间" prop="updated_at" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="300">
+            <el-table-column label="操作" align="center" width="220">
                 <template #default="scope">
-                    <el-button type="success" plain :loading="scope.row.runLoading"
-                        @click="setDialogVisible(scope.row)">运行</el-button>&nbsp;
+                    <el-tooltip content="运行用例，批量运行模板关联的所有用例" placement="top-end" effect="customized">
+                        <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
+                            @click="setDialogVisible(scope.row)"></el-button>
+                    </el-tooltip>
+
                     <el-button-group class="ml-4">
-                        <el-button type="primary" plain @click="getTempData(scope.row)"
-                            :loading="scope.row.dataLoading">详情</el-button>
-                        <el-button type="primary" plain @click="tempToCase(scope.row)"
-                            :loading="scope.row.tempToCaseLoading">转化</el-button>
-                    </el-button-group>&nbsp;
-                    <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
-                    </el-button>
+                        <el-tooltip content="模板详情，可编辑数据，调试接口" placement="top-end" effect="customized">
+                            <el-button :icon="Edit" type="primary" plain @click="getTempData(scope.row)"
+                                :loading="scope.row.dataLoading"></el-button>
+                        </el-tooltip>
+
+                        <el-tooltip content="转化为JSON下载，或系统内部直接转为用例，过程中会自动关联部分数据" placement="top-end" effect="customized">
+                            <el-button :icon="DArrowRight" type="primary" plain @click="tempToCase(scope.row)"
+                                :loading="scope.row.tempToCaseLoading"></el-button>
+                        </el-tooltip>
+
+                    </el-button-group>
+                    <el-tooltip content="删除模板，会校验有无用例" placement="top-start" effect="customized">
+                        <el-button :icon="Delete" type="danger" plain :loading="scope.row.delLoading"
+                            @click="delDialogVisible(scope.row)" />
+                    </el-tooltip>
+
                 </template>
             </el-table-column>
         </el-table>
@@ -132,7 +144,7 @@
 import TempData from './TempData.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check } from '@element-plus/icons-vue'
+import { Edit, Check, DArrowRight, Document, Delete, CircleCheck } from '@element-plus/icons-vue'
 export default {
     name: "MyTempInfo",
 
@@ -151,6 +163,10 @@ export default {
         return {
             Edit,
             Check,
+            Delete,
+            CircleCheck,
+            Document,
+            DArrowRight,
             loading: !this.tempInfo ? true : false,
             myDialog: false,
             uploadDialogBl: false,

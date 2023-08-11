@@ -13,7 +13,7 @@ import MyEchartsFree from "./components/MyEchartsFree.vue"
 import MyStatistic from "./components/MyStatistic.vue"
 import MySettingSet from "./components/MySettingSet.vue"
 import { ElMessage } from 'element-plus'
-import { Check, Close } from '@element-plus/icons-vue'
+import { Check, Close, Histogram, List, UploadFilled, Crop, Grid, HelpFilled, Tools, Edit } from '@element-plus/icons-vue'
 // import { useDark, useToggle } from '@vueuse/core'
 export default {
   components: {
@@ -34,6 +34,14 @@ export default {
     return {
       Check,
       Close,
+      Histogram,
+      List,
+      UploadFilled,
+      Tools,
+      Edit,
+      HelpFilled,
+      Grid,
+      Crop,
       // 判断哪个按钮点击了
       clickStatus: {
         isTemp: false,
@@ -364,7 +372,7 @@ export default {
       }
       // 再改单个状态为true
       this.clickStatus['isCase'] = true
-      
+
       this.caseInfoLoading = false
       this.ifMain = true
 
@@ -464,38 +472,39 @@ export default {
       <el-affix :offset="10">
         <el-button-group class="ml-4">
           <!-- 计数 -->
-          <el-button type="default" @click="getECharts()" :loading="echartsLoading">计数</el-button>
+          <el-button type="default" :icon="Histogram" @click="getECharts()" :loading="echartsLoading">计数</el-button>
           <!-- 关系 -->
-          <el-button type="default" @click="getEChartsFree()" :loading="freeEchartsLoading">关系</el-button>
+          <el-button type="default" :icon="Histogram" @click="getEChartsFree()"
+            :loading="freeEchartsLoading">关系</el-button>
         </el-button-group>&nbsp;
 
         <el-button-group>
           <!-- 模板信息 -->
-          <el-button type="primary" @click="getTempInfo()" :loading="tempInfoLoading">API模板列表</el-button>
+          <el-button type="primary" :icon="List" @click="getTempInfo()" :loading="tempInfoLoading">API模板</el-button>
           <!-- 用例信息 -->
-          <el-button type="primary" @click="getCaseInfo()" :loading="caseInfoLoading">API用例列表</el-button>
+          <el-button type="primary" :icon="List" @click="getCaseInfo()" :loading="caseInfoLoading">API用例</el-button>
           <!-- 文件上传 -->
-          <el-button type="primary" @click="uploadFile('temp-har', '.har')">模板用例上传</el-button>
+          <el-button type="primary" :icon="UploadFilled" @click="uploadFile('temp-har', '.har')">数据上传</el-button>
           <!-- 模板组装 -->
-          <el-button type="primary" @click="dialogTempSuit = true">模板场景组装</el-button>
+          <el-button type="primary" :icon="Grid" @click="dialogTempSuit = true">模板组装</el-button>
           <!-- 参数变更 -->
-          <el-button type="primary" @click="dialogParamsCharge = true">接口参数变更</el-button>
+          <el-button type="primary" :icon="Crop" @click="dialogParamsCharge = true">参数变更</el-button>
         </el-button-group>&nbsp;
 
         <el-button-group class="ml-4">
           <!-- UI用例信息 -->
-          <el-button type="success" @click="getUiCaseInfo()" :loading="uiCaseInfoLoading">UI用例列表</el-button>
+          <el-button type="success" :icon="List" @click="getUiCaseInfo()" :loading="uiCaseInfoLoading">UI用例</el-button>
           <!-- 编辑器 -->
-          <el-button type="success" @click="dialogMonaco = true">UI脚本编辑</el-button>
+          <el-button type="success" :icon="Edit" @click="dialogMonaco = true">UI脚本</el-button>
           <!-- 文件上传 -->
-          <el-button type="success" @click="uploadFile('ui-case', '.xlsx')">UI数据上传</el-button>
+          <el-button type="success" :icon="UploadFilled" @click="uploadFile('ui-case', '.xlsx')">数据上传</el-button>
         </el-button-group>&nbsp;
 
         <el-button-group class="ml-4">
           <!-- 环境组装 -->
-          <el-button type="warning" @click="getSettingSet()" :loading="settingLoading">环境组合</el-button>
+          <el-button type="warning" :icon="HelpFilled" @click="getSettingSet()" :loading="settingLoading">环境</el-button>
           <!-- 全局配置 -->
-          <el-button type="warning" @click="dialogWholeConf = true">全局配置</el-button>
+          <el-button type="warning" :icon="Tools" @click="dialogWholeConf = true">配置</el-button>
         </el-button-group>
 
         <!-- 开关灯 -->

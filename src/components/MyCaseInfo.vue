@@ -48,27 +48,45 @@
                         size="small" @click="scope.row.percentage = 0" />
                 </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" width="520">
+            <el-table-column label="操作" align="center" width="420">
                 <template #default="scope">
-                    <el-button type="success" plain :loading="scope.row.runLoading" @click="setDialogVisible(scope.row)">运行
-                    </el-button>&nbsp;
+                    <el-tooltip content="运行用例" placement="top-end" effect="customized">
+                        <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
+                            @click="setDialogVisible(scope.row)">
+                        </el-button>
+                    </el-tooltip>
                     <el-button-group class="ml-4">
-                        <el-button type="primary" plain @click="getCaseData(scope.row)"
-                            :loading="scope.row.dataLoading">详情</el-button>
-                        <el-button type="primary" plain @click="copyDialogVisible(scope.row)"
-                            :loading="scope.row.copyLoading">复制</el-button>
-                        <el-button type="primary" plain @click="getGather(scope.row)"
-                            :loading="scope.row.gatherLoading">数据</el-button>
+                        <el-tooltip content="用例详情，可编辑数据" placement="top-end" effect="customized">
+                            <el-button :icon="Edit" type="primary" plain @click="getCaseData(scope.row)"
+                                :loading="scope.row.dataLoading"></el-button>
+                        </el-tooltip>
+
+                        <el-tooltip content="复制用例，生成一条新的数据" placement="top-end" effect="customized">
+                            <el-button :icon="DocumentCopy" type="primary" plain @click="copyDialogVisible(scope.row)"
+                                :loading="scope.row.copyLoading"></el-button>
+                        </el-tooltip>
+
+                        <el-tooltip content="用例对应的数据集，没有则404" placement="top-start" effect="customized">
+                            <el-button :icon="Postcard" type="primary" plain @click="getGather(scope.row)"
+                                :loading="scope.row.gatherLoading"></el-button>
+                        </el-tooltip>
+
+
                         <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
                             confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
                             @confirm="caseDataSet(scope.row)" :icon="Download" icon-color="#626AEF" title="下载用例">
                             <template #reference>
-                                <el-button type="primary" plain>下载</el-button>
+                                <el-button :icon="Download" type="primary" plain></el-button>
                             </template>
                         </el-popconfirm>
-                    </el-button-group>&nbsp;
-                    <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
-                    </el-button>&nbsp;
+
+                    </el-button-group>
+                    <el-tooltip content="删除用例，以及关联的数据集和allure报告" placement="top-start" effect="customized">
+                        <el-button :icon="Delete" type="danger" plain :loading="scope.row.delLoading"
+                            @click="delDialogVisible(scope.row)">
+                        </el-button>
+                    </el-tooltip>
+
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
                     </el-button>
@@ -136,7 +154,7 @@ import MyGather from './MyGather.vue'
 import RunApiCase from './runApiCase.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check, Download, Close } from '@element-plus/icons-vue'
+import { Edit, Check, Download, Close, Document, DocumentCopy, Postcard, Delete, CircleCheck } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
@@ -158,6 +176,11 @@ export default {
             Check,
             Download,
             Close,
+            Document,
+            DocumentCopy,
+            Postcard,
+            Delete,
+            CircleCheck,
             loading: !this.caseInfo ? true : false,
             myDialog: false,
             thisCaseData: [],
@@ -575,7 +598,18 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
+.el-popper.is-customized {
+    /* Set padding to ensure the height is 32px */
+    padding: 6px 12px;
+    background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
+}
+
+.el-popper.is-customized .el-popper__arrow::before {
+    background: linear-gradient(45deg, #b2e68d, #bce689);
+    right: 0;
+}
+
 .el-link {
     margin-right: 8px;
 }

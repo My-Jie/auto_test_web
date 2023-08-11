@@ -1,6 +1,7 @@
 <template>
     <div>
-        <el-input v-model="likeTempName" placeholder="按模板名称模糊查询" @keyup.enter.native="get_ui_case(page, size, likeTempName)">
+        <el-input v-model="likeTempName" placeholder="按模板名称模糊查询"
+            @keyup.enter.native="get_ui_case(page, size, likeTempName)">
             <template #prepend>模板名称</template>
             <template #append>
                 <el-button plain @click="get_ui_case(page, size, likeTempName)">搜索</el-button>
@@ -19,18 +20,29 @@
             <el-table-column label="成功" prop="success" width="60px" align="center"></el-table-column>
             <el-table-column label="失败" prop="fail" width="60px" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="400px">
+            <el-table-column label="操作" align="center" width="320px">
                 <template #default="scope">
-                    <el-button type="success" plain :loading="scope.row.runLoading"
-                        @click="getCaseInfo(scope.row)">运行</el-button>&nbsp;
+                    <el-tooltip content="运行用例" placement="top-end" effect="customized">
+                        <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
+                            @click="getCaseInfo(scope.row)"></el-button>
+                    </el-tooltip>
+
                     <el-button-group class="ml-4">
-                        <el-button type="primary" plain @click="getUiTempData(scope.row)"
-                            :loading="scope.row.dataLoading">编辑</el-button>
-                        <el-button type="primary" plain @click="getUiCaseData(scope.row)"
-                            :loading="scope.row.CaseLoading">数据</el-button>
-                    </el-button-group>&nbsp;
-                    <el-button type="danger" plain :loading="scope.row.delLoading" @click="delDialogVisible(scope.row)">删除
-                    </el-button>&nbsp;
+                        <el-tooltip content="测试用例文本详情" placement="top-end" effect="customized">
+                            <el-button :icon="Edit" type="primary" plain @click="getUiTempData(scope.row)"
+                                :loading="scope.row.dataLoading"></el-button>
+                        </el-tooltip>
+                        <el-tooltip content="查看提取的变量数据，没有则404" placement="top-end" effect="customized">
+                            <el-button :icon="Document" type="primary" plain @click="getUiCaseData(scope.row)"
+                                :loading="scope.row.CaseLoading"></el-button>
+                        </el-tooltip>
+
+                    </el-button-group>
+                    <el-tooltip content="删除用例，会删除数据集" placement="top-start" effect="customized">
+                        <el-button :icon="Delete" type="danger" plain :loading="scope.row.delLoading"
+                            @click="delDialogVisible(scope.row)" />
+                    </el-tooltip>
+
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
                     </el-button>
@@ -123,7 +135,7 @@
 <script>
 import MonacoEditor from "./MonacoEditor.vue"
 import { ElNotification, ElMessage } from 'element-plus'
-
+import { Edit, Document, Delete, CircleCheck } from '@element-plus/icons-vue'
 export default {
     name: "MyUiTempInfo",
 
@@ -140,6 +152,10 @@ export default {
 
     data() {
         return {
+            Edit,
+            Document,
+            Delete,
+            CircleCheck,
             loading: !this.uiTempInfo ? true : false,
             uiTempTitle: null,
             dialogUiMonaco: false,
@@ -326,7 +342,7 @@ export default {
             this.uiTempId = row.id
             this.uiTempName = row.temp_name
             this.uiTempRow = row
-            
+
             var settingInfoList = []
             await this.$http({
                 url: '/runCase/get/ui/setting/info?case_id=' + this.uiTempId,
@@ -347,7 +363,7 @@ export default {
             row.runLoading = true
             var flag = false
             var run_order = null
-            var success = null 
+            var success = null
             var fail = null
             ElNotification.success({
                 title: 'Success',
