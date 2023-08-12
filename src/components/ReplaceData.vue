@@ -50,12 +50,12 @@
             <el-collapse-item title="自定参数表达式(*双花括号)" name="1">
                 <p>1.直接提取: %{key}</p>
             </el-collapse-item>
-            <el-collapse-item title="JsonPath表达式实例(*双花括号)" name="1">
+            <el-collapse-item title="JsonPath表达式实例(*双花括号)" name="2">
                 <p>1.直接提取: {number.$.jsonPath表达式}</p>
                 <p>2.索引切片: {number.$.jsonPath表达式|index:index}</p>
                 <p>3.同级邻居确认: {number.$.jsonPath表达式,string in key,string == key}</p>
             </el-collapse-item>
-            <el-collapse-item title="假数据表达式(*单花括号)" name="2">
+            <el-collapse-item title="假数据表达式(*单花括号)" name="3">
                 <p>1.身份证: {ssn}</p>
                 <p>2.电话: {phone_number}</p>
                 <p>3.银行卡: {credit_card_number}</p>

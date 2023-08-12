@@ -181,6 +181,14 @@
                 </template>
             </el-table-column>
         </el-table>
+        <br>
+        <!-- 响应信息内容 -->
+        <el-tabs v-model="activeName" :tab-position="'top'" type="border-card" @tab-click="handleTabClick">
+            <el-tab-pane label="tempResponse" name="temp">
+                <el-input type="textarea" v-model="tempResponse" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+            <el-tab-pane label="caseResponse" name="case"></el-tab-pane>
+        </el-tabs>
     </el-dialog>
     <!-- params\data的弹窗 -->
     <el-dialog v-model="dataDialog" width="60%" draggable
@@ -194,7 +202,7 @@
         <br>
         <el-input v-model="dataInfo" type="textarea" :rows="dataLength" spellcheck="false">
         </el-input>
-        <el-collapse :v-model="activeName = '1'" accordion>
+        <el-collapse :v-model="activeName2 = '1'" accordion>
             <el-collapse-item title="假数据表达式(*单花括号)" name="1">
                 <p>1.身份证: {ssn}</p>
                 <p>2.电话: {phone_number}</p>
@@ -291,10 +299,40 @@ export default {
             headerInfo: [],
             renovate: false,
             repData: false,
-            dataLoading: false
+            dataLoading: false,
+            activeName: 'temp',
+            tabName: { props: { name: 'temp' } },
+            tempResponse: null
         }
     },
     methods: {
+        // 获取单接口的response
+        async handleTabClick(tab) {
+            this.tabName.props.name = tab.props.name
+            var res = null
+            switch (tab.props.name) {
+                case 'temp':
+                    await this.$http({
+                        url: '/caseService/get/response',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            res = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.tempResponse = JSON.stringify(res, null, 4)
+            }
+
+            this.responseDialog = true
+        },
         // 刷新用例详情数据
         async getCaseData() {
             this.dataLoading = true
@@ -525,6 +563,7 @@ export default {
                 num++
             }
             this.checkDialog = true
+            this.handleTabClick(this.tabName)
         },
         // 新增row
         addRow(myType) {
