@@ -187,7 +187,9 @@
             <el-tab-pane label="tempResponse" name="temp">
                 <el-input type="textarea" v-model="tempResponse" :rows="15" spellcheck="false"></el-input>
             </el-tab-pane>
-            <el-tab-pane label="caseResponse" name="case"></el-tab-pane>
+            <el-tab-pane label="caseResponse" name="case">
+                <el-input type="textarea" v-model="caseResponse" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
         </el-tabs>
     </el-dialog>
     <!-- params\data的弹窗 -->
@@ -302,14 +304,16 @@ export default {
             dataLoading: false,
             activeName: 'temp',
             tabName: { props: { name: 'temp' } },
-            tempResponse: null
+            tempResponse: null,
+            caseResponse: null,
         }
     },
     methods: {
         // 获取单接口的response
         async handleTabClick(tab) {
             this.tabName.props.name = tab.props.name
-            var res = null
+            var tempRes = null
+            var caseRes = null
             switch (tab.props.name) {
                 case 'temp':
                     await this.$http({
@@ -321,14 +325,35 @@ export default {
                         }
                     }).then(
                         function (response) {
-                            res = response.data
+                            tempRes = response.data
                         }
                     ).catch(
                         function (error) {
                             ElMessage.error(error.message)
                         }
                     )
-                    this.tempResponse = JSON.stringify(res, null, 4)
+                    this.tempResponse = JSON.stringify(tempRes, null, 4)
+                    break
+
+                case 'case':
+                    await this.$http({
+                        url: '/runCase/get/response',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            caseRes = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.caseResponse = JSON.stringify(caseRes, null, 4)
+                    break
             }
 
             this.responseDialog = true
@@ -760,6 +785,8 @@ export default {
                 offset: 200,
             })
             this.renovate = false
+            this.tempResponse = null
+            this.caseResponse = null
         },
 
         indexMethod(index) {
