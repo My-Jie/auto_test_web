@@ -5,8 +5,8 @@
     </el-affix>
 
     <!-- 替换数据弹窗 -->
-    <el-dialog v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false :close-on-press-escape=false
-        draggable :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>
+    <el-dialog v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false draggable
+        :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>
         <my-replace-data :case-id="caseId"></my-replace-data>
     </el-dialog>
     <br>
@@ -23,7 +23,7 @@
                 <el-switch v-model="scope.row.config.is_login" active-text="登录" inactive-text="登录"
                     :loading="scope.row.isLoginLoading" class="ml-2" style="--el-switch-on-color: #67C23A;"
                     @click="setConfigStatus(scope.row, 'is_login')" inline-prompt></el-switch>
-                <el-col :span="20">
+                <el-col :span="22">
                     <el-input v-model="scope.row.config.sleep" size="small"
                         @keyup.enter.native="setConfigStatus(scope.row, 'sleep')">
                         <template #prepend>轮询</template>
@@ -35,24 +35,12 @@
                 </el-col>
             </template>
         </el-table-column>
-        <el-table-column fixed="left" label="number" prop="number" type="index" :index="indexMethod"
-            width="80px"></el-table-column>
+        <el-table-column fixed="left" label="num" prop="number" type="index" :index="indexMethod" width="70px"
+            align="center"></el-table-column>
+        <el-table-column label="host" prop="host" width="280px"></el-table-column>
+        <el-table-column label="method" prop="method" width="80px"></el-table-column>
         <el-table-column label="path" prop="path" width="300px"></el-table-column>
-        <!-- 描述的按钮和内容框 -->
-        <el-table-column label="" width="55" align="center">
-            <template #default="scope">
-                <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
-                <el-button :icon="Check" size="small" v-if="!scope.row.edit"
-                    @click="checkDescription(scope.row)"></el-button>
-            </template>
-        </el-table-column>
-        <el-table-column label="description" prop="description" width="250px">
-            <template #default="scope">
-                <div v-if="scope.row.description && scope.row.edit">{{ scope.row.description }}</div>
-                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false"
-                    @keyup.enter.native="checkDescription(scope.row)"></el-input>
-            </template>
-        </el-table-column>
+
         <!-- params的按钮和内容框 -->
         <el-table-column label="" width="55" align="center">
             <template #default="scope">
@@ -97,11 +85,26 @@
                 <div>{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
             </template>
         </el-table-column>
+        <!-- 描述的按钮和内容框 -->
+        <el-table-column label="" width="55" align="center" fixed="right">
+            <template #default="scope">
+                <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
+                <el-button :icon="Check" size="small" v-if="!scope.row.edit"
+                    @click="checkDescription(scope.row)"></el-button>
+            </template>
+        </el-table-column>
+        <el-table-column label="description" prop="description" width="150px" fixed="right">
+            <template #default="scope">
+                <div v-if="scope.row.description && scope.row.edit">{{ scope.row.description }}</div>
+                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false"
+                    @keyup.enter.native="checkDescription(scope.row)"></el-input>
+            </template>
+        </el-table-column>
     </el-table>
     <!-- check的弹窗 -->
-    <el-dialog v-model='checkDialog' width="50%" draggable
+    <el-dialog v-if="checkDialog" v-model='checkDialog' width="50%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
-        :close-on-press-escape=false @close="closeCheckDialog('Check')">
+        @close="closeCheckDialog('Check')">
         <!-- 增加操作 -->
         <el-button v-if="checkInfo.length <= 0" :icon="Plus" type="warning" size="small"
             @click="addRow('check')"></el-button>
@@ -184,18 +187,18 @@
         <br>
         <!-- 响应信息内容 -->
         <el-tabs v-model="activeName" :tab-position="'top'" type="border-card" @tab-click="handleTabClick">
-            <el-tab-pane label="tempResponse" name="temp">
+            <el-tab-pane label="tempResponse" name="tempResponse">
                 <el-input type="textarea" v-model="tempResponse" :rows="15" spellcheck="false"></el-input>
             </el-tab-pane>
-            <el-tab-pane label="caseResponse" name="case">
+            <el-tab-pane label="caseResponse" name="caseResponse">
                 <el-input type="textarea" v-model="caseResponse" :rows="15" spellcheck="false"></el-input>
             </el-tab-pane>
         </el-tabs>
     </el-dialog>
     <!-- params\data的弹窗 -->
-    <el-dialog v-model="dataDialog" width="60%" draggable
+    <el-dialog v-if="dataDialog" v-model="dataDialog" width="60%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , ' + this.dataTitle + ' 数据'"
-        :close-on-click-modal=false :close-on-press-escape=false @close="closeCheckDialog(this.dataTitle)">
+        :close-on-click-modal=false @close="closeCheckDialog(this.dataTitle)">
         <el-button type="info" @click="initData()">初始化</el-button>
         <el-button type="success" @click="formatData()">格式化</el-button>
         <el-button type="warning" @click="emptyData()">清空数据</el-button>
@@ -204,6 +207,29 @@
         <br>
         <el-input v-model="dataInfo" type="textarea" :rows="dataLength" spellcheck="false">
         </el-input>
+        <br>
+        <br>
+        <!-- 响应信息内容 -->
+        <el-tabs v-if="dataTitle == 'Params'" v-model="activeNameParams" :tab-position="'top'" type="border-card"
+            @tab-click="handleTabClickParams">
+            <el-tab-pane label="tempParams" name="tempParams">
+                <el-input type="textarea" v-model="tempParams" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+            <el-tab-pane label="caseParams" name="caseParams">
+                <el-input type="textarea" v-model="caseParams" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+        </el-tabs>
+
+        <el-tabs v-if="dataTitle == 'Data'" v-model="activeNameData" :tab-position="'top'" type="border-card"
+            @tab-click="handleTabClickData">
+            <el-tab-pane label="tempData" name="tempData">
+                <el-input type="textarea" v-model="tempDataS" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+            <el-tab-pane label="caseData" name="caseData">
+                <el-input type="textarea" v-model="caseDataS" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+        </el-tabs>
+
         <el-collapse :v-model="activeName2 = '1'" accordion>
             <el-collapse-item title="假数据表达式(*单花括号)" name="1">
                 <p>1.身份证: {ssn}</p>
@@ -223,7 +249,7 @@
         </el-collapse>
     </el-dialog>
     <!-- header的弹窗 -->
-    <el-dialog v-model='headerDialog' width="50%" draggable
+    <el-dialog v-if="headerDialog" v-model='headerDialog' width="50%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 请求头'" :close-on-click-modal=false
         :close-on-press-escape=false @close="closeCheckDialog('Header')">
         <!-- 增加操作 -->
@@ -264,6 +290,17 @@
                 </template>
             </el-table-column>
         </el-table>
+        <br>
+        <br>
+        <!-- 响应信息内容 -->
+        <el-tabs v-model="activeNameHeaders" :tab-position="'top'" type="border-card" @tab-click="handleTabClickHeaders">
+            <el-tab-pane label="tempHeaders" name="tempHeaders">
+                <el-input type="textarea" v-model="tempHeaders" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+            <el-tab-pane label="caseHeaders" name="caseParams">
+                <el-input type="textarea" v-model="caseHeaders" :rows="15" spellcheck="false"></el-input>
+            </el-tab-pane>
+        </el-tabs>
     </el-dialog>
 </template>
 
@@ -302,8 +339,24 @@ export default {
             renovate: false,
             repData: false,
             dataLoading: false,
-            activeName: 'temp',
-            tabName: { props: { name: 'temp' } },
+
+            activeNameParams: 'tempParams',
+            tabNameParams: { props: { name: 'tempParams' } },
+            tempParams: null,
+            caseParams: null,
+
+            activeNameData: 'tempData',
+            tabNameData: { props: { name: 'tempData' } },
+            tempDataS: null,
+            caseDataS: null,
+
+            activeNameHeaders: 'tempHeaders',
+            tabNameHeaders: { props: { name: 'tempHeaders' } },
+            tempHeaders: null,
+            caseHeaders: null,
+
+            activeName: 'tempResponse',
+            tabName: { props: { name: 'tempResponse' } },
             tempResponse: null,
             caseResponse: null,
         }
@@ -312,15 +365,15 @@ export default {
         // 获取单接口的response
         async handleTabClick(tab) {
             this.tabName.props.name = tab.props.name
-            var tempRes = null
-            var caseRes = null
             switch (tab.props.name) {
-                case 'temp':
+                case 'tempResponse':
+                    var tempRes = null
                     await this.$http({
-                        url: '/caseService/get/response',
+                        url: '/caseService/get/apiInfo',
                         method: 'GET',
                         params: {
                             case_id: this.caseId,
+                            type_: 'response',
                             number: this.checkNumber
                         }
                     }).then(
@@ -335,12 +388,14 @@ export default {
                     this.tempResponse = JSON.stringify(tempRes, null, 4)
                     break
 
-                case 'case':
+                case 'caseResponse':
+                    var caseRes = null
                     await this.$http({
-                        url: '/runCase/get/response',
+                        url: '/runCase/get/apiInfo',
                         method: 'GET',
                         params: {
                             case_id: this.caseId,
+                            type_: 'response',
                             number: this.checkNumber
                         }
                     }).then(
@@ -355,8 +410,153 @@ export default {
                     this.caseResponse = JSON.stringify(caseRes, null, 4)
                     break
             }
+        },
+        // 获取单接口的Params
+        async handleTabClickParams(tab) {
+            this.tabNameParams.props.name = tab.props.name
+            switch (tab.props.name) {
+                case 'tempParams':
+                    var tempParams = null
+                    await this.$http({
+                        url: '/caseService/get/apiInfo',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            type_: 'params',
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            tempParams = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.tempParams = JSON.stringify(tempParams, null, 4)
+                    break
 
-            this.responseDialog = true
+                case 'caseParams':
+                    var caseParams = null
+                    await this.$http({
+                        url: '/runCase/get/apiInfo',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            type_: 'params',
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            caseParams = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.caseParams = JSON.stringify(caseParams, null, 4)
+                    break
+            }
+        },
+        // 获取单接口的Data
+        async handleTabClickData(tab) {
+            this.tabNameData.props.name = tab.props.name
+            switch (tab.props.name) {
+                case 'tempData':
+                    var tempData = null
+                    await this.$http({
+                        url: '/caseService/get/apiInfo',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            type_: 'data',
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            tempData = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.tempDataS = JSON.stringify(tempData, null, 4)
+                    break
+
+                case 'caseData':
+                    var caseData = null
+                    await this.$http({
+                        url: '/runCase/get/apiInfo',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            type_: 'data',
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            caseData = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.caseDataS = JSON.stringify(caseData, null, 4)
+                    break
+            }
+        },
+        // 获取单接口的Headers
+        async handleTabClickHeaders(tab) {
+            this.tabNameHeaders.props.name = tab.props.name
+            switch (tab.props.name) {
+                case 'tempHeaders':
+                    var tempHeaders = null
+                    await this.$http({
+                        url: '/caseService/get/apiInfo',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            type_: 'headers',
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            tempHeaders = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.tempHeaders = JSON.stringify(tempHeaders, null, 4)
+                    break
+
+                case 'caseHeaders':
+                    var caseHeaders = null
+                    await this.$http({
+                        url: '/runCase/get/apiInfo',
+                        method: 'GET',
+                        params: {
+                            case_id: this.caseId,
+                            type_: 'headers',
+                            number: this.checkNumber
+                        }
+                    }).then(
+                        function (response) {
+                            caseHeaders = response.data
+                        }
+                    ).catch(
+                        function (error) {
+                            ElMessage.error(error.message)
+                        }
+                    )
+                    this.caseHeaders = JSON.stringify(caseHeaders, null, 4)
+                    break
+            }
         },
         // 刷新用例详情数据
         async getCaseData() {
@@ -395,23 +595,24 @@ export default {
                     length++
                 }
                 this.dataLength = length > this.dataLength ? length + 2 : this.dataLength + 2
-                this.dataInfo = JSON.stringify(row.params, null, 8);
+                this.dataInfo = JSON.stringify(row.params, null, 4);
                 this.dataInit = row.params
+                this.handleTabClickParams(this.tabNameParams)
             } else {
                 var length = 0
                 for (var _ in row.data) {
                     length++
                 }
                 this.dataLength = length > this.dataLength ? length + 2 : this.dataLength + 2
-                this.dataInfo = JSON.stringify(row.data, null, 8);
+                this.dataInfo = JSON.stringify(row.data, null, 4);
                 this.dataInit = row.data
+                this.handleTabClickData(this.tabNameData)
             }
-
         },
         // 初始化数据
         initData() {
             try {
-                this.dataInfo = JSON.stringify(this.dataInit, null, 8);
+                this.dataInfo = JSON.stringify(this.dataInit, null, 4);
                 ElMessage.success('数据初始化成功')
             } catch (e) {
                 ElMessage.error('数据初始化失败，格式有误')
@@ -420,7 +621,7 @@ export default {
         // 格式化数据
         formatData() {
             try {
-                this.dataInfo = JSON.stringify(JSON.parse(this.dataInfo), null, 8);
+                this.dataInfo = JSON.stringify(JSON.parse(this.dataInfo), null, 4);
                 ElMessage.success('数据格式化成功')
             } catch (e) {
                 ElMessage.error('数据格式化失败，格式有误')
@@ -428,7 +629,7 @@ export default {
         },
         // 清空数据
         emptyData() {
-            this.dataInfo = JSON.stringify({}, null, 8);
+            this.dataInfo = JSON.stringify({}, null, 4);
         },
         // 请求头内容的弹窗
         setHeader(row) {
@@ -448,6 +649,7 @@ export default {
                 num++
             }
             this.headerDialog = true
+            this.handleTabClickHeaders(this.tabNameHeaders)
         },
         // 请求头内容的提交
         async HeaderCheck(row, myType) {
