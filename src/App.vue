@@ -526,105 +526,57 @@ export default {
       <my-echarts-free v-if="freeEcharts" :api-free="apiFree" :ui-free="uiFree"></my-echarts-free>
     </el-main>
     <!-- 参数变更的弹窗 -->
-    <el-dialog v-model='dialogParamsCharge' width="70%" title="参数变更" :close-on-click-modal=false
-      :close-on-press-escape=false @close='dialogParamsCharge = false' draggable>
+    <el-dialog class="cg" v-model='dialogParamsCharge' width="70%" title="参数变更" :close-on-click-modal=false
+      @close='dialogParamsCharge = false' draggable>
       <my-change v-if="dialogParamsCharge"></my-change>
     </el-dialog>
     <!-- 文件上传的弹窗 -->
-    <el-dialog v-model='dialogUpload' width="40%" title="文件上传" @close='dialogUpload = false' draggable>
+    <el-dialog class="up" v-model='dialogUpload' width="60%" title="文件上传" @close='dialogUpload = false' draggable>
       <my-upload v-if="dialogUpload" :upload-type_="uploadFileType" :file-type_="fileType"></my-upload>
     </el-dialog>
     <!-- 模板组装的弹窗 -->
-    <el-dialog v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
-      :close-on-press-escape=false @close='dialogTempSuit = false' draggable>
+    <el-dialog class="tf" v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
+      @close='dialogTempSuit = false' draggable>
       <my-transfer v-if="dialogTempSuit"></my-transfer>
     </el-dialog>
     <!-- 配置弹窗 -->
-    <el-dialog v-model="dialogWholeConf" width="60%" title="配置项" draggable>
+    <el-dialog class="wc" v-model="dialogWholeConf" width="60%" title="配置项" draggable>
       <my-whole-conf v-if="dialogWholeConf"></my-whole-conf>
     </el-dialog>
     <!-- 编辑器 -->
-    <el-dialog v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
-      :close-on-press-escape=false @close='dialogMonaco = false' draggable>
+    <el-dialog class="mc" v-model='dialogMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
+      @close='dialogMonaco = false' draggable>
       <monaco-editor v-if="dialogMonaco" :ui-temp-value="uiTempValue"></monaco-editor>
     </el-dialog>
   </el-container>
 </template>
 
 
-<style scoped>
-.el-switch {
-  position: absolute;
-  right: 80px;
-}
-
+<style>
 main {
-  background-color: rgba(192, 192, 192, 0.4);
+  background-color: rgba(192, 192, 192, 0.6);
   border-radius: 20px
 }
 
-.el-button--primary {
-  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
-  --el-button-bg-color: rgba(225, 57, 110, 1);
-  --el-button-hover-bg-color: rgba(225, 57, 110, 1);
-  --el-button-active-border-color: rgba(225, 57, 110, 1);
-  --el-button-active-bg-color: rgba(225, 57, 110, 1);
-  --el-button-border-color: none;
-  color: rgb(13, 1, 28);
+.el-dialog.tf {
+  background: url("./assets/transfer.png");
+  background-size: 85% 100%;
 }
 
-.el-button--success {
-  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
-  --el-button-bg-color: rgba(72, 121, 135, 1);
-  --el-button-hover-bg-color: rgba(72, 121, 135, 1);
-  --el-button-active-border-color: rgba(72, 121, 135, 1);
-  --el-button-active-bg-color: rgba(72, 121, 135, 1);
-  --el-button-border-color: none;
-  color: rgb(13, 1, 28);
+.el-dialog.up {
+  background: url("./assets/upload.png");
+  background-size: 100%;
 }
 
-.el-button--warning {
-  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
-  --el-button-bg-color: rgba(178, 118, 130, 1);
-  --el-button-hover-bg-color: rgba(178, 118, 130, 1);
-  --el-button-active-border-color: rgba(178, 118, 130, 1);
-  --el-button-active-bg-color: rgba(178, 118, 130, 1);
-  --el-button-border-color: none;
-  color: rgb(13, 1, 28);
+.el-dialog.wc {
+  background: url("./assets/wholeConf.png");
+  background-size: 100%;
+  --el-text-color-primary: aliceblue;
 }
 
-
-.el-button--default {
-  /* --el-button-bg-color: rgba(235, 150, 173, 1); */
-  --el-button-bg-color: rgba(221, 160, 104, 1);
-  --el-button-hover-bg-color: rgba(221, 160, 104, 1);
-  --el-button-active-border-color: rgba(221, 160, 104, 1);
-  --el-button-active-bg-color: rgba(221, 160, 104, 1);
-  --el-button-hover-text-color: rgb(255, 255, 255);
-  --el-button-border-color: none;
-  color: rgb(13, 1, 28);
+.el-dialog.cg {
+  background: url("./assets/charge.png");
+  background-size: 100%;
+  --el-text-color-primary: aliceblue;
 }
-
-
-
-
-
-
-/* .el-button--primary:hover {
-  --el-button-hover-bg-color: rgba(225, 57, 110, 1);
-} */
-
-
-/* .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #959999aa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-} */
 </style>

@@ -157,7 +157,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '绑定成功',
-                        offset: 200,
                     })
                     row.loading = false
                 }
@@ -180,7 +179,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '添加成功',
-                        offset: 200,
                     })
                 }
             ).catch(function (error) {

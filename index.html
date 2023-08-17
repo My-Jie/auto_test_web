@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
-    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>随便测测</title>
 </head>
@@ -16,7 +16,244 @@
 
 <style>
     .fgo {
-        background: url("./src/assets/saber.png");
+        background: url("./src/assets/index.png");
+        background-size: cover;
+    }
+    
+    .el-popper.is-customized {
+        /* Set padding to ensure the height is 32px */
+        padding: 6px 12px;
+        background: linear-gradient(90deg, #8dc6ff, #ffb6c1);
+    }
+    
+    .el-popper.is-customized .el-popper__arrow::before {
+        background: linear-gradient(45deg, #8dc6ff, #ffb6c1);
+        right: 0;
+    }
+    
+    .el-button--default {
+        --el-button-bg-color: #8dc6ff;
+        --el-button-hover-bg-color: #1e88e5;
+        --el-button-active-border-color: #8dc6ff;
+        --el-button-active-bg-color: #8dc6ff;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    
+    .el-button--primary {
+        --el-button-bg-color: #fdf3b3;
+        --el-button-hover-bg-color: #fbc02d;
+        --el-button-active-border-color: #fdf3b3;
+        --el-button-active-bg-color: #fdf3b3;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    
+    .el-button--success {
+        --el-button-bg-color: #fdd0a2;
+        --el-button-hover-bg-color: #f9a826;
+        --el-button-active-border-color: #fdd0a2;
+        --el-button-active-bg-color: #fdd0a2;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    
+    .el-button--warning {
+        --el-button-bg-color: #ffb6c1;
+        --el-button-hover-bg-color: #ff69b4;
+        --el-button-active-border-color: #ffb6c1;
+        --el-button-active-bg-color: #ffb6c1;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    
+    .el-button--Info {
+        --el-button-bg-color: #7dcea0;
+        --el-button-hover-bg-color: #2e7d32;
+        --el-button-active-border-color: #7dcea0;
+        --el-button-active-bg-color: #7dcea0;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    /* 操作按钮 */
+    
+    .el-button.el-button--success.is-plain.el-tooltip__trigger {
+        --el-button-bg-color: #8dc6ff;
+        --el-button-hover-bg-color: #1e88e5;
+        --el-button-active-border-color: #8dc6ff;
+        --el-button-active-bg-color: #8dc6ff;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    
+    .el-button.el-button--primary.is-plain.el-tooltip__trigger {
+        --el-button-bg-color: #fdf3b3;
+        --el-button-hover-bg-color: #fbc02d;
+        --el-button-active-border-color: #fdf3b3;
+        --el-button-active-bg-color: #fdf3b3;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    
+    .el-button.el-button--danger.is-plain.el-tooltip__trigger {
+        --el-button-bg-color: #cccccc;
+        --el-button-hover-bg-color: #cccccc;
+        --el-button-active-border-color: #cccccc;
+        --el-button-active-bg-color: #cccccc;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    /* 删除确认 */
+    
+    .el-button.el-button--danger {
+        --el-button-bg-color: #cccccc;
+        --el-button-hover-bg-color: #cccccc;
+        --el-button-active-border-color: #cccccc;
+        --el-button-active-bg-color: #cccccc;
+        --el-button-border-color: none;
+        color: #2f4858;
+    }
+    /* 转化确认 */
+    
+    .el-upload-dragger {
+        opacity: 0.9;
+    }
+    
+    .el-form-item.is-required.asterisk-left {
+        opacity: 0.9;
+    }
+    
+    .el-form-item.asterisk-left {
+        opacity: 0.9;
+    }
+    
+    .el-radio-button {
+        opacity: 0.9;
+    }
+    
+    .el-tabs__content {
+        opacity: 0.9;
+    }
+    
+    .el-textarea__inner {
+        opacity: 0.9;
+    }
+    
+    .el-transfer-panel {
+        opacity: 0.9;
+    }
+    
+    .el-input.el-input-group.el-input-group--prepend {
+        opacity: 0.9;
+    }
+    
+    .monaco-editor.no-user-select.showUnused.showDeprecated.vs-dark {
+        opacity: 0.9;
+    }
+    
+    .demo-collapse {
+        opacity: 0.9;
+    }
+    
+    .el-pagination.is-background {
+        opacity: 0.9;
+        color: black;
+    }
+    
+    .el-collapse-item__header {
+        opacity: 0.9;
+    }
+    
+    .el-collapse-item__wrap {
+        opacity: 0.9;
+    }
+    
+    .el-pagination__total.is-first {
+        color: #fff;
+    }
+    
+    .el-pagination__goto {
+        color: #fff;
+    }
+    
+    .el-form-item.is-required.asterisk-left {
+        opacity: 0.9;
+    }
+    
+    .el-table,
+    .el-table__expanded-cell {
+        opacity: 0.9;
+    }
+    
+    .el-table .warning-row {
+        background: #4a7538;
+    }
+    
+    .el-table .success-row {
+        background: rgb(129, 103, 54);
+    }
+    
+    .el-input__suffix {
+        color: black;
+    }
+    
+    .el-input-group__prepend {
+        color: black;
+    }
+    
+    .el-radio-button.is-active {
+        --el-color-primary: #fbc02d;
+        color: #2f4858;
+    }
+    
+    .el-input__inner {
+        color: black;
+    }
+    
+    .el-form-item__label {
+        color: black;
+    }
+    
+    .el-table__body-wrapper {
+        color: black;
+    }
+    
+    .el-tabs--border-card {
+        opacity: 0.9;
+        color: black;
+    }
+    
+    .el-dialog.mc {
+        background: url("src/assets/monaco.png");
+        background-size: 100%;
+        --el-text-color-primary: aliceblue;
+    }
+    
+    .confirm {
+        background: url("src/assets/confirm.png");
+        background-size: 100%;
+    }
+    
+    .case-data {
+        background: url("src/assets/caseData.png");
+        background-size: 100%;
+        /* --el-text-color-primary: aliceblue; */
+    }
+    
+    .details {
+        background: url("src/assets/details.png");
+        background-size: 100%;
+        /* --el-text-color-primary: aliceblue; */
+    }
+    
+    .setting-bind {
+        background: url("src/assets/setting-bind.png");
+        background-size: 100%;
+        /* --el-text-color-primary: aliceblue; */
+    }
+    
+    .el-notification {
+        background: url("src/assets/notification.png");
         background-size: cover;
     }
 </style>

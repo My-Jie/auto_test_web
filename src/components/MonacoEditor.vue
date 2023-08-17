@@ -17,7 +17,7 @@
 
     <!-- 提取数据的弹窗 -->
     <el-dialog v-model='dialogPlaywrightData' width="50%" title="获取到的可替换内容" :close-on-click-modal=false
-        :close-on-press-escape=false @close='dialogPlaywrightData = false' draggable>
+        @close='dialogPlaywrightData = false' draggable>
         <el-table :data="caseInfo" stripe fit>
             <el-table-column label="Row" prop="row" type="index" :index="indexMethod" width="50"
                 align="center"></el-table-column>
@@ -114,7 +114,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '保存成功',
-                        offset: 200,
                     })
                 }
             ).catch(
@@ -197,4 +196,4 @@ export default {
 };
 </script>
    
-<style lang="scss" scoped></style>
+<style scoped></style>

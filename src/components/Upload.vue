@@ -216,80 +216,20 @@ export default {
 }
 </script>
 
-<style>
-/* 弹窗的 */
-.el-dialog__body {
-    background: url('../assets/upload4.png');
-    background-size: cover;
-}
-
-.el-radio-group {
-    --el-color-primary: rgba(225, 57, 110, 1);
-    color: black;
-}
-
-.el-upload-dragger {
-    opacity: 0.9;
-}
-
-.el-form-item.is-required.asterisk-left {
-    opacity: 0.9;
-}
-
-.el-form-item.asterisk-left {
-    opacity: 0.9;
-}
-
-.el-radio-button {
-    opacity: 0.9;
-}
-
-.el-tabs__content {
-    opacity: 0.9;
-}
-
-.el-textarea__inner {
-    opacity: 0.9;
-}
-
-.el-transfer-panel {
-    opacity: 0.9;
-}
-
-.el-input.el-input-group.el-input-group--prepend {
-    opacity: 0.9;
-}
-
-.monaco-editor.no-user-select.showUnused.showDeprecated.vs-dark {
-    opacity: 0.9;
-}
-
-.demo-collapse {
-    opacity: 0.9;
-}
-
-.el-pagination.is-background {
-    opacity: 0.9;
-    color: black;
-}
-
-.el-collapse-item__header {
-    opacity: 0.9;
-}
-
-.el-collapse-item__wrap {
-    opacity: 0.9;
-}
-
-.el-table__body-wrapper {
-    color: black;
-}
-
-.el-pagination__total.is-first {
-    color: #fff
-}
-
-.el-pagination__goto {
-    color: #fff
+<style scoped>
+.el-upload-demo {
+    height: 220px;
+    width: 100%;
+    border: 1px dashed #DEDEDE;
+    /* border-radius: 4px; */
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px dashed #2260FF;
+    font-size: 14px;
+    margin-top: 30px;
+    text-align: center;
+    line-height: unset;
 }
 </style>

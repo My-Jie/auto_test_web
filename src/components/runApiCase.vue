@@ -102,7 +102,6 @@ export default {
                         ElNotification.warning({
                             title: 'Warning',
                             message: '需要选择环境域名',
-                            offset: 200,
                         })
                         return
                     }
@@ -135,7 +134,6 @@ export default {
                     // ElNotification.success({
                     //     title: 'Success',
                     //     message: '绑定成功',
-                    //     offset: 200,
                     // })
                 }
             ).catch(function (error) {

@@ -340,13 +340,11 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: '变更成功',
-                                offset: 200,
                             })
                         } else {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: '未变更',
-                                offset: 200,
                             })
                         }
 
@@ -381,7 +379,6 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: 'Params插入字段成功',
-                                offset: 200,
                             })
                         }
                     ).catch(
@@ -390,7 +387,6 @@ export default {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: 'Params插入操作不可逆',
-                                offset: 200,
                             })
                         }
                     )
@@ -418,13 +414,11 @@ export default {
                                 ElNotification.success({
                                     title: 'Success',
                                     message: 'Params替换字段成功',
-                                    offset: 200,
                                 })
                             } else {
                                 ElNotification.warning({
                                     title: 'Warning',
                                     message: 'Params替换字段未替换',
-                                    offset: 200,
                                 })
                             }
                         }
@@ -434,7 +428,6 @@ export default {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: 'Params字段未替换',
-                                offset: 200,
                             })
                         }
                     )
@@ -459,7 +452,6 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: 'Params字段删除成功',
-                                offset: 200,
                             })
                         }
                     ).catch(
@@ -468,7 +460,6 @@ export default {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: 'Params删除操作不可逆',
-                                offset: 200,
                             })
                         }
                     )
@@ -496,7 +487,6 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: 'Data插入字段成功',
-                                offset: 200,
                             })
                         }
                     ).catch(
@@ -505,7 +495,6 @@ export default {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: 'Data插入操作不可逆',
-                                offset: 200,
                             })
                         }
                     )
@@ -533,13 +522,11 @@ export default {
                                 ElNotification.success({
                                     title: 'Success',
                                     message: 'Data替换字段成功',
-                                    offset: 200,
                                 })
                             } else {
                                 ElNotification.warning({
                                     title: 'Warning',
                                     message: 'Data替换字段未替换',
-                                    offset: 200,
                                 })
                             }
                         }
@@ -549,7 +536,6 @@ export default {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: 'Data字段未替换',
-                                offset: 200,
                             })
                         }
                     )
@@ -574,7 +560,6 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: 'Data字段删除成功',
-                                offset: 200,
                             })
                         }
                     ).catch(
@@ -583,7 +568,6 @@ export default {
                             ElNotification.warning({
                                 title: 'Warning',
                                 message: 'Data删除操作不可逆',
-                                offset: 200,
                             })
                         }
                     )
@@ -733,33 +717,4 @@ export default {
 };
 </script>
 
-<style>
-.el-table .warning-row {
-    background: #4a7538;
-}
-
-.el-table .success-row {
-    background: rgb(129, 103, 54);
-}
-
-.el-input__inner {
-    color: black;
-}
-
-.el-input__suffix {
-    color: black;
-}
-
-.el-input-group__prepend {
-    color: black;
-}
-
-/* .el-input__wrapper {
-    background-color: #283443 !important;
-  } */
-
-/* :deep(.el-input__inner){
-        	text-align: center;
-        } */
-</style>
 

@@ -20,7 +20,7 @@
             </el-table-column>
             <el-table-column label="用例名称" prop="name" width="420px">
                 <template #default="scope">
-                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#E1396E">{{
+                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#F29492">{{
                         scope.row.case_name }}</font>
                     </div>
                     <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"
@@ -99,13 +99,14 @@
             :total=caseTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 详情弹窗 -->
-        <el-dialog v-model='myDialog' width="90%" :title="caseId + ' ' + dataTitle">
+        <el-dialog class="details" v-model='myDialog' width="90%" :title="caseId + ' ' + dataTitle">
             <!-- <div class="el-dialog-div"> -->
             <case-data v-if="myDialog" :case-data="thisCaseData" :case-id="caseId"></case-data>
             <!-- </div> -->
         </el-dialog>
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" :title="'执行用例' + caseId + '-' + caseName" width="60%" @close="closeRunCase">
+        <el-dialog class="confirm" v-model="dialogVisible" :title="'执行用例' + caseId + '-' + caseName" width="50%"
+            @close="closeRunCase">
             <el-select v-model="settingVirtualId" placeholder="选择环境" @visible-change="selectSetting">
                 <el-option v-for="item in settingInfoList" :key="item.setting_name" :label="item.setting_name"
                     :value="item.virtual_id"></el-option>
@@ -121,7 +122,7 @@
             </template>
         </el-dialog>
         <!-- 复制用例弹窗 -->
-        <el-dialog v-model="setCopyDialogVisible" title="Tips" width="30%">
+        <el-dialog class="confirm" v-model="setCopyDialogVisible" title="Tips" width="50%">
             <span>复制用例 [ {{ caseId }} - {{ caseName }} ]</span>
             <template #footer>
                 <span class="dialog-footer">
@@ -131,16 +132,17 @@
             </template>
         </el-dialog>
         <!-- 数据集的弹窗 -->
-        <el-dialog v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog" width="70%">
+        <el-dialog class="confirm" v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog"
+            width="70%">
             <my-gather :gather-data="gatherData" :case-id="caseId"></my-gather>
         </el-dialog>
         <!-- 删除的窗口 -->
-        <el-dialog v-model="delDialog" title="Tips" width="30%">
+        <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
             <span>删除用例 [ {{ caseId }} - {{ caseName }} ]</span>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="delDialog = false">取消</el-button>
-                    <el-button type="primary" @click="delCase(caseRow)">确认</el-button>
+                    <el-button type="danger" @click="delCase(caseRow)">确认</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -261,7 +263,6 @@ export default {
                         ElNotification.warning({
                             title: 'Warning',
                             message: '没有运行这个用例[ ' + row.case_id + ' ]',
-                            offset: 200,
                         })
                         row.percentage = 0
                         row.percentageStatus = 'success'
@@ -270,7 +271,6 @@ export default {
                         ElNotification.warning({
                             title: 'Warning',
                             message: '用例[ ' + row.case_id + ' ]已停止',
-                            offset: 200,
                         })
                     }
                 }
@@ -293,7 +293,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '修改成功',
-                        offset: 200,
                     })
                 }
             ).catch(
@@ -351,7 +350,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '用例[ ' + row.name + ' ] 删除成功',
-                        offset: 200,
                     })
                     flag = true
                 }
@@ -470,7 +468,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '用例[ ' + row.name + ' ] 复制成功 新用例名称 [ ' + response.data.case_name + ' ]',
-                        offset: 200,
                     })
                     row.copyLoading = false
                 }
@@ -522,7 +519,6 @@ export default {
             ElNotification.success({
                 title: 'Success',
                 message: '开始执行 用例ID: ' + row.case_id,
-                offset: 200,
             })
             await this.$http({
                 url: '/runCase/case',
@@ -567,7 +563,6 @@ export default {
                         ElNotification.error({
                             title: 'Error',
                             message: '用例\n[ ' + row.case_id + '-' + row.name + ' ] 执行失败',
-                            offset: 200,
                         })
                     }
                 }
@@ -576,7 +571,6 @@ export default {
                 ElNotification.error({
                     title: 'Error',
                     message: '执行失败 用例ID: ' + row.case_id,
-                    offset: 200,
                 })
                 row.runLoading = false
             })
@@ -598,18 +592,7 @@ export default {
 </script>
 
 
-<style>
-.el-popper.is-customized {
-    /* Set padding to ensure the height is 32px */
-    padding: 6px 12px;
-    background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
-}
-
-.el-popper.is-customized .el-popper__arrow::before {
-    background: linear-gradient(45deg, #b2e68d, #bce689);
-    right: 0;
-}
-
+<style scoped>
 .el-link {
     margin-right: 8px;
 }

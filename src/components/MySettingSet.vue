@@ -53,7 +53,7 @@
     </el-table>
 
     <!-- 绑定窗口 -->
-    <el-dialog v-model="settingEdit" width="60%" title="配置项绑定" @close="get_setting" draggable>
+    <el-dialog class="setting-bind" v-if="settingEdit" v-model="settingEdit" width="60%" title="配置项绑定" @close="get_setting" draggable>
         <my-setting-bind v-if="settingEdit" :setting-name="settingName" :setting-id="settingId"></my-setting-bind>
     </el-dialog>
 </template>
@@ -121,7 +121,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '添加成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -150,7 +149,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '删除成功',
-                        offset: 200,
                     })
                     row.del = false
                     row.EditDisabled = false

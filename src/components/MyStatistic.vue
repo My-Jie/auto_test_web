@@ -128,7 +128,7 @@ export default {
     padding: 20px;
     border-radius: 10px;
     /* background-color: rgb(138, 163, 192); */
-    background-image: url('../assets/upload.png');
+    background-color: #F2E9E4;
 }
 
 .statistic-footer {

@@ -64,13 +64,13 @@
             :total=tempTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 详情弹窗 -->
-        <el-dialog v-model='myDialog' width="90%" :title="tempTitle">
+        <el-dialog class="details" v-model='myDialog' width="90%" :title="tempTitle">
             <div class="el-dialog-div">
                 <temp-data v-if="myDialog" :temp-data="thisTempData" :temp-id="tempId"></temp-data>
             </div>
         </el-dialog>
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" title="Tips" width="30%">
+        <el-dialog class="confirm" v-model="dialogVisible" title="Tips" width="50%">
             <span>模板 [ {{ tempId }} - {{ tempName }} ] 包含以下用例</span>
             <br>
             <el-table :data="thisCaseInfo">
@@ -80,22 +80,22 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="runCase(tempRow)">确认</el-button>
+                    <el-button type="success" @click="runCase(tempRow)">确认</el-button>
                 </span>
             </template>
         </el-dialog>
         <!-- 删除的窗口 -->
-        <el-dialog v-model="delDialog" title="Tips" width="30%">
+        <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
             <span>删除模板 [ {{ tempId }} - {{ tempName }} ]</span>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="delDialog = false">取消</el-button>
-                    <el-button type="primary" @click="delTemp(tempRow)">确认</el-button>
+                    <el-button type="danger" @click="delTemp(tempRow)">确认</el-button>
                 </span>
             </template>
         </el-dialog>
         <!-- 转化为用例的弹窗 -->
-        <el-dialog v-model='dialogTempToCase' width="50%" :title="tempToCaseTitle" @close='closeDialog'>
+        <el-dialog class="confirm" v-model='dialogTempToCase' width="50%" :title="tempToCaseTitle" @close='closeDialog'>
             <el-radio-group v-model="radioTempToCase">
                 <el-radio-button :label='true'>新增</el-radio-button>
                 <el-radio-button :label='false'>覆盖</el-radio-button>
@@ -218,7 +218,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '修改成功',
-                        offset: 200,
                     })
                 }
             ).catch(
@@ -262,13 +261,11 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '模板 [' + tempId + '] 新增用例 [' + response.data.data.case_id + '] 成功',
-                        offset: 200,
                     })
                 } else {
                     ElNotification.success({
                         title: 'Success',
                         message: '模板 [' + tempId + '] 覆盖用例 [' + response.data.data.case_id + '] 成功',
-                        offset: 200,
                     })
                 }
             }).catch(function (error) {
@@ -334,7 +331,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '模板[ ' + row.temp_name + ' ] 删除成功',
-                        offset: 200,
                     })
                     flag = true
                 }
@@ -413,7 +409,6 @@ export default {
             ElNotification.success({
                 title: 'Success',
                 message: '开始执行 模板ID: ' + row.id,
-                offset: 200,
             })
             await this.$http.post('/runCase/temp', [row.id]).then(
                 function (response) {
@@ -435,7 +430,6 @@ export default {
                         ElNotification.error({
                             title: 'Error',
                             message: '模板\n[ ' + row.id + '-' + row.temp_name + ' ] 执行失败',
-                            offset: 200,
                         })
                     }
                 }
@@ -444,7 +438,6 @@ export default {
                 ElNotification.error({
                     title: 'Error',
                     message: '执行失败 模板ID: ' + row.id,
-                    offset: 200,
                 })
                 row.runLoading = false
             })
@@ -470,129 +463,9 @@ export default {
 </script>
 
 
-<style sc>
-.el-upload-demo {
-    height: 220px;
-    width: 100%;
-    border: 1px dashed #DEDEDE;
-    /* border-radius: 4px; */
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    border: 1px dashed #2260FF;
-    font-size: 14px;
-    margin-top: 30px;
-    text-align: center;
-    line-height: unset;
-}
-
+<style scoped>
 .el-dialog-div {
     height: 65vh;
     overflow: auto;
 }
-
-.el-upload-dragger {
-    opacity: 0.9;
-}
-
-.el-form-item.is-required.asterisk-left {
-    opacity: 0.9;
-}
-
-
-
-.el-button.el-button--success.is-plain {
-    background-color: rgba(72, 121, 135, 1);
-    color: black;
-}
-
-.el-button.el-button--success.ml-2 {
-    background-color: rgba(72, 121, 135, 1);
-    color: black;
-}
-
-.el-button.el-button--success.el-button--small {
-    background-color: rgba(72, 121, 135, 1);
-    color: black;
-}
-
-.el-button.el-button--primary.is-plain {
-    background-color: rgba(225, 57, 110, 1);
-    color: black;
-}
-
-.el-button.el-button--primary.is-disabled.el-transfer__button.is-with-texts {
-    background-color: rgba(225, 57, 110, 1);
-    color: black;
-}
-
-
-
-.el-button.el-button--primary {
-    --el-button-bg-color: rgba(225, 57, 110, 1);
-    --el-button-hover-bg-color: rgba(225, 57, 110, 1);
-    --el-button-active-border-color: rgba(225, 57, 110, 1);
-    --el-button-active-bg-color: rgba(225, 57, 110, 1);
-    --el-button-border-color: none;
-    color: rgb(13, 1, 28);
-}
-
-
-.el-button.el-button--success {
-    --el-button-hover-bg-color: rgba(72, 121, 135, 1);
-    --el-button-active-border-color: rgba(72, 121, 135, 1);
-    --el-button-active-bg-color: rgba(72, 121, 135, 1);
-    --el-button-border-color: none;
-    background-color: rgba(72, 121, 135, 1);
-    color: black;
-
-}
-
-.el-button.el-button--warning {
-    --el-button-hover-bg-color: rgba(178, 118, 130, 1);
-    --el-button-active-border-color: rgba(178, 118, 130, 1);
-    --el-button-active-bg-color: rgba(178, 118, 130, 1);
-    --el-button-border-color: none;
-    background-color: rgba(178, 118, 130, 1);
-    color: black;
-}
-
-.el-button.el-button--info {
-    --el-button-hover-bg-color: rgba(150, 145, 146, 1);
-    --el-button-active-border-color: rgba(150, 145, 146, 1);
-    --el-button-active-bg-color: rgba(150, 145, 146, 1);
-    --el-button-border-color: none;
-    background-color: rgba(150, 145, 146, 1);
-    color: black;
-}
-
-
-.el-button.el-button--danger {
-    --el-button-hover-bg-color: rgba(114, 4, 26, 1);
-    --el-button-active-border-color: rgba(114, 4, 26, 1);
-    --el-button-active-bg-color: rgba(114, 4, 26, 1);
-    --el-button-border-color: none;
-    background-color: rgba(114, 4, 26, 1);
-    color: #ffffff;
-}
-
-
-
-.el-notification.right {
-    background: url('../assets/xp.png');
-    background-size: cover;
-    /* color: #fff; */
-}
-
-.el-table,
-.el-table__expanded-cell {
-    opacity: 0.9;
-}
-
-/* .el-table th,
-.el-table tr,
-.el-table td {
-    opacity: 0.8;
-} */
 </style>

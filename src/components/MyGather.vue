@@ -245,7 +245,6 @@ export default {
                         ElNotification.error({
                             title: 'Error',
                             message: '用例 [ ' + case_id + ' ] 执行失败',
-                            offset: 200,
                         })
                     }
                 }

@@ -55,7 +55,7 @@
             :total=uiTempTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 运行用例弹窗 -->
-        <el-dialog v-model="dialogVisible" title="Tips" width="40%"
+        <el-dialog class="confirm" v-model="dialogVisible" title="Tips" width="50%"
             @close='browserId = null, headless = true, gatherId = null'>
             <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
             <br>
@@ -89,15 +89,15 @@
         </el-dialog>
 
         <!-- 编辑器弹窗 -->
-        <el-dialog v-model='dialogUiMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
-            :close-on-press-escape=false @close='dialogUiMonaco = false' draggable>
+        <el-dialog class="mc" v-model='dialogUiMonaco' width="70%" title="Python页面编辑器" :close-on-click-modal=false
+            @close='dialogUiMonaco = false' draggable>
             <monaco-editor v-if="dialogUiMonaco" :ui-temp-id="uiTempId" :ui-temp-name="uiTempName"
                 :project-name="projectName" :ui-temp-value="uiTempValue"></monaco-editor>
         </el-dialog>
 
         <!-- 数据详情的弹窗 -->
-        <el-dialog v-model="dialogGather" title="Tips" width="60%" @close='dialogGather = false' :close-on-click-modal=false
-            :close-on-press-escape=false>
+        <el-dialog class="confirm" v-model="dialogGather" title="Tips" width="60%" @close='dialogGather = false'
+            :close-on-click-modal=false>
             <el-table v-loading='loading' :data="gatherInfo" row-key="case_id" stripe fit>
                 <el-table-column label="CaseId" prop="id" type="index" :index="indexMethodGather" width="100%"
                     align="center"></el-table-column>
@@ -120,7 +120,7 @@
         </el-dialog>
 
         <!-- 删除的窗口 -->
-        <el-dialog v-model="delDialog" title="Tips" width="30%">
+        <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
             <span>删除Playwright模板和测试数据 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
             <template #footer>
                 <span class="dialog-footer">
@@ -316,7 +316,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '模板[ ' + row.temp_name + ' ] 删除成功',
-                        offset: 200,
                     })
                     flag = true
                 }
@@ -368,7 +367,6 @@ export default {
             ElNotification.success({
                 title: 'Success',
                 message: '开始执行 用例ID: ' + this.uiTempId,
-                offset: 200,
             })
             await this.$http({
                 url: '/runCase/ui/temp',
@@ -406,7 +404,6 @@ export default {
                 ElNotification.error({
                     title: 'Error',
                     message: '执行失败 用例ID: ' + row.id,
-                    offset: 200,
                 })
                 row.runLoading = false
             })

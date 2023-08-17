@@ -253,13 +253,11 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '用例[ ' + case_id + '-' + row.number + '-' + rep + ' ] 替换成功',
-                            offset: 200,
                         })
                     } else {
                         ElNotification.warning({
                             title: 'Warning',
                             message: '用例[ ' + case_id + '-' + row.number + '-' + rep + ' ] 取消替换',
-                            offset: 200,
                         })
                     }
                 }

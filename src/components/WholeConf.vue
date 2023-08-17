@@ -420,7 +420,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '添加成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -449,7 +448,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '修改成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -480,7 +478,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '添加成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -509,7 +506,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '修改成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -542,7 +538,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '添加成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -573,7 +568,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '修改成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -606,7 +600,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '添加成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -637,7 +630,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '修改成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -673,7 +665,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '添加成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -707,7 +698,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '修改成功',
-                            offset: 200,
                         })
                         row.edit = false
                         row.delDisabled = false
@@ -734,7 +724,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '删除成功',
-                        offset: 200,
                     })
                     row.del = false
                     row.EditDisabled = false
@@ -760,7 +749,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '删除成功',
-                        offset: 200,
                     })
                     row.del = false
                     row.EditDisabled = false
@@ -786,7 +774,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '删除成功',
-                        offset: 200,
                     })
                     row.del = false
                     row.EditDisabled = false
@@ -812,7 +799,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '删除成功',
-                        offset: 200,
                     })
                     row.del = false
                     row.EditDisabled = false
@@ -838,7 +824,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '删除成功',
-                        offset: 200,
                     })
                     row.del = false
                     row.EditDisabled = false
@@ -941,30 +926,3 @@ export default {
     }
 }
 </script>
-
-<style>
-.el-input__inner {
-    color: black;
-}
-
-.el-form-item__label {
-    color: black;
-}
-
-.el-table__body-wrapper {
-    color: black;
-}
-
-.el-tabs__active-bar.is-top {
-    --el-color-primary: rgba(225, 57, 110, 1);
-}
-
-.el-tabs__item.is-top.is-active {
-    --el-color-primary: rgba(225, 57, 110, 1);
-}
-
-.el-tabs--border-card {
-    opacity: 0.9;
-    color: black;
-}
-</style>

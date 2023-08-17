@@ -5,7 +5,7 @@
     </el-affix>
 
     <!-- 替换数据弹窗 -->
-    <el-dialog v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false draggable
+    <el-dialog class="case-data" v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false draggable
         :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>
         <my-replace-data :case-id="caseId"></my-replace-data>
     </el-dialog>
@@ -15,13 +15,13 @@
         <el-table-column fixed="left" label="config" prop="config" width="250%">
             <template #default="scope">
                 <el-switch v-model="scope.row.config.stop" active-text="主动结束" inactive-text="主动结束"
-                    :loading="scope.row.stopLoading" class="ml-2" style="--el-switch-on-color: #E6A23C;"
+                    :loading="scope.row.stopLoading" class="ml-2" style="--el-switch-on-color: #FFC857;"
                     @click="setConfigStatus(scope.row, 'stop')" inline-prompt></el-switch>&nbsp;
                 <el-switch v-model="scope.row.config.fail_stop" active-text="失败停止" inactive-text="失败停止"
-                    :loading="scope.row.failStopLoading" class="ml-2" style="--el-switch-on-color: #F56C6C;"
+                    :loading="scope.row.failStopLoading" class="ml-2" style="--el-switch-on-color: #F29492;"
                     @click="setConfigStatus(scope.row, 'fail_stop')" inline-prompt></el-switch>&nbsp;
                 <el-switch v-model="scope.row.config.is_login" active-text="登录" inactive-text="登录"
-                    :loading="scope.row.isLoginLoading" class="ml-2" style="--el-switch-on-color: #67C23A;"
+                    :loading="scope.row.isLoginLoading" class="ml-2" style="--el-switch-on-color: #6FCF97;"
                     @click="setConfigStatus(scope.row, 'is_login')" inline-prompt></el-switch>
                 <el-col :span="22">
                     <el-input v-model="scope.row.config.sleep" size="small"
@@ -102,7 +102,7 @@
         </el-table-column>
     </el-table>
     <!-- check的弹窗 -->
-    <el-dialog v-if="checkDialog" v-model='checkDialog' width="50%" draggable height="550px"
+    <el-dialog class="case-data" v-if="checkDialog" v-model='checkDialog' width="50%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
         @close="closeCheckDialog('Check')">
         <!-- 增加操作 -->
@@ -188,15 +188,15 @@
         <!-- 响应信息内容 -->
         <el-tabs v-model="activeName" :tab-position="'top'" type="border-card" @tab-click="handleTabClick">
             <el-tab-pane label="tempResponse" name="tempResponse">
-                <el-input type="textarea" v-model="tempResponse" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="tempResponse" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
             <el-tab-pane label="caseResponse" name="caseResponse">
-                <el-input type="textarea" v-model="caseResponse" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="caseResponse" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
         </el-tabs>
     </el-dialog>
     <!-- params\data的弹窗 -->
-    <el-dialog v-if="dataDialog" v-model="dataDialog" width="60%" draggable height="550px"
+    <el-dialog class="case-data" v-if="dataDialog" v-model="dataDialog" width="50%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , ' + this.dataTitle + ' 数据'"
         :close-on-click-modal=false @close="closeCheckDialog(this.dataTitle)">
         <el-button type="info" @click="initData()">初始化</el-button>
@@ -213,20 +213,20 @@
         <el-tabs v-if="dataTitle == 'Params'" v-model="activeNameParams" :tab-position="'top'" type="border-card"
             @tab-click="handleTabClickParams">
             <el-tab-pane label="tempParams" name="tempParams">
-                <el-input type="textarea" v-model="tempParams" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="tempParams" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
             <el-tab-pane label="caseParams" name="caseParams">
-                <el-input type="textarea" v-model="caseParams" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="caseParams" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
         </el-tabs>
 
         <el-tabs v-if="dataTitle == 'Data'" v-model="activeNameData" :tab-position="'top'" type="border-card"
             @tab-click="handleTabClickData">
             <el-tab-pane label="tempData" name="tempData">
-                <el-input type="textarea" v-model="tempDataS" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="tempDataS" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
             <el-tab-pane label="caseData" name="caseData">
-                <el-input type="textarea" v-model="caseDataS" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="caseDataS" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
         </el-tabs>
 
@@ -249,9 +249,9 @@
         </el-collapse>
     </el-dialog>
     <!-- header的弹窗 -->
-    <el-dialog v-if="headerDialog" v-model='headerDialog' width="50%" draggable height="550px"
+    <el-dialog class="case-data" v-if="headerDialog" v-model='headerDialog' width="50%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 请求头'" :close-on-click-modal=false
-        :close-on-press-escape=false @close="closeCheckDialog('Header')">
+        @close="closeCheckDialog('Header')">
         <!-- 增加操作 -->
         <el-button v-if="headerInfo.length <= 0" :icon="Plus" type="warning" size="small"
             @click="addRow('header')"></el-button>
@@ -295,10 +295,10 @@
         <!-- 响应信息内容 -->
         <el-tabs v-model="activeNameHeaders" :tab-position="'top'" type="border-card" @tab-click="handleTabClickHeaders">
             <el-tab-pane label="tempHeaders" name="tempHeaders">
-                <el-input type="textarea" v-model="tempHeaders" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="tempHeaders" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
             <el-tab-pane label="caseHeaders" name="caseParams">
-                <el-input type="textarea" v-model="caseHeaders" :rows="15" spellcheck="false"></el-input>
+                <el-input type="textarea" v-model="caseHeaders" :rows="10" spellcheck="false"></el-input>
             </el-tab-pane>
         </el-tabs>
     </el-dialog>
@@ -675,7 +675,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '修改成功',
-                        offset: 200,
                     })
                 }
             ).catch(
@@ -885,7 +884,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '修改成功',
-                        offset: 200,
                     })
                 }
 
@@ -984,7 +982,6 @@ export default {
             ElNotification.success({
                 title: 'Success',
                 message: 'CaseId : ' + this.caseId + ' -Number : ' + this.checkNumber + ' 刷新成功',
-                offset: 200,
             })
             this.renovate = false
             this.tempResponse = null
@@ -1014,7 +1011,6 @@ export default {
                     ElNotification.success({
                         title: 'Success',
                         message: '修改成功',
-                        offset: 200,
                     })
                 }
             ).catch(

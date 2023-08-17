@@ -53,7 +53,7 @@
         </el-table-column>
     </el-table>
     <!-- 新增修改数据的弹窗 -->
-    <el-dialog v-model='tempDialog' width="60%" :title="tempTitle" :close-on-click-modal=false :close-on-press-escape=false
+    <el-dialog class="case-data" v-model='tempDialog' width="50%" :title="tempTitle" :close-on-click-modal=false
         @close="closeTempDialog(tempInfo)" draggable v-if="tempDialog">
         <!-- <el-button type="success" @click="curlDialog = true">解析CURL</el-button>
         <br>
@@ -130,8 +130,9 @@
                 </template>
             </el-input>
             <el-input v-model="jsonPath" placeholder="jsonpath" clearable></el-input>
-
-            <el-tabs v-model="activeName">
+            <br>
+            <br>
+            <el-tabs v-model="activeName" type="border-card">
                 <el-tab-pane label="Params" name="Params">
                     <el-input type="textarea" v-model="params" :rows="paramsLen" spellcheck="false"></el-input>
                 </el-tab-pane>
@@ -355,7 +356,6 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: '新增成功',
-                                offset: 200,
                             })
                         }
                     ).catch(
@@ -379,7 +379,6 @@ export default {
                             ElNotification.success({
                                 title: 'Success',
                                 message: '修改成功',
-                                offset: 200,
                             })
                         }
                     ).catch(
@@ -442,7 +441,6 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '删除成功',
-                            offset: 200,
                         })
                     }
                 ).catch(
@@ -550,8 +548,7 @@ export default {
                 function () {
                     ElNotification.success({
                         title: 'Success',
-                        message: '清楚成功',
-                        offset: 200,
+                        message: '清除成功',
                     })
                 }
             ).catch(
@@ -598,13 +595,11 @@ export default {
                         ElNotification.success({
                             title: 'Success',
                             message: '请求成功',
-                            offset: 200,
                         })
                     } else {
                         ElNotification.warning({
                             title: 'Warning',
                             message: '请求失败, status: ' + response.data.data.status,
-                            offset: 200,
                         })
                     }
                 }
@@ -653,34 +648,9 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .container {
     display: flex;
     justify-content: flex-end;
-}
-
-/* .el-checkbox.is-bordered {
-    color: rgb(255, 255, 255);
-} */
-
-.debugInfo {
-    background-color: rgba(192, 192, 192, 0.4);
-    border-radius: 20px;
-    display: inline;
-    /* width: 300px;
-    height: 300px; */
-}
-
-.el-checkbox__label {
-    --el-checkbox-checked-text-color: rgba(225, 57, 110, 1);
-}
-
-.el-checkbox__inner {
-    --el-checkbox-checked-input-border-color: rgba(225, 57, 110, 1);
-    --el-checkbox-checked-bg-color: rgba(225, 57, 110, 1);
-}
-
-.el-checkbox.is-bordered.is-checked {
-    --el-color-primary: rgba(225, 57, 110, 1);
 }
 </style>
