@@ -70,7 +70,7 @@
     <el-button class="ml-2" type="success" @click="btnSubmit" :loading="submitLoading">上传到服务器</el-button>
 
     <!-- 成功的弹窗 -->
-    <el-dialog v-model='mySuccess' width="50%" title="上传成功">
+    <el-dialog class="confirm" v-model='mySuccess' width="50%" title="上传成功">
         <el-form :model="successData">
             <!-- 模板内容 -->
             <el-form-item label="模板名称 : " v-if="this.uploadType == 'temp-har' || this.uploadType == 'temp-swagger'">
