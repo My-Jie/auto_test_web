@@ -390,6 +390,7 @@ export default {
         },
         // 用例执行时序表
         async schedule(row) {
+            row.scheduleLoading = true
             this.caseId = row.case_id
             this.dataTitle = row.name
 
@@ -412,6 +413,7 @@ export default {
 
             this.scheduleData = res
             this.scheduleDialog = true
+            row.scheduleLoading = false
         },
         // 获取数据集
         async getGather(row) {
@@ -642,5 +644,13 @@ export default {
 .el-dialog-div {
     height: 65vh;
     overflow: auto;
+}
+
+.el-progress.is-success {
+    --el-color-success: #7dcea0;
+}
+
+.el-progress.is-warning {
+    --el-color-warning: #F29492;
 }
 </style>
