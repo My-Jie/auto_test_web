@@ -1,7 +1,9 @@
 <template>
     <el-row>
-        <el-col :span="1">
-
+        <el-col :span="3" class="my-col">
+            <el-statistic title="api总数" :value=totalApi>
+                <template #suffix>个</template>
+            </el-statistic>
         </el-col>
         <el-col :span="3" class="my-col">
             <el-statistic title="执行api" :value=runApi>
@@ -40,20 +42,17 @@
         <el-timeline-item v-for="(activity, index) in this.scheduleData" :key="index" :timestamp="activity.timestamp"
             :type="activity.type" :color="activity.color" :hollow="activity.hollow" placement="top">
             <el-card class=my-card>
-                <el-descriptions :title="activity.url" border direction="vertical" :size="'small'"
-                    :extra="activity.description">
+                <el-descriptions :title="activity.method + ' ' + activity.url" border direction="vertical" :size="'small'"
+                    :extra="activity.description + ' ' + index">
+                    <el-descriptions-item label="耗时">{{ activity.time }} ms</el-descriptions-item>
+                    <el-descriptions-item label="预期">{{ activity.expect }}</el-descriptions-item>
                     <el-descriptions-item label="结果">
                         <el-tag size="small" :type="activity.is_fail == false ? 'success' : 'danger'">
                             {{ activity.is_fail == false ? 'PASS' : 'FAIL' }}
                         </el-tag>
                     </el-descriptions-item>
-                    <el-descriptions-item label="预期">{{ activity.expect }}</el-descriptions-item>
-                    <el-descriptions-item label="耗时">{{ activity.time }} ms</el-descriptions-item>
-                    <el-descriptions-item label="方法">
-                        {{ activity.method }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="实际">{{ activity.actual }}</el-descriptions-item>
                     <el-descriptions-item label="总耗时">{{ activity.total_time }} ms</el-descriptions-item>
+                    <el-descriptions-item label="实际">{{ activity.actual }}</el-descriptions-item>
 
                 </el-descriptions>
             </el-card>
@@ -74,6 +73,7 @@ export default {
         return {
             DataBoard,
             activities: [],
+            totalApi: 0,
             runApi: 0,
             passApi: 0,
             failApi: 0,
@@ -86,6 +86,7 @@ export default {
         var bgc = document.getElementsByClassName('my-card')
         for (var x in this.scheduleData) {
             this.runApi++
+            this.totalApi = this.scheduleData[x].total_api
             this.avgTime = this.scheduleData[x].total_time / this.scheduleData.length
 
             if (this.scheduleData[x].is_fail == false) {
