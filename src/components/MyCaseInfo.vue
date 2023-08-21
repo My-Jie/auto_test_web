@@ -48,7 +48,7 @@
                         size="small" @click="scope.row.percentage = 0" />
                 </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" width="420">
+            <el-table-column label="操作" align="center" width="470">
                 <template #default="scope">
                     <el-tooltip content="运行用例" placement="top-end" effect="customized">
                         <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
@@ -71,6 +71,10 @@
                                 :loading="scope.row.gatherLoading"></el-button>
                         </el-tooltip>
 
+                        <el-tooltip content="用例执行的时序表" placement="top-start" effect="customized">
+                            <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
+                                :loading="scope.row.scheduleLoading"></el-button>
+                        </el-tooltip>
 
                         <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
                             confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
@@ -133,8 +137,12 @@
         </el-dialog>
         <!-- 数据集的弹窗 -->
         <el-dialog class="confirm" v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog"
-            width="70%">
+            width="50%">
             <my-gather :gather-data="gatherData" :case-id="caseId"></my-gather>
+        </el-dialog>
+        <!-- 用例时序图弹窗 -->
+        <el-dialog v-model='scheduleDialog' width="50%" :title="caseId + ' ' + dataTitle">
+            <my-case-schedule v-if="scheduleDialog" :schedule-data="scheduleData"></my-case-schedule>
         </el-dialog>
         <!-- 删除的窗口 -->
         <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
@@ -152,11 +160,12 @@
 <script>
 
 import CaseData from './CaseData.vue'
+import MyCaseSchedule from './MyCaseSchedule.vue'
 import MyGather from './MyGather.vue'
 import RunApiCase from './runApiCase.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check, Download, Close, Document, DocumentCopy, Postcard, Delete, CircleCheck } from '@element-plus/icons-vue'
+import { Edit, Check, Download, Close, Document, DocumentCopy, Postcard, Delete, CircleCheck, More } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
@@ -169,7 +178,8 @@ export default {
     components: {
         CaseData,
         MyGather,
-        RunApiCase
+        RunApiCase,
+        MyCaseSchedule
     },
 
     data() {
@@ -183,6 +193,7 @@ export default {
             Postcard,
             Delete,
             CircleCheck,
+            More,
             loading: !this.caseInfo ? true : false,
             myDialog: false,
             thisCaseData: [],
@@ -200,7 +211,9 @@ export default {
             likeCaseName: null,
             settingInfo: {},
             settingInfoList: [],
-            settingVirtualId: null
+            settingVirtualId: null,
+            scheduleDialog: false,
+            scheduleData: []
         }
     },
 
@@ -374,6 +387,31 @@ export default {
             this.caseName = row.name
             this.caseId = row.case_id
             this.caseRow = row
+        },
+        // 用例执行时序表
+        async schedule(row) {
+            this.caseId = row.case_id
+            this.dataTitle = row.name
+
+            var res = []
+            await this.$http({
+                url: '/runCase/get/case/schedule',
+                method: "GET",
+                params: {
+                    case_id: row.case_id
+                }
+            }).then(
+                function (response) {
+                    res = response.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                    row.gatherLoading = false
+                })
+
+            this.scheduleData = res
+            this.scheduleDialog = true
         },
         // 获取数据集
         async getGather(row) {
