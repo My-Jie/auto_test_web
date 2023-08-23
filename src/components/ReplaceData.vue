@@ -52,43 +52,7 @@
             </template>
         </el-input>
     </el-form-item>
-    <div class="demo-collapse">
-        <el-collapse v-model="activeName" accordion>
-            <el-collapse-item title=" 自定参数表达式(*双花括号)" name="1">
-                <el-descriptions border :size="'small'">
-                    <el-descriptions-item label="直接提取">%{key}</el-descriptions-item>
-                </el-descriptions>
-            </el-collapse-item>
-            <el-collapse-item title=" JsonPath表达式实例(*双花括号)" name="2">
-                <el-descriptions border :size="'small'">
-                    <el-descriptions-item label="直接提取">{number.$.jsonPath}</el-descriptions-item>
-                    <el-descriptions-item label="索引切片">{number.$.jsonPath表达式|index:index}</el-descriptions-item>
-                    <el-descriptions-item label="同级邻居确认">{number.$.jsonPath表达式,string in key,string ==
-                        key}</el-descriptions-item>
-                    <el-descriptions-item label="提取response-headers">{number.h$.jsonPath表达式}</el-descriptions-item>
-                </el-descriptions>
-            </el-collapse-item>
-            <el-collapse-item title=" 假数据表达式(*单花括号)" name="3">
-                <el-descriptions border :size="'small'">
-                    <el-descriptions-item label="身份证">{ssn}</el-descriptions-item>
-                    <el-descriptions-item label="电话">{phone_number}</el-descriptions-item>
-                    <el-descriptions-item label="银行卡">{credit_card_number}</el-descriptions-item>
-                    <el-descriptions-item label="城市">{city}</el-descriptions-item>
-                    <el-descriptions-item label="地址">{address}</el-descriptions-item>
-                    <el-descriptions-item label="随机数字">{random_int.1} number为长度</el-descriptions-item>
-                    <el-descriptions-item label="随机小写字母">{random_lower.1} number为长度</el-descriptions-item>
-                    <el-descriptions-item label="随机大写字母">{random_upper.1} number为长度</el-descriptions-item>
-                    <el-descriptions-item label="随机大小写字母">{random_letter.1} number为长度</el-descriptions-item>
-                    <el-descriptions-item label="随机汉字">{random_cn.1} number为长度</el-descriptions-item>
-                    <el-descriptions-item label="数字计算">{compute}</el-descriptions-item>
-                    <el-descriptions-item label="时间字符串">{time_str.1} 同时间戳</el-descriptions-item>
-                    <el-descriptions-item label="时间戳">{time_int.0} 0:当前时间, -1:当前时间前一天, 1:当前时间后一天,-2:前一天00:00:00,
-                        2:后一天23:59:59</el-descriptions-item>
-                </el-descriptions>
-            </el-collapse-item>
-        </el-collapse>
-    </div>
-    <br>
+    <my-collapse :column="3"></my-collapse>
 
     <!-- 复选框的按钮 -->
     <el-radio-group v-model="tableLayout">
@@ -167,8 +131,14 @@
 <script>
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
+import MyCollapse from './MyCollapse.vue'
 export default {
     name: 'MyReplaceData',
+
+    components: {
+        MyCollapse
+    },
+
     props: {
         'caseId': Number
     },
