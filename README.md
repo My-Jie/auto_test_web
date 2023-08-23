@@ -83,6 +83,22 @@
 
 [随便测测-做 UI 测试](https://blog.csdn.net/yangj507/article/details/131579327)
 
+## v2.4.3jsonpath 支持取第几个值
+
+![image](img/1692777697683.jpg)
+![image](img/1692777846519.jpg)
+
+- 表达式：{{number.$.jsonpath?number}}
+- 优化提示信息展示效果
+
+## v2.4.2 增加 response-headers 取值相关操作
+
+![image](img/1692777440868.jpg)
+
+- 解析 har 时，response-headers 落库
+- 上下接口数据关联时，支持选择 response-headers 进行匹配
+- response 的取值表达式：{{number.$.jsonpath}}；response-headers 的取值表达式：{{number.h$.jsonpath}}
+
 ## v2.4.1 简易的测试结果时序图
 
 ![image](img/1692595790992.jpg)
