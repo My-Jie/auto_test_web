@@ -2,19 +2,26 @@
     <!-- 原始数据查询 -->
     <el-form-item :inline="true">
         <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3"
-            @keyup.enter.native="getResponseJsonPath">
+            @keyup.enter.native="getResponseJsonPath" >
             <template #prepend>
-                <el-select v-model="selectResponse" placeholder="请选择数据源">
-                    <el-option label="从Response中的value字段" value="value" />
-                    <el-option label="从Response中的key字段" value="key" />
-                </el-select>
-                <div v-show="selectResponse == 'value'">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <el-select v-model="select" placeholder="==" style="width: 80px">
+                <el-space wrap :size="40">
+                    <el-select v-model="dataType" placeholder="请选择数据源" style="width: 130px">
+                        <el-option label="Response" value="response" />
+                        <el-option label="ResHeaders" value="response_headers" />
+                    </el-select>
+                </el-space>
+                <el-space wrap :size="40">
+                    <el-select v-model="selectResponse" placeholder="请选择取值方式" style="width: 85px">
+                        <el-option label="value" value="value" />
+                        <el-option label="key" value="key" />
+                    </el-select>
+                </el-space>
+                <el-space wrap :size="20">
+                    <el-select v-show="selectResponse == 'value'" v-model="select" placeholder="==" style="width: 65px">
                         <el-option label="==" value="==" />
                         <el-option label="in" value="in" />
                     </el-select>
-                </div>
+                </el-space>
             </template>
             <template #append>
                 <el-button plain @click="getResponseJsonPath">查询</el-button>
@@ -54,6 +61,7 @@
                 <p>1.直接提取: {number.$.jsonPath表达式}</p>
                 <p>2.索引切片: {number.$.jsonPath表达式|index:index}</p>
                 <p>3.同级邻居确认: {number.$.jsonPath表达式,string in key,string == key}</p>
+                <p>4.提取response-headers: {number.h$.jsonPath表达式}</p>
             </el-collapse-item>
             <el-collapse-item title="假数据表达式(*单花括号)" name="3">
                 <p>1.身份证: {ssn}</p>
@@ -160,6 +168,7 @@ export default {
         return {
             responseValueInput: '',
             responseValueJsonpath: [],
+            dataType: 'response',
             selectResponse: 'value',
             select: '==',
             fixedResponseValueJsonpath: '',
@@ -189,7 +198,8 @@ export default {
                     case_id: this.caseId,
                     extract_contents: this.responseValueInput,
                     key_value: this.selectResponse,
-                    ext_type: this.select
+                    ext_type: this.select,
+                    data_type: this.dataType
                 }
             }).then(
                 function (response) {

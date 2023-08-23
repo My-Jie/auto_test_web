@@ -1,12 +1,12 @@
 <template>
     <el-affix :offset="10">
-        <el-button type="primary" @click="repData = true">提取数据进行替换</el-button>
+        <el-button type="primary" @click="repData = true">关联数据</el-button>
         <el-button type="primary" :loading="dataLoading" @click="getCaseData">刷新</el-button>
     </el-affix>
 
     <!-- 替换数据弹窗 -->
     <el-dialog class="case-data" v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false draggable
-        :title="caseId + ' ' + dataTitle + '      --从response中提取jsonpath路径, 替换测试数据'" @close='repData = false'>
+        :title="'提取Jsonpath数据, 进行上下接口数据关联'" @close='repData = false'>
         <my-replace-data :case-id="caseId"></my-replace-data>
     </el-dialog>
     <br>

@@ -30,6 +30,11 @@
                 <div>{{ JSON.stringify(scope.row.response, null, 1) }}</div>
             </template>
         </el-table-column>
+        <el-table-column label="res_headers" prop="response_headers" show-overflow-tooltip='true' width="110%">
+            <template #default="scope">
+                <div>{{ JSON.stringify(scope.row.response_headers, null, 1) }}</div>
+            </template>
+        </el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
             <template #default="scope">
                 <!-- 编辑操作 -->
@@ -145,6 +150,10 @@
                 <el-tab-pane label="Response" name="Response">
                     <el-input type="textarea" v-model="response" :rows="responseLen" spellcheck="false"></el-input>
                 </el-tab-pane>
+                <el-tab-pane label="ResponseHeaders" name="response_headers">
+                    <el-input type="textarea" v-model="response_headers" :rows="response_headersLen"
+                        spellcheck="false"></el-input>
+                </el-tab-pane>
                 <el-tab-pane label="Cookie" name="Cookie" v-if="getCookie">
                     <el-input type="textarea" v-model="cookie" rows="15" spellcheck="false"></el-input>
                 </el-tab-pane>
@@ -197,6 +206,7 @@ export default {
                 data: {},
                 headers: {},
                 response: {},
+                response_headers: {},
                 edit: false,
                 EditDisabled: false,
                 del: false,
@@ -211,11 +221,13 @@ export default {
             jsonBody: '',
             headers: {},
             response: {},
+            response_headers: {},
             cookie: '',
             paramsLen: 0,
             dataLen: 0,
             headersLen: 0,
             responseLen: 0,
+            response_headersLen: 0,
             tempNumber: null,
 
             curlDialog: false,
@@ -297,6 +309,7 @@ export default {
                 data: {},
                 headers: {},
                 response: {},
+                response_headers: {},
                 description: '',
                 edit: false,
                 EditDisabled: false,
@@ -317,11 +330,13 @@ export default {
             this.data = JSON.stringify(this.tempInfo.data, null, 8)
             this.headers = JSON.stringify(this.tempInfo.headers, null, 8)
             this.response = JSON.stringify(this.tempInfo.response, null, 8)
+            this.response_headers = JSON.stringify(this.tempInfo.response_headers, null, 8)
             this.jsonBody = this.tempInfo.json_body
             this.paramsLen = 15
             this.dataLen = 15
             this.headersLen = 15
             this.responseLen = 15
+            this.response_headersLen = 15
 
             this.tempTitle = '对模板接口数据查看或编辑'
             if (type == 'edit') {
@@ -341,6 +356,7 @@ export default {
                     file_data: [],
                     headers: this.tempInfo.headers,
                     response: this.tempInfo.response,
+                    response_headers: this.tempInfo.response_headers,
                     description: this.tempInfo.description
                 }
                 if (this.tempInfo.add) {
@@ -402,6 +418,7 @@ export default {
                 this.tempInfo.data = JSON.parse(this.data)
                 this.tempInfo.headers = JSON.parse(this.headers)
                 this.tempInfo.response = JSON.parse(this.response)
+                this.tempInfo.response_headers = JSON.parse(this.response_headers)
             } catch {
                 ElMessage.error('Json数据格式有误')
                 return
@@ -499,6 +516,8 @@ export default {
                     this.headers = JSON.stringify(this.tempInfo.headers, null, 8);
                 } else if (this.activeName == 'Response') {
                     this.response = JSON.stringify(this.tempInfo.response, null, 8);
+                } else if (this.activeName == 'response_headers') {
+                    this.response_headers = JSON.stringify(this.tempInfo.response_headers, null, 8);
                 }
                 ElMessage.success('数据初始化成功')
             } catch (e) {
@@ -516,6 +535,8 @@ export default {
                     this.headers = JSON.stringify(JSON.parse(this.headers), null, 8);
                 } else if (this.activeName == 'Response') {
                     this.response = JSON.stringify(JSON.parse(this.response), null, 8);
+                } else if (this.activeName == 'response_headers') {
+                    this.response_headers = JSON.stringify(JSON.parse(this.response_headers), null, 8);
                 }
                 ElMessage.success('数据格式化成功')
             } catch (e) {
@@ -533,6 +554,8 @@ export default {
                 this.headers = JSON.stringify({}, null, 8);
             } else if (this.activeName == 'Response') {
                 this.response = JSON.stringify({}, null, 8);
+            } else if (this.activeName == 'response_headers') {
+                this.response_headers = JSON.stringify({}, null, 8);
             }
         },
         // 清空缓存
@@ -562,13 +585,13 @@ export default {
         async sendData() {
             var flag = false
             var resP = null
+            var resH = null
             var cookie = ''
 
             try {
                 this.tempInfo.params = JSON.parse(this.params)
                 this.tempInfo.data = JSON.parse(this.data)
                 this.tempInfo.headers = JSON.parse(this.headers)
-                this.tempInfo.response = JSON.parse(this.response)
                 this.tempInfo.get_cookie = this.getCookie
             } catch {
                 ElMessage.error('Json数据格式有误')
@@ -590,6 +613,8 @@ export default {
                 function (response) {
                     flag = true
                     resP = response.data.data.response
+                    resH = response.data.data.response_headers
+                    console.log(response.data.data);
                     cookie = response.data.data.cookie
                     if (response.data.data.status <= 400) {
                         ElNotification.success({
@@ -611,6 +636,7 @@ export default {
 
             if (flag) {
                 this.response = JSON.stringify(resP, null, 8)
+                this.response_headers = JSON.stringify(resH, null, 8)
                 this.activeName = 'Response'
                 this.cookie = cookie
             }
