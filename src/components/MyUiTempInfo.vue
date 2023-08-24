@@ -36,12 +36,16 @@
                             <el-button :icon="Document" type="primary" plain @click="getUiCaseData(scope.row)"
                                 :loading="scope.row.CaseLoading"></el-button>
                         </el-tooltip>
-
                     </el-button-group>
-                    <el-tooltip content="删除用例，会删除数据集" placement="top-start" effect="customized">
-                        <el-button :icon="Delete" type="danger" plain :loading="scope.row.delLoading"
-                            @click="delDialogVisible(scope.row)" />
-                    </el-tooltip>
+
+                    <el-popover title="确定删除？" placement="top" trigger="focus">
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="small" type="primary" @click="delUiTemp(scope.row)">是</el-button>
+                        </div>
+                        <template #reference>
+                            <el-button :loading="scope.row.delLoading" :icon="Delete" type="danger" plain></el-button>
+                        </template>
+                    </el-popover>
 
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
@@ -118,17 +122,6 @@
                 </span>
             </template>
         </el-dialog>
-
-        <!-- 删除的窗口 -->
-        <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
-            <span>删除Playwright模板和测试数据 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="delDialog = false">取消</el-button>
-                    <el-button type="primary" @click="delUiTemp(uiTempRow)">确认</el-button>
-                </span>
-            </template>
-        </el-dialog>
     </div>
 </template>
 
@@ -159,7 +152,6 @@ export default {
             loading: !this.uiTempInfo ? true : false,
             uiTempTitle: null,
             dialogUiMonaco: false,
-            delDialog: false,
             uiTempRow: [],
 
             // 详情信息
@@ -296,17 +288,8 @@ export default {
                 }
             }
         },
-
-        // 删除窗口
-        delDialogVisible(row) {
-            this.delDialog = true
-            this.uiTempId = row.id
-            this.uiTempName = row.temp_name
-            this.uiTempRow = row
-        },
         // 删除模板
         async delUiTemp(row) {
-            var flag = false
             row.delLoading = true
             await this.$http({
                 url: '/caseUi/del/playwright/data/' + row.id,
@@ -317,23 +300,12 @@ export default {
                         title: 'Success',
                         message: '模板[ ' + row.temp_name + ' ] 删除成功',
                     })
-                    flag = true
                 }
             ).catch(function (error) {
                 ElMessage.error(error.message)
             })
-
-            if (flag) {
-                for (var x in this.uiTempInfo) {
-                    if (this.uiTempInfo[x].id == row.id) {
-                        this.uiTempInfo.splice(x, 1)
-                        break
-                    }
-                }
-            }
-
             row.delLoading = false
-            this.delDialog = false
+            this.get_ui_case()
         },
 
         async getCaseInfo(row) {

@@ -61,10 +61,15 @@
                                 :loading="scope.row.dataLoading"></el-button>
                         </el-tooltip>
 
-                        <el-tooltip content="复制用例，生成一条新的数据" placement="top-end" effect="customized">
-                            <el-button :icon="DocumentCopy" type="primary" plain @click="copyDialogVisible(scope.row)"
-                                :loading="scope.row.copyLoading"></el-button>
-                        </el-tooltip>
+                        <el-popover title="确定复制？" placement="top" trigger="focus">
+                            <div style="text-align: right; margin: 0">
+                                <el-button size="small" type="primary" @click="copyCase(scope.row)">是</el-button>
+                            </div>
+                            <template #reference>
+                                <el-button :loading="scope.row.copyLoading" :icon="DocumentCopy" type="primary"
+                                    plain></el-button>
+                            </template>
+                        </el-popover>
 
                         <el-tooltip content="用例对应的数据集，没有则404" placement="top-start" effect="customized">
                             <el-button :icon="Postcard" type="primary" plain @click="getGather(scope.row)"
@@ -85,11 +90,15 @@
                         </el-popconfirm>
 
                     </el-button-group>
-                    <el-tooltip content="删除用例，以及关联的数据集和allure报告" placement="top-start" effect="customized">
-                        <el-button :icon="Delete" type="danger" plain :loading="scope.row.delLoading"
-                            @click="delDialogVisible(scope.row)">
-                        </el-button>
-                    </el-tooltip>
+
+                    <el-popover title="确定删除？" placement="top" trigger="focus">
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="small" type="primary" @click="delCase(scope.row)">是</el-button>
+                        </div>
+                        <template #reference>
+                            <el-button :loading="scope.row.delLoading" :icon="Delete" type="danger" plain></el-button>
+                        </template>
+                    </el-popover>
 
                     <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
@@ -125,16 +134,6 @@
                 </span>
             </template>
         </el-dialog>
-        <!-- 复制用例弹窗 -->
-        <el-dialog class="confirm" v-model="setCopyDialogVisible" title="Tips" width="50%">
-            <span>复制用例 [ {{ caseId }} - {{ caseName }} ]</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="setCopyDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="copyCase(caseRow)">确认</el-button>
-                </span>
-            </template>
-        </el-dialog>
         <!-- 数据集的弹窗 -->
         <el-dialog class="confirm" v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog"
             width="50%">
@@ -143,16 +142,6 @@
         <!-- 用例时序图弹窗 -->
         <el-dialog v-model='scheduleDialog' width="50%" :title="caseId + ' ' + dataTitle">
             <my-case-schedule v-if="scheduleDialog" :schedule-data="scheduleData"></my-case-schedule>
-        </el-dialog>
-        <!-- 删除的窗口 -->
-        <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
-            <span>删除用例 [ {{ caseId }} - {{ caseName }} ]</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="delDialog = false">取消</el-button>
-                    <el-button type="danger" @click="delCase(caseRow)">确认</el-button>
-                </span>
-            </template>
         </el-dialog>
     </div>
 </template>
@@ -199,9 +188,6 @@ export default {
             thisCaseData: [],
             caseId: null,
             dataTitle: null,
-            dialogVisible: false,
-            setCopyDialogVisible: false,
-            delDialog: false,
             caseName: null,
             caseRow: null,
             gatherDialog: false,
@@ -213,7 +199,7 @@ export default {
             settingInfoList: [],
             settingVirtualId: null,
             scheduleDialog: false,
-            scheduleData: []
+            scheduleData: [],
         }
     },
 
@@ -343,18 +329,9 @@ export default {
 
             this.settingInfoList = settingInfoList
         },
-        // 删除窗口
-        delDialogVisible(row) {
-            this.delDialog = true
-            this.caseName = row.name
-            this.caseId = row.case_id
-            this.caseRow = row
-        },
         // 删除用例
         async delCase(row) {
-            var flag = false
             row.delLoading = true
-            this.delDialog = false
             await this.$http({
                 url: '/caseService/del/' + row.case_id,
                 method: 'DELETE',
@@ -364,29 +341,12 @@ export default {
                         title: 'Success',
                         message: '用例[ ' + row.name + ' ] 删除成功',
                     })
-                    flag = true
                 }
             ).catch(function (error) {
                 ElMessage.error(error.message)
             })
-
-            if (flag) {
-                for (var x in this.caseInfo) {
-                    if (this.caseInfo[x].case_id == row.case_id) {
-                        this.caseInfo.splice(x, 1)
-                        break
-                    }
-                }
-            }
-
             row.delLoading = false
-        },
-        // 复制窗口
-        copyDialogVisible(row) {
-            this.setCopyDialogVisible = true
-            this.caseName = row.name
-            this.caseId = row.case_id
-            this.caseRow = row
+            this.get_case()
         },
         // 用例执行时序表
         async schedule(row) {
@@ -494,9 +454,7 @@ export default {
         },
         // 复制测试用例
         async copyCase(row) {
-            this.setCopyDialogVisible = false
             row.copyLoading = true
-            console.log(row);
             await this.$http({
                 url: '/caseService/copy/case',
                 method: 'GET',
@@ -515,6 +473,7 @@ export default {
                 ElMessage.error(error.message)
                 row.copyLoading = false
             })
+            this.get_case()
         },
 
         // 用例详情数据
