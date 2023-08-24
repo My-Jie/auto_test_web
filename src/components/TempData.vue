@@ -109,26 +109,24 @@
             <el-input v-model="responseValueInput" placeholder="请输入需要查找的原始数据" clearable minlength="3"
                 @keyup.enter.native="getResponseJsonPath">
                 <template #prepend>
-                    <el-select v-model="type_" placeholder="response" style="width: 110px">
-                        <!-- <el-option label="params" value="params" />
-                        <el-option label="data" value="data" /> -->
-                        <el-option label="headers" value="headers" />
-                        <el-option label="response" value="response" />
-                    </el-select>
-                    <div>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <el-select v-model="key_value" placeholder="value" style="width: 100px">
-                            <el-option label="key" value="key" />
-                            <el-option label="value" value="value" />
+                    <el-space wrap :size="40">
+                        <el-select v-model="type_" placeholder="response" style="width: 110px">
+                            <el-option label="headers" value="headers" />
+                            <el-option label="response" value="response" />
                         </el-select>
-                    </div>
-                    <div>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <el-select v-model="ext_type" placeholder="==" style="width: 70px">
+                    </el-space>
+                    <el-space wrap :size="40">
+                        <el-select v-model="key_value" placeholder="value" style="width: 85px">
+                            <el-option label="value" value="value" />
+                            <el-option label="key" value="key" />
+                        </el-select>
+                    </el-space>
+                    <el-space wrap :size="20">
+                        <el-select v-model="ext_type" placeholder="==" style="width: 65px">
                             <el-option label="==" value="==" />
                             <el-option label="in" value="in" />
                         </el-select>
-                    </div>
+                    </el-space>
                 </template>
                 <template #append>
                     <el-button plain @click="getResponseJsonPath" style="width: 100px">查询</el-button>
@@ -175,9 +173,15 @@
 <script>
 import { ElMessage, ElNotification } from 'element-plus'
 import { Edit, Check, Plus, Delete, Close } from '@element-plus/icons-vue'
+import VueJsonPretty from 'vue-json-pretty'
 import _ from 'lodash'
 export default {
     name: 'TempData',
+
+    components: {
+        VueJsonPretty
+    },
+
     props: {
         'tempData': Array,
         'tempId': Number

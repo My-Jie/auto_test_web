@@ -188,10 +188,10 @@
         <!-- 响应信息内容 -->
         <el-tabs v-model="activeName" :tab-position="'top'" type="border-card" @tab-click="handleTabClick">
             <el-tab-pane label="tempResponse" name="tempResponse">
-                <el-input type="textarea" v-model="tempResponse" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(tempResponse)"></vue-json-pretty>
             </el-tab-pane>
             <el-tab-pane label="caseResponse" name="caseResponse">
-                <el-input type="textarea" v-model="caseResponse" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(caseResponse)"></vue-json-pretty>
             </el-tab-pane>
         </el-tabs>
     </el-dialog>
@@ -209,26 +209,27 @@
         </el-input>
         <br>
         <br>
-        <!-- 响应信息内容 -->
+
         <el-tabs v-if="dataTitle == 'Params'" v-model="activeNameParams" :tab-position="'top'" type="border-card"
             @tab-click="handleTabClickParams">
             <el-tab-pane label="tempParams" name="tempParams">
-                <el-input type="textarea" v-model="tempParams" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(tempParams)"></vue-json-pretty>
             </el-tab-pane>
             <el-tab-pane label="caseParams" name="caseParams">
-                <el-input type="textarea" v-model="caseParams" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(caseParams)"></vue-json-pretty>
             </el-tab-pane>
         </el-tabs>
 
         <el-tabs v-if="dataTitle == 'Data'" v-model="activeNameData" :tab-position="'top'" type="border-card"
             @tab-click="handleTabClickData">
             <el-tab-pane label="tempData" name="tempData">
-                <el-input type="textarea" v-model="tempDataS" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(tempDataS)"></vue-json-pretty>
             </el-tab-pane>
             <el-tab-pane label="caseData" name="caseData">
-                <el-input type="textarea" v-model="caseDataS" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(caseDataS)"></vue-json-pretty>
             </el-tab-pane>
         </el-tabs>
+        <br>
         <my-collapse :column="2"></my-collapse>
     </el-dialog>
     <!-- header的弹窗 -->
@@ -278,10 +279,10 @@
         <!-- 响应信息内容 -->
         <el-tabs v-model="activeNameHeaders" :tab-position="'top'" type="border-card" @tab-click="handleTabClickHeaders">
             <el-tab-pane label="tempHeaders" name="tempHeaders">
-                <el-input type="textarea" v-model="tempHeaders" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(tempHeaders)"></vue-json-pretty>
             </el-tab-pane>
             <el-tab-pane label="caseHeaders" name="caseParams">
-                <el-input type="textarea" v-model="caseHeaders" :rows="10" spellcheck="false"></el-input>
+                <vue-json-pretty :data="JSON.parse(caseHeaders)"></vue-json-pretty>
             </el-tab-pane>
         </el-tabs>
     </el-dialog>
@@ -293,11 +294,13 @@ import { ElMessage } from 'element-plus'
 import { Edit, Check, Plus, Delete, Close } from '@element-plus/icons-vue'
 import MyReplaceData from './ReplaceData.vue'
 import MyCollapse from './MyCollapse.vue'
+import VueJsonPretty from 'vue-json-pretty'
 export default {
     name: 'CaseData',
     components: {
         MyReplaceData,
-        MyCollapse
+        MyCollapse,
+        VueJsonPretty
     },
     props: {
         'caseData': Array,

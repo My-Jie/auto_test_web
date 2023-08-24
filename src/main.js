@@ -6,7 +6,7 @@ import ElementPlus from 'element-plus'; //为vue3项目特别更新的版本
 import 'element-plus/dist/index.css';
 
 import 'element-plus/theme-chalk/dark/css-vars.css'
-
+import 'vue-json-pretty/lib/styles.css';
 import JsonViewer from "vue3-json-viewer"
 import dayjs from 'dayjs'
 

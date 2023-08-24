@@ -18,8 +18,10 @@
         "lodash": "^4.17.21",
         "monaco-editor": "^0.39.0",
         "monaco-editor-webpack-plugin": "^7.0.1",
+        "save": "^2.9.0",
         "scss": "^0.2.4",
         "vue": "^3.2.45",
+        "vue-json-pretty": "^2.2.4",
         "vue3-json-viewer": "^2.2.2"
     },
     "devDependencies": {
