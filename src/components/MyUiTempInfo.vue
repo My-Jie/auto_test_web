@@ -20,7 +20,7 @@
             <el-table-column label="成功" prop="success" width="60px" align="center"></el-table-column>
             <el-table-column label="失败" prop="fail" width="60px" align="center"></el-table-column>
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="320px">
+            <el-table-column label="操作" align="center" width="350px">
                 <template #default="scope">
                     <el-tooltip content="运行用例" placement="top-end" effect="customized">
                         <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
@@ -32,6 +32,17 @@
                             <el-button :icon="Edit" type="primary" plain @click="getUiTempData(scope.row)"
                                 :loading="scope.row.dataLoading"></el-button>
                         </el-tooltip>
+
+                        <el-popover title="确定复制？" placement="top" trigger="focus">
+                            <div style="text-align: right; margin: 0">
+                                <el-button size="small" type="primary" @click="copyCase(scope.row)">是</el-button>
+                            </div>
+                            <template #reference>
+                                <el-button :loading="scope.row.copyLoading" :icon="DocumentCopy" type="primary"
+                                    plain></el-button>
+                            </template>
+                        </el-popover>
+
                         <el-tooltip content="查看提取的变量数据，没有则404" placement="top-end" effect="customized">
                             <el-button :icon="Document" type="primary" plain @click="getUiCaseData(scope.row)"
                                 :loading="scope.row.CaseLoading"></el-button>
@@ -128,7 +139,7 @@
 <script>
 import MonacoEditor from "./MonacoEditor.vue"
 import { ElNotification, ElMessage } from 'element-plus'
-import { Edit, Document, Delete, CircleCheck } from '@element-plus/icons-vue'
+import { Edit, Document, Delete, CircleCheck, DocumentCopy } from '@element-plus/icons-vue'
 export default {
     name: "MyUiTempInfo",
 
@@ -149,6 +160,7 @@ export default {
             Document,
             Delete,
             CircleCheck,
+            DocumentCopy,
             loading: !this.uiTempInfo ? true : false,
             uiTempTitle: null,
             dialogUiMonaco: false,
@@ -287,6 +299,29 @@ export default {
                     this.gathers.push({ "key": gather[x].id, "value": gather[x].case_name })
                 }
             }
+        },
+        // 复制模板
+        async copyCase(row) {
+            row.copyLoading = true
+            await this.$http({
+                url: '/caseUi/copy/case',
+                method: 'GET',
+                params: {
+                    temp_id: row.id
+                }
+            }).then(
+                function (response) {
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '用例[ ' + row.name + ' ] 复制成功 新用例名称 [ ' + response.data.case_name + ' ]',
+                    })
+                    row.copyLoading = false
+                }
+            ).catch(function (error) {
+                ElMessage.error(error.message)
+                row.copyLoading = false
+            })
+            this.get_ui_case()
         },
         // 删除模板
         async delUiTemp(row) {
