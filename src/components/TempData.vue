@@ -60,15 +60,12 @@
     <!-- 新增修改数据的弹窗 -->
     <el-dialog class="case-data" v-model='tempDialog' width="50%" :title="tempTitle" :close-on-click-modal=false
         @close="closeTempDialog(tempInfo)" draggable v-if="tempDialog">
-        <!-- <el-button type="success" @click="curlDialog = true">解析CURL</el-button>
-        <br>
-        <br> -->
         <el-form v-model="tempInfo" label-width="75px">
-            <el-form-item label="Host" prop="host" :required="true">
-                <el-input v-model="tempInfo.host"></el-input>
+            <el-form-item label="Host" :required="true">
+                <el-input v-model="tempInfo.host" spellcheck="false"></el-input>
             </el-form-item>
-            <el-form-item label="Path" prop="path" :required="true">
-                <el-input v-model="tempInfo.path"></el-input>
+            <el-form-item label="Path" :required="true">
+                <el-input v-model="tempInfo.path" spellcheck="false"></el-input>
             </el-form-item>
             <el-form-item label="Method" :required="true">
                 <el-select v-model="tempInfo.method" placeholder="Method" style="width: 115px">
@@ -93,16 +90,17 @@
                     <el-option label="json" value="json" />
                 </el-select>
             </el-form-item>
+            <el-button type="info" @click="curlDialog = true">cURL</el-button>
             <el-button type="info" @click="initData()">初始化</el-button>
-            <el-button type="success" @click="formatData()">格式化</el-button>
+            <el-button type="info" @click="formatData()">格式化</el-button>
             <el-button type="warning" @click="emptyData()">清空数据</el-button>
             <el-button type="primary" @click="confirmData()">保存</el-button>
             <div class="debugInfo">
-                <el-button type="warning" @click="delData()" :loading="delLoading"
-                    :style="{ float: 'right' }">清空缓存</el-button>
+                <el-checkbox v-model="getCookie" label="提取Cookie" border :style="{ float: 'right' }" />
                 <el-button type="primary" @click="sendData()" :loading="sendLoading"
                     :style="{ float: 'right' }">发送</el-button>
-                <el-checkbox v-model="getCookie" label="提取Cookie" border :style="{ float: 'right' }" />
+                <el-button type="warning" @click="delData()" :loading="delLoading"
+                    :style="{ float: 'right' }">清空缓存</el-button>
             </div>
             <br>
             <br>
@@ -159,12 +157,12 @@
         </el-form>
     </el-dialog>
     <!-- 解析CURL弹窗 -->
-    <el-dialog v-model='curlDialog' width="50%" title="解析CURL" draggable v-if="curlDialog">
-        <el-input type="textarea" v-model="curlData" rows="10" spellcheck="false"></el-input>
+    <el-dialog class="case-data" v-model='curlDialog' width="50%" title="解析cURL(bash)" draggable @close="curlData = ''">
+        <el-input type="textarea" v-model="curlData" rows="16" spellcheck="false"></el-input>
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="curlDialog = false">取消</el-button>
-                <el-button type="primary" @click="curlHeader()">确认</el-button>
+                <el-button type="primary" :loading="curlLoading" @click="curlHeader()">确认</el-button>
             </span>
         </template>
     </el-dialog>
@@ -235,6 +233,7 @@ export default {
             tempNumber: null,
 
             curlDialog: false,
+            curlLoading: false,
             curlData: '',
             sendLoading: false,
             delLoading: false,
@@ -286,18 +285,39 @@ export default {
             this.tempData.push(_.cloneDeep(this.tempInit))
         },
         // 解析curl
-        curlHeader() {
-            var curlList = this.curlData.split("\\")
-
-            for (var x in curlList) {
-                var newStr = curlList[x].trim()
-                if (x == 0) {
-                    console.log(newStr.match(/\'(.*?)\'/g));
-                } else {
-                    console.log(newStr.match(/\-(.*?)\'/g));
+        async curlHeader() {
+            this.curlLoading = true
+            var data = {}
+            await this.$http({
+                url: '/template/upload/curl',
+                method: 'POST',
+                data: JSON.stringify({
+                    'curl_command': this.curlData
+                }),
+                headers: {
+                    'content-type': "application/json"
                 }
-                // console.log(newStr);
-            }
+            }).then(
+                function (response) {
+                    data = response.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+            // 用tempInfo 
+            this.tempInfo.host = data.host
+            this.tempInfo.path = data.path
+            this.tempInfo.method = data.method
+            this.tempInfo.json_body = data.json_body
+
+            this.params = JSON.stringify(data.params, null, 8)
+            this.data = JSON.stringify(data.data, null, 8)
+            this.headers = JSON.stringify(data.headers, null, 8)
+
+            this.curlLoading = false
+            this.curlDialog = false
         },
         // 新增数据接口
         addTemp(scope) {
@@ -682,5 +702,9 @@ export default {
 .container {
     display: flex;
     justify-content: flex-end;
+}
+
+.debugInfo {
+    display: inline;
 }
 </style>

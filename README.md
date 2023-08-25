@@ -83,13 +83,20 @@
 
 [随便测测-做 UI 测试](https://blog.csdn.net/yangj507/article/details/131579327)
 
+## v2.4.5 增加 cURL(bash)解析
+
+![image](img/1692978076215.jpg)
+
+- 后端 python 解析，返回到前端
+- 填充到模板编辑窗口
+
 ## v2.4.4 文件上传-har，支持选择 charles 和 chrome
 
 ![image](img/1692942609447.jpg)
 ![image](img/1692942876768.jpg)
 
 - charles 的 har 过滤：按 mimeType 内容进行过滤 js、css、image 等
-- chrome 的 har 过滤: _resourceType 字段值 != xhr
+- chrome 的 har 过滤: \_resourceType 字段值 != xhr
 
 ## v2.4.3jsonpath 支持取第几个值
 
