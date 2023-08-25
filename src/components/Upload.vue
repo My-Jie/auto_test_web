@@ -71,7 +71,7 @@
     <el-upload drag :auto-upload="false" :action="uploadUrl" :http-request="upload" :limit="1" ref="upload"
         :accept="fileType" :on-success="onSuccess" :on-error="onError">
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">将文件拖拽到此处 或者 <em>点击上传</em></div>
+        <div class="el-upload__text"><font color="#F29492">将文件拖拽到此处</font> 或者 <font color="#F29492">点击上传</font></div>
     </el-upload>
     <el-button class="ml-2" type="success" @click="btnSubmit" :loading="submitLoading">上传到服务器</el-button>
 
