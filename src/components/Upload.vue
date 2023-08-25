@@ -10,6 +10,12 @@
     <br>
     <!-- 模板-har -->
     <el-form v-if="uploadType == 'temp-har'">
+        <el-form-item label="数据源" label-width="100px" :required="true" placeholder="charles">
+            <el-radio-group v-model="harType">
+                <el-radio label="charles">charles</el-radio>
+                <el-radio label="chrome">chrome</el-radio>
+            </el-radio-group>
+        </el-form-item>
         <el-form-item label="模板名称" label-width="100px" :required="true" placeholder="">
             <el-input v-model="tempName" />
         </el-form-item>
@@ -127,6 +133,7 @@ export default {
             tempName: '',
             tempHost: '',
             projectName: '',
+            harType: 'charles',
             // 上传的基本信息
             uploadUrl: '',
             uploadType: this.uploadType_,
@@ -181,7 +188,7 @@ export default {
         },
         btnSubmit() {
             if (this.uploadType == 'temp-har') {
-                this.uploadUrl = '/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName
+                this.uploadUrl = '/template/upload/har?temp_name=' + this.tempName + '&project_name=' + this.projectName + '&har_type=' + this.harType
             } else if (this.uploadType == 'temp-swagger') {
                 this.uploadUrl = '/template/upload/swagger/json?host=' + this.tempHost + '&project_name=' + this.projectName
             } else if (this.uploadType == 'case') {
