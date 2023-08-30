@@ -43,7 +43,7 @@
                             </template>
                         </el-popover>
 
-                        <el-tooltip content="查看提取的变量数据，没有则404" placement="top-end" effect="customized">
+                        <el-tooltip content="查看数据集，没有则404" placement="top-end" effect="customized">
                             <el-button :icon="Document" type="primary" plain @click="getUiCaseData(scope.row)"
                                 :loading="scope.row.CaseLoading"></el-button>
                         </el-tooltip>

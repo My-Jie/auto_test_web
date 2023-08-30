@@ -16,10 +16,10 @@
     <div ref="main" style="width: 100%; height: 500px;"></div>
 
     <!-- 提取数据的弹窗 -->
-    <el-dialog v-model='dialogPlaywrightData' width="50%" title="获取到的可替换内容" :close-on-click-modal=false
+    <el-dialog class="case-data" v-model='dialogPlaywrightData' width="50%" title="获取到的可替换内容" :close-on-click-modal=false
         @close='dialogPlaywrightData = false' draggable>
         <el-table :data="caseInfo" stripe fit>
-            <el-table-column label="Row" prop="row" type="index" :index="indexMethod" width="50"
+            <el-table-column label="Row" prop="row" type="index" :index="indexMethod" width="70"
                 align="center"></el-table-column>
             <el-table-column label="原内容" prop="data" align="center"></el-table-column>
         </el-table>

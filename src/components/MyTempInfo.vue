@@ -48,12 +48,16 @@
                             <el-button :icon="DArrowRight" type="primary" plain @click="tempToCase(scope.row)"
                                 :loading="scope.row.tempToCaseLoading"></el-button>
                         </el-tooltip>
-
                     </el-button-group>
-                    <el-tooltip content="删除模板，会校验有无用例" placement="top-start" effect="customized">
-                        <el-button :icon="Delete" type="danger" plain :loading="scope.row.delLoading"
-                            @click="delDialogVisible(scope.row)" />
-                    </el-tooltip>
+
+                    <el-popover title="确定删除？" placement="top" trigger="focus">
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="small" type="primary" @click="delTemp(scope.row)">是</el-button>
+                        </div>
+                        <template #reference>
+                            <el-button :loading="scope.row.delLoading" :icon="Delete" type="danger" plain></el-button>
+                        </template>
+                    </el-popover>
 
                 </template>
             </el-table-column>
@@ -81,16 +85,6 @@
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
                     <el-button type="success" @click="runCase(tempRow)">确认</el-button>
-                </span>
-            </template>
-        </el-dialog>
-        <!-- 删除的窗口 -->
-        <el-dialog class="confirm" v-model="delDialog" title="Tips" width="50%">
-            <span>删除模板 [ {{ tempId }} - {{ tempName }} ]</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="delDialog = false">取消</el-button>
-                    <el-button type="danger" @click="delTemp(tempRow)">确认</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -312,16 +306,9 @@ export default {
             this.radioTempToCase = true
             this.activeStop = true
         },
-        // 删除窗口
-        delDialogVisible(row) {
-            this.delDialog = true
-            this.tempName = row.temp_name
-            this.tempId = row.id
-            this.tempRow = row
-        },
+
         // 删除模板
         async delTemp(row) {
-            var flag = false
             row.delLoading = true
             await this.$http({
                 url: '/template/del/all/' + row.id,
@@ -332,23 +319,14 @@ export default {
                         title: 'Success',
                         message: '模板[ ' + row.temp_name + ' ] 删除成功',
                     })
-                    flag = true
                 }
             ).catch(function (error) {
                 ElMessage.error(error.message)
             })
 
-            if (flag) {
-                for (var x in this.tempInfo) {
-                    if (this.tempInfo[x].id == row.id) {
-                        this.tempInfo.splice(x, 1)
-                        break
-                    }
-                }
-            }
-
             row.delLoading = false
-            this.delDialog = false
+
+            this.get_temp(this.page, this.size)
         },
         // 运行的窗口
         setDialogVisible(row) {
