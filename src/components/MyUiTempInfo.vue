@@ -421,7 +421,7 @@ export default {
                         this.uiTempInfo[x].run_order = run_order
                         this.uiTempInfo[x].success = success
                         this.uiTempInfo[x].fail = fail
-                        this.uiTempInfo[x].allureReport = 'ui/allure/' + this.uiTempInfo[x].id + '/' + run_order + '/index.html'
+                        this.uiTempInfo[x].allureReport = '/ui/allure/' + this.uiTempInfo[x].id + '/' + run_order + '/index.html'
                         break
                     }
                 }
