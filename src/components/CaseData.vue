@@ -2,7 +2,13 @@
     <el-affix :offset="10">
         <el-button type="primary" @click="repData = true">关联数据</el-button>
         <el-button type="primary" :loading="dataLoading" @click="getCaseData">刷新</el-button>
+        <el-button type="primary" :loading="chartLoading" @click="getJsonpath">统计</el-button>
     </el-affix>
+    <!-- jsonpath统计 -->
+    <el-dialog class="case-data" v-model='jsonpath' v-if="jsonpath" width="70%" :close-on-click-modal=false draggable
+        :title="'Jsonpath数据引用追踪'" @close='jsonpath = false'>
+        <case-jsonpath :jsonpath-data="jsonpathData"></case-jsonpath>
+    </el-dialog>
 
     <!-- 替换数据弹窗 -->
     <el-dialog class="case-data" v-model='repData' v-if="repData" width="70%" :close-on-click-modal=false draggable
@@ -294,13 +300,15 @@ import { ElMessage } from 'element-plus'
 import { Edit, Check, Plus, Delete, Close } from '@element-plus/icons-vue'
 import MyReplaceData from './ReplaceData.vue'
 import MyCollapse from './MyCollapse.vue'
+import CaseJsonpath from './CaseJsonpath.vue'
 import VueJsonPretty from 'vue-json-pretty'
 export default {
     name: 'CaseData',
     components: {
         MyReplaceData,
         MyCollapse,
-        VueJsonPretty
+        CaseJsonpath,
+        VueJsonPretty,
     },
     props: {
         'caseData': Array,
@@ -326,7 +334,10 @@ export default {
             headerInfo: [],
             renovate: false,
             repData: false,
+            jsonpath: false,
+            jsonpathData: [],
             dataLoading: false,
+            chartLoading: false,
 
             activeNameParams: 'tempParams',
             tabNameParams: { props: { name: 'tempParams' } },
@@ -571,6 +582,31 @@ export default {
                 this.caseData[x] = case_[x]
             }
             this.dataLoading = false
+        },
+        // jsonpath统计
+        async getJsonpath() {
+            this.chartLoading = true
+
+            var res = []
+            await this.$http({
+                url: '/caseService/get/jsonpath',
+                method: 'GET',
+                params: {
+                    case_id: this.caseId
+                }
+            }).then(
+                function (response) {
+                    res = response.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            this.jsonpathData = res
+            this.chartLoading = false
+            this.jsonpath = true
         },
         // params/data数据的弹窗
         setData(row, type_) {
