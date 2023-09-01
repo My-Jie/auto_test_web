@@ -200,6 +200,7 @@ export default {
             settingVirtualId: null,
             scheduleDialog: false,
             scheduleData: [],
+            dialogVisible: false
         }
     },
 
@@ -326,7 +327,6 @@ export default {
                     ElMessage.error(error.message)
                 }
             )
-
             this.settingInfoList = settingInfoList
         },
         // 删除用例

@@ -192,3 +192,7 @@
 - 主页：http://ip:port/index.html
 
 # QQ 交流群: 599733338
+
+# WeChat 交流群
+
+![image](img/1693561940501.jpg)
