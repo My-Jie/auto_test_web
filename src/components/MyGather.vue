@@ -15,7 +15,7 @@
         <el-table-column label="数据集名称" prop="name" width="150px" align="center"></el-table-column>
         <el-table-column label="Path" prop="path" show-overflow-tooltip='true' width="300px"></el-table-column>
 
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="View" size="small" @click="lookData(scope.row, 'params')"></el-button>
             </template>
@@ -25,7 +25,7 @@
                 <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="View" size="small" @click="lookData(scope.row, 'data')"></el-button>
             </template>
@@ -35,7 +35,7 @@
                 <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="View" size="small" @click="lookData(scope.row, 'check')"></el-button>
             </template>
@@ -45,7 +45,7 @@
                 <div>{{ JSON.stringify(scope.row.check, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="" width="40" align="center">
+        <el-table-column label="" width="55" align="center">
             <template #default="scope">
                 <el-button :icon="View" size="small" @click="lookData(scope.row, 'headers')"></el-button>
             </template>
@@ -57,11 +57,11 @@
         </el-table-column>
     </el-table>
     <!-- 详情弹窗 -->
-    <el-dialog v-model='dataDialog' width="50%" draggable :title="dataTitle + '-详情'">
-        <el-input v-model="Data" type="textarea" spellcheck="false" :rows="dataLength"></el-input>
+    <el-dialog class="case-data" v-model='dataDialog' width="50%" draggable :title="dataTitle + '-详情'">
+        <vue-json-pretty :data="JSON.parse(Data)"></vue-json-pretty>
     </el-dialog>
     <!-- 运行用例弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="runTitle" width="60%" @close="closeRunCase">
+    <el-dialog class="confirm" v-model="dialogVisible" :title="runTitle" width="50%" @close="closeRunCase">
         <el-select v-model="settingVirtualId" placeholder="选择环境" @visible-change="selectSetting">
             <el-option v-for="item in settingInfoList" :key="item.setting_name" :label="item.setting_name"
                 :value="item.virtual_id"></el-option>
@@ -82,11 +82,13 @@
 import RunApiCase from './runApiCase.vue'
 import { View } from '@element-plus/icons-vue'
 import { ElMessage, ElNotification } from 'element-plus'
+import VueJsonPretty from 'vue-json-pretty'
 export default {
     name: 'MyGather',
 
     components: {
-        RunApiCase
+        RunApiCase,
+        VueJsonPretty
     },
 
     props: {
@@ -203,6 +205,7 @@ export default {
                 return
             }
 
+            this.dialogVisible = false
             var case_id = this.caseId
             await this.$http({
                 url: '/runCase/gather',

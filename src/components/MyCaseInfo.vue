@@ -71,7 +71,7 @@
                             </template>
                         </el-popover>
 
-                        <el-tooltip content="用例对应的数据集，没有则404" placement="top-start" effect="customized">
+                        <el-tooltip content="用例对应的数据集，无数据不弹窗" placement="top-start" effect="customized">
                             <el-button :icon="Postcard" type="primary" plain @click="getGather(scope.row)"
                                 :loading="scope.row.gatherLoading"></el-button>
                         </el-tooltip>
@@ -135,7 +135,7 @@
             </template>
         </el-dialog>
         <!-- 数据集的弹窗 -->
-        <el-dialog class="confirm" v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog"
+        <el-dialog class="details" v-model="gatherDialog" :title="caseId + '-' + caseName + '-数据集'" v-if="gatherDialog"
             width="50%">
             <my-gather :gather-data="gatherData" :case-id="caseId"></my-gather>
         </el-dialog>
@@ -395,7 +395,9 @@ export default {
                         gather_data[x]['checkbox'] = true
                     }
                     row.gatherLoading = false
-                    gatherDialog = true
+                    if (gather_data.length > 0) {
+                        gatherDialog = true
+                    }
                 }
             ).catch(
                 function (error) {

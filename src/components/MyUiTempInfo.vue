@@ -43,8 +43,8 @@
                             </template>
                         </el-popover>
 
-                        <el-tooltip content="查看数据集，没有则404" placement="top-end" effect="customized">
-                            <el-button :icon="Document" type="primary" plain @click="getUiCaseData(scope.row)"
+                        <el-tooltip content="用例对应的数据集，无数据不弹窗" placement="top-end" effect="customized">
+                            <el-button :icon="Postcard" type="primary" plain @click="getUiCaseData(scope.row)"
                                 :loading="scope.row.CaseLoading"></el-button>
                         </el-tooltip>
                     </el-button-group>
@@ -70,11 +70,8 @@
             :total=uiTempTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
         <!-- 运行用例弹窗 -->
-        <el-dialog class="confirm" v-model="dialogVisible" title="Tips" width="50%"
-            @close='browserId = null, headless = true, gatherId = null'>
-            <span>执行用例 [ {{ uiTempId }} - {{ uiTempName }} ]</span>
-            <br>
-            <br>
+        <el-dialog class="confirm" v-model="dialogVisible" :title="'执行用例' + uiTempId + '-' + projectName + '-' + uiTempName"
+            width="50%" @close='browserId = null, headless = true, gatherId = null'>
             <el-form>
                 <el-form-item label="远程环境" label-width="100px">
                     <el-select v-model="browserId" placeholder="选择环境" @visible-change="handleVisibleChange">
@@ -111,20 +108,10 @@
         </el-dialog>
 
         <!-- 数据详情的弹窗 -->
-        <el-dialog class="confirm" v-model="dialogGather" title="Tips" width="60%" @close='dialogGather = false'
-            :close-on-click-modal=false>
-            <el-table v-loading='loading' :data="gatherInfo" row-key="case_id" stripe fit>
-                <el-table-column label="CaseId" prop="id" type="index" :index="indexMethodGather" width="100%"
-                    align="center"></el-table-column>
-                <el-table-column label="用例名称" prop="case_name" width="150px">
-                </el-table-column>
-                <el-table-column label="Gather" prop="rows_data" show-overflow-tooltip='true'>
-                    <template #default="scope">
-                        <div>{{ JSON.stringify(scope.row.rows_data, null, 1) }}</div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="创建时间" prop="created_at" align="center" width="200px"></el-table-column>
-            </el-table>
+        <el-dialog class="details" v-model="dialogGather" :title="uiTempId + '-' + projectName + '-' + uiTempName + '-数据集'"
+            width="50%" @close='dialogGather = false' :close-on-click-modal=false>
+
+            <my-ui-gather :gather-info="gatherInfo" :ui-temp-id="uiTempId"></my-ui-gather>
 
             <template #footer>
                 <span class="dialog-footer">
@@ -138,13 +125,15 @@
 
 <script>
 import MonacoEditor from "./MonacoEditor.vue"
+import MyUiGather from "./MyUiGather.vue"
 import { ElNotification, ElMessage } from 'element-plus'
-import { Edit, Document, Delete, CircleCheck, DocumentCopy } from '@element-plus/icons-vue'
+import { Edit, Postcard, Delete, CircleCheck, DocumentCopy } from '@element-plus/icons-vue'
 export default {
     name: "MyUiTempInfo",
 
     components: {
         MonacoEditor,
+        MyUiGather
     },
 
     props: {
@@ -157,7 +146,7 @@ export default {
     data() {
         return {
             Edit,
-            Document,
+            Postcard,
             Delete,
             CircleCheck,
             DocumentCopy,
@@ -255,6 +244,7 @@ export default {
         async getUiCaseData(row) {
             this.uiTempId = row.id
             this.uiTempName = row.temp_name
+            this.projectName = row.project_name
             var flag = false
             var gather = []
             await this.$http({
@@ -263,6 +253,9 @@ export default {
             }).then(
                 function (response) {
                     gather = response.data
+                    for (var x in gather) {
+                        gather[x].checkbox = true
+                    }
                     flag = true
                 }
             ).catch(function (error) {
@@ -271,9 +264,13 @@ export default {
 
             if (flag) {
                 this.gatherInfo = gather
-                this.dialogGather = true
+                if (gather.length > 0) {
+                    this.dialogGather = true
+                }
             }
         },
+
+
 
         async getUiCaseName(val) {
             if (!val) {
@@ -347,21 +344,9 @@ export default {
             this.dialogVisible = true
             this.uiTempId = row.id
             this.uiTempName = row.temp_name
+            this.projectName = row.project_name
             this.uiTempRow = row
 
-            var settingInfoList = []
-            await this.$http({
-                url: '/runCase/get/ui/setting/info?case_id=' + this.uiTempId,
-                method: 'GET',
-            }).then(
-                function (response) {
-                    settingInfoList = response.data
-                }
-            ).catch(
-                function (error) {
-                    ElMessage.error(error.message)
-                }
-            )
         },
 
         async runCase(row) {
@@ -396,7 +381,6 @@ export default {
                     run_order = case_report.run_order
                     success = case_report.success
                     fail = case_report.fail
-                    console.log(run_order);
                     ElNotification({
                         title: '测试报告',
                         message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.id + ']的报告</a>',
