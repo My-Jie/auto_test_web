@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-button type="success" :loading="runLoading" @click="queryRun(false)">同步运行</el-button>
-        <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)" disabled>异步运行</el-button>
+        <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)">异步运行</el-button>
         <br>
         <br>
 
