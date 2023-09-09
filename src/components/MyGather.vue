@@ -223,7 +223,8 @@ export default {
             }).then(
                 function (response) {
                     if (response.data.code == 0) {
-                        var case_report = response.data.data.allure_report[case_id]
+                        var allure_report = response.data.data.allure_report
+                        var case_report = allure_report[allure_report.length - 1]
                         if (!case_report.is_fail) {
                             ElNotification({
                                 title: '测试报告',
