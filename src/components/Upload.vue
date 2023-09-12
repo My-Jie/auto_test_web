@@ -21,7 +21,7 @@
         </el-form-item>
         <el-form-item label="系统名称" label-width="100px" :required="true">
             <el-select v-model="projectName" placeholder="选择系统" @visible-change="handleVisibleChange">
-                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.code"></el-option>
+                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.id"></el-option>
             </el-select>
         </el-form-item>
     </el-form>
@@ -32,7 +32,7 @@
         </el-form-item>
         <el-form-item label="系统名称" label-width="100px" :required="true">
             <el-select v-model="projectName" placeholder="选择系统" @visible-change="handleVisibleChange">
-                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.code"></el-option>
+                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.id"></el-option>
             </el-select>
         </el-form-item>
     </el-form>

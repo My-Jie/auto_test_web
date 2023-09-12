@@ -18,7 +18,7 @@
                 <el-button type="primary" size="small" @click="checkTemp" :loading="tempCheckLoading">确认组装</el-button>&nbsp;
                 <el-input v-model="tempName" style="width:200px" size="small" placeholder="tempName"></el-input>
                 <el-select v-model="projectName" placeholder="选择系统" size="small" @visible-change="handleVisibleChange">
-                    <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.code"></el-option>
+                    <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.id"></el-option>
                 </el-select>
             </template>
         </el-transfer>
