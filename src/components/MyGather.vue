@@ -2,6 +2,14 @@
     <el-affix :offset="10">
         <el-button type="success" :loading="runLoading" @click="queryRun(false)">同步运行</el-button>
         <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)">异步运行</el-button>
+        <el-popover title="确定删除？" placement="top" trigger="focus">
+            <div style="text-align: right; margin: 0">
+                <el-button size="small" type="primary" @click="delGather">是</el-button>
+            </div>
+            <template #reference>
+                <el-button type="danger" plain>删除</el-button>
+            </template>
+        </el-popover>
     </el-affix>
     <br>
     <el-table :data="gatherData" stripe fit :cell-class-name="onTableRowClassName">
@@ -55,6 +63,7 @@
                 <div>{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
             </template>
         </el-table-column>
+
     </el-table>
     <!-- 详情弹窗 -->
     <el-dialog class="case-data" v-model='dataDialog' width="50%" draggable :title="dataTitle + '-详情'">
@@ -82,6 +91,7 @@
 import RunApiCase from './runApiCase.vue'
 import { View } from '@element-plus/icons-vue'
 import { ElMessage, ElNotification } from 'element-plus'
+import { Delete } from '@element-plus/icons-vue'
 import VueJsonPretty from 'vue-json-pretty'
 export default {
     name: 'MyGather',
@@ -98,6 +108,7 @@ export default {
     data() {
         return {
             View,
+            Delete,
             Data: null,
             dataLength: 0,
             dataDialog: false,
@@ -180,6 +191,57 @@ export default {
             )
 
             this.settingInfoList = settingInfoList
+        },
+        // 删除数据集
+        async delGather() {
+            var suite_list = []
+            for (var x in this.gatherData) {
+                if (this.gatherData[x].checkbox && !suite_list.includes(this.gatherData[x].suite)) {
+                    suite_list.push(this.gatherData[x].suite)
+                }
+            }
+
+            if (suite_list.length <= 0) {
+                ElMessage.warning('当前没有选中需要删除的数据集')
+                return
+            }
+
+            var flag = false
+
+            await this.$http({
+                url: '/caseDdt/del/gather',
+                method: 'DELETE',
+                data: JSON.stringify({
+                    case_id: this.caseId,
+                    suite: suite_list
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+
+            }).then(
+                function () {
+                    flag = true
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '删除成功',
+                    })
+                }
+
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            if (flag) {
+                for (var i = this.gatherData.length - 1; i >= 0; i--) {
+                    if (this.gatherData[i].checkbox) {
+                        this.gatherData.splice(i, 1)
+                    }
+                }
+            }
+
         },
         // 运行用例
         async runCase() {

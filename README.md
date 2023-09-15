@@ -160,14 +160,6 @@
 - 统一响应：在转化用例时与 response 对比，自动添加到用例 check 中
 - 系统列表：api 用例、ui 用例标识
 
-## 一些文档地址
-
-- 博客：https://blog.csdn.net/yangj507/category_12359965.html
-- 前端：https://gitee.com/myjiee/auto_test_web
-- 前端：https://github.com/My-Jie/auto_test_web
-- 主页：http://localhost:8000/index.html
-- swagger-ui: http://localhost:8000/docs
-
 ## 一些截图
 
 ![image](img/1689178463172.jpg)
@@ -205,9 +197,16 @@
 - 将 dist 文件夹内的 3 个文件，拷贝到 static 目录下
 - 主页：http://ip:port/index.html
 
+## 一些文档地址
+
+- 博客：https://blog.csdn.net/yangj507/category_12359965.html
+- 后端：https://gitee.com/myjiee/fast-api_auto_test
+- 后端：https://github.com/My-Jie/FastApi_auto_test
+- 主页：http://localhost:8000/index.html
+- swagger-ui: http://localhost:8000/docs
+
 # QQ 交流群: 599733338
 
 # WeChat 交流群
 
 ![image](img/1693561940501.jpg)
-

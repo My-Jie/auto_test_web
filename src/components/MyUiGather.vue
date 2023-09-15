@@ -2,6 +2,14 @@
     <div>
         <el-button type="success" :loading="runLoading" @click="queryRun(false)">同步运行</el-button>
         <el-button type="success" :loading="asyncRunLoading" @click="queryRun(true)">异步运行</el-button>
+        <el-popover title="确定删除？" placement="top" trigger="focus">
+            <div style="text-align: right; margin: 0">
+                <el-button size="small" type="primary" @click="delGather">是</el-button>
+            </div>
+            <template #reference>
+                <el-button type="danger" plain>删除</el-button>
+            </template>
+        </el-popover>
         <br>
         <br>
 
@@ -110,6 +118,57 @@ export default {
                 }
             )
             this.browsers = browsers
+        },
+        // 删除数据集
+        async delGather() {
+            var suite_list = []
+            for (var x in this.gatherInfo) {
+                if (this.gatherInfo[x].checkbox && !suite_list.includes(this.gatherInfo[x].id)) {
+                    suite_list.push(this.gatherInfo[x].id)
+                }
+            }
+
+            if (suite_list.length <= 0) {
+                ElMessage.warning('当前没有选中需要删除的数据集')
+                return
+            }
+
+            var flag = false
+
+            await this.$http({
+                url: '/caseUi/del/gather',
+                method: 'DELETE',
+                data: JSON.stringify({
+                    temp_id: this.uiTempId,
+                    gather_ids: suite_list
+                }),
+                headers: {
+                    'content-type': "application/json"
+                }
+
+            }).then(
+                function () {
+                    flag = true
+                    ElNotification.success({
+                        title: 'Success',
+                        message: '删除成功',
+                    })
+                }
+
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            if (flag) {
+                for (var i = this.gatherInfo.length - 1; i >= 0; i--) {
+                    if (this.gatherInfo[i].checkbox) {
+                        this.gatherInfo.splice(i, 1)
+                    }
+                }
+            }
+
         },
         // 运行用例
         async runCase() {

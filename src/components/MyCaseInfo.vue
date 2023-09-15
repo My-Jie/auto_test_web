@@ -50,16 +50,16 @@
             </el-table-column>
             <el-table-column label="操作" align="center" width="470">
                 <template #default="scope">
-                    <el-tooltip content="运行用例" placement="top-end" effect="customized">
-                        <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
-                            @click="setDialogVisible(scope.row)">
-                        </el-button>
-                    </el-tooltip>
+                    <!-- <el-tooltip content="运行用例" placement="top-end" effect="customized"> -->
+                    <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
+                        @click="setDialogVisible(scope.row)">
+                    </el-button>
+                    <!-- </el-tooltip> -->
                     <el-button-group class="ml-4">
-                        <el-tooltip content="用例详情，可编辑数据" placement="top-end" effect="customized">
-                            <el-button :icon="Edit" type="primary" plain @click="getCaseData(scope.row)"
-                                :loading="scope.row.dataLoading"></el-button>
-                        </el-tooltip>
+                        <!-- <el-tooltip content="用例详情，可编辑数据" placement="top-end" effect="customized"> -->
+                        <el-button :icon="Edit" type="primary" plain @click="getCaseData(scope.row)"
+                            :loading="scope.row.dataLoading"></el-button>
+                        <!-- </el-tooltip> -->
 
                         <el-popover title="确定复制？" placement="top" trigger="focus">
                             <div style="text-align: right; margin: 0">
@@ -76,10 +76,8 @@
                                 :loading="scope.row.gatherLoading"></el-button>
                         </el-tooltip>
 
-                        <el-tooltip content="用例执行的时序表" placement="top-start" effect="customized">
-                            <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
-                                :loading="scope.row.scheduleLoading"></el-button>
-                        </el-tooltip>
+                        <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
+                            :loading="scope.row.scheduleLoading"></el-button>
 
                         <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
                             confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
@@ -392,7 +390,7 @@ export default {
                 function (response) {
                     gather_data = response.data
                     for (var x in gather_data) {
-                        gather_data[x]['checkbox'] = true
+                        gather_data[x]['checkbox'] = false
                     }
                     row.gatherLoading = false
                     if (gather_data.length > 0) {

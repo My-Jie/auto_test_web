@@ -22,16 +22,16 @@
             <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
             <el-table-column label="操作" align="center" width="350px">
                 <template #default="scope">
-                    <el-tooltip content="运行用例" placement="top-end" effect="customized">
-                        <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
-                            @click="getCaseInfo(scope.row)"></el-button>
-                    </el-tooltip>
+                    <!-- <el-tooltip content="运行用例" placement="top-end" effect="customized"> -->
+                    <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
+                        @click="getCaseInfo(scope.row)"></el-button>
+                    <!-- </el-tooltip> -->
 
                     <el-button-group class="ml-4">
-                        <el-tooltip content="测试用例文本详情" placement="top-end" effect="customized">
-                            <el-button :icon="Edit" type="primary" plain @click="getUiTempData(scope.row)"
-                                :loading="scope.row.dataLoading"></el-button>
-                        </el-tooltip>
+                        <!-- <el-tooltip content="测试用例文本详情" placement="top-end" effect="customized"> -->
+                        <el-button :icon="Edit" type="primary" plain @click="getUiTempData(scope.row)"
+                            :loading="scope.row.dataLoading"></el-button>
+                        <!-- </el-tooltip> -->
 
                         <el-popover title="确定复制？" placement="top" trigger="focus">
                             <div style="text-align: right; margin: 0">
@@ -254,7 +254,7 @@ export default {
                 function (response) {
                     gather = response.data
                     for (var x in gather) {
-                        gather[x].checkbox = true
+                        gather[x].checkbox = false
                     }
                     flag = true
                 }
