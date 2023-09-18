@@ -5,7 +5,7 @@
         <el-button type="primary" :loading="chartLoading" @click="getJsonpath">统计</el-button>
     </el-affix>
     <!-- jsonpath统计 -->
-    <el-dialog class="case-data" v-model='jsonpath' v-if="jsonpath" width="70%" :close-on-click-modal=false draggable
+    <el-dialog class="case-data" v-model='jsonpath' v-if="jsonpath" width="80%" :close-on-click-modal=false draggable
         :title="'Jsonpath数据引用追踪'" @close='jsonpath = false'>
         <case-jsonpath :jsonpath-data="jsonpathData"></case-jsonpath>
     </el-dialog>
@@ -287,7 +287,7 @@
             <el-tab-pane label="tempHeaders" name="tempHeaders">
                 <vue-json-pretty :data="JSON.parse(tempHeaders)"></vue-json-pretty>
             </el-tab-pane>
-            <el-tab-pane label="caseHeaders" name="caseParams">
+            <el-tab-pane label="caseHeaders" name="caseHeaders">
                 <vue-json-pretty :data="JSON.parse(caseHeaders)"></vue-json-pretty>
             </el-tab-pane>
         </el-tabs>
