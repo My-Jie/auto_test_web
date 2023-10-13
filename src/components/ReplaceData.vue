@@ -230,7 +230,7 @@ export default {
                 params: {
                     case_id: case_id,
                     number: row.number,
-                    old_data: row.old_data,
+                    old_data: this.responseValueInput,
                     new_data: row.new_data,
                     rep: row.rep,
                     data_type: rep,
