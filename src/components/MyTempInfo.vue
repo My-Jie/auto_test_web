@@ -29,8 +29,16 @@
 
             <el-table-column label="API数量" prop="api_count" align="center"></el-table-column>
             <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
-            <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
-            <el-table-column label="修改时间" prop="updated_at" align="center"></el-table-column>
+            <el-table-column label="创建时间" align="center">
+                <template #default="scope">
+                    {{ new Date(scope.row.created_at).toLocaleString() }}
+                </template>
+            </el-table-column>
+            <el-table-column label="修改时间" align="center">
+                <template #default="scope">
+                    {{ new Date(scope.row.updated_at).toLocaleString() }}
+                </template>
+            </el-table-column>
             <el-table-column label="操作" align="center" width="220">
                 <template #default="scope">
                     <el-tooltip content="运行用例，批量运行模板关联的所有用例" placement="top-end" effect="customized">

@@ -358,6 +358,7 @@ export default {
         this.caseInfo[x].dataLoading = false
         this.caseInfo[x].gatherLoading = false
         this.caseInfo[x].scheduleLoading = false
+        this.caseInfo[x].reportLoading = false
         this.caseInfo[x].edit = true
         this.caseInfo[x].checkLoading = false
         this.caseInfo[x].percentage = 0

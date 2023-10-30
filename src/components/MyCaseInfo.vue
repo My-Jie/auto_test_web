@@ -31,7 +31,11 @@
             <el-table-column label="运行" prop="run_order" width="60px" align="center"></el-table-column>
             <el-table-column label="成功" prop="success" width="60px" align="center"></el-table-column>
             <el-table-column label="失败" prop="fail" width="60px" align="center"></el-table-column>
-            <el-table-column label="创建时间" prop="created_at" align="center"></el-table-column>
+            <el-table-column label="创建时间" align="center">
+                <template #default="scope">
+                    {{ new Date(scope.row.created_at).toLocaleString() }}
+                </template>
+            </el-table-column>
             <el-table-column label="进度">
                 <template #default="scope">
                     <el-progress :text-inside="true" :stroke-width="25" :percentage=scope.row.percentage
@@ -76,8 +80,8 @@
                                 :loading="scope.row.gatherLoading"></el-button>
                         </el-tooltip>
 
-                        <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
-                            :loading="scope.row.scheduleLoading"></el-button>
+                        <!-- <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
+                            :loading="scope.row.scheduleLoading"></el-button> -->
 
                         <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
                             confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
@@ -98,9 +102,12 @@
                         </template>
                     </el-popover>
 
-                    <el-button type="Info" plain>
+                    <!-- <el-button type="Info" plain>
                         <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
-                    </el-button>
+                    </el-button> -->
+
+                    <el-button :icon="DataLine" type="Info" plain @click="report(scope.row)"
+                        :loading="scope.row.reportLoading"></el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -109,11 +116,14 @@
         <el-pagination background :page-sizes="[10, 20, 50, 80, 100]" layout="total, jumper, prev, pager, next, sizes"
             :total=caseTotal @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
+        <!-- 测试报告列表弹窗 -->
+        <el-dialog class="details" v-model='reportDialog' width="90%" :title="caseName + '-报告列表'">
+            <api-case-report v-if="reportDialog" :report-list="reportList" :case-name="caseName"></api-case-report>
+        </el-dialog>
+
         <!-- 详情弹窗 -->
         <el-dialog class="details" v-model='myDialog' width="90%" :title="caseId + ' ' + dataTitle">
-            <!-- <div class="el-dialog-div"> -->
             <case-data v-if="myDialog" :case-data="thisCaseData" :case-id="caseId"></case-data>
-            <!-- </div> -->
         </el-dialog>
         <!-- 运行用例弹窗 -->
         <el-dialog class="confirm" v-model="dialogVisible" :title="'执行用例' + caseId + '-' + caseName" width="50%"
@@ -150,9 +160,10 @@ import CaseData from './CaseData.vue'
 import MyCaseSchedule from './MyCaseSchedule.vue'
 import MyGather from './MyGather.vue'
 import RunApiCase from './runApiCase.vue'
+import ApiCaseReport from './ApiCaseReport.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Check, Download, Close, Document, DocumentCopy, Postcard, Delete, CircleCheck, More } from '@element-plus/icons-vue'
+import { Edit, Check, Download, Close, Document, DocumentCopy, Postcard, Delete, CircleCheck, More, DataLine } from '@element-plus/icons-vue'
 export default {
     name: "MyCaseInfo",
     props: {
@@ -166,7 +177,8 @@ export default {
         CaseData,
         MyGather,
         RunApiCase,
-        MyCaseSchedule
+        MyCaseSchedule,
+        ApiCaseReport
     },
 
     data() {
@@ -181,6 +193,7 @@ export default {
             Delete,
             CircleCheck,
             More,
+            DataLine,
             loading: !this.caseInfo ? true : false,
             myDialog: false,
             thisCaseData: [],
@@ -198,11 +211,39 @@ export default {
             settingVirtualId: null,
             scheduleDialog: false,
             scheduleData: [],
-            dialogVisible: false
+            dialogVisible: false,
+            reportDialog: false,
+            reportList: []
         }
     },
 
     methods: {
+        // 接口测试报告
+        async report(row) {
+            this.caseName = row.name
+            row.reportLoading = true
+            var report = []
+            await this.$http({
+                url: '/report/list/' + row.case_id,
+                method: 'GET',
+                params: {
+                    page: 1,
+                    size: 999
+                }
+            }).then(
+                function (response) {
+                    report = response.data
+                }
+            ).catch(
+                function (error) {
+                    ElMessage.error(error.message)
+                }
+            )
+
+            this.reportList = report
+            this.reportDialog = true
+            row.reportLoading = false
+        },
         // 选择环境
         async selectSetting(val) {
             if (val) {
@@ -533,25 +574,21 @@ export default {
                 function (response) {
                     row.runLoading = false
                     if (response.data.code == 0) {
-                        var allure_report = response.data.data.allure_report
-                        var case_report = allure_report[allure_report.length - 1]
+                        var report = response.data.data.report
+                        var case_report = report[report.length - 1]
                         if (!case_report.is_fail) {
                             ElNotification({
-                                title: '测试报告',
-                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.case_id + ']的报告</a>',
+                                title: 'RunCase: ' + row.case_id + ', Success!',
                                 duration: 0,
                                 type: 'success',
                                 position: 'bottom-right',
-                                dangerouslyUseHTMLString: true,
                             })
                         } else {
                             ElNotification({
-                                title: '测试报告',
-                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + row.case_id + ']的报告</a>',
+                                title: 'RunCase: ' + row.case_id + ', Warning!',
                                 duration: 0,
                                 type: 'warning',
                                 position: 'bottom-right',
-                                dangerouslyUseHTMLString: true,
                             })
                         }
                         flag = true
@@ -581,7 +618,6 @@ export default {
                         this.caseInfo[x].run_order = run_order
                         this.caseInfo[x].success = success
                         this.caseInfo[x].fail = fail
-                        this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + run_order + '/index.html'
                         break
                     }
                 }

@@ -18,16 +18,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.use(ElementPlus)
 app.use(JsonViewer)
-app.mixin({
-    methods: {
-        dataFilter(val, format = "YYYY-MM-DD hh:mm:ss") {
-            console.log(val)
-            val = parseInt(val);
-            console.log(val)
-            return dayjs(val).format(format);
-        }
-    }
-})
 
 // axios.defaults.baseURL = '/api'
 app.config.globalProperties.$http = axios

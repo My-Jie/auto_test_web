@@ -285,25 +285,21 @@ export default {
             }).then(
                 function (response) {
                     if (response.data.code == 0) {
-                        var allure_report = response.data.data.allure_report
-                        var case_report = allure_report[allure_report.length - 1]
+                        var report = response.data.data.report
+                        var case_report = report[report.length - 1]
                         if (!case_report.is_fail) {
                             ElNotification({
-                                title: '测试报告',
-                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + case_id + ']的报告</a>',
+                                title: 'RunCase: ' + row.case_id + ', Success!',
                                 duration: 0,
                                 type: 'success',
                                 position: 'bottom-right',
-                                dangerouslyUseHTMLString: true,
                             })
                         } else {
                             ElNotification({
-                                title: '测试报告',
-                                message: '<a href="' + case_report.report + '/index.html" target="_blank">查看用例[' + case_id + ']的报告</a>',
+                                title: 'RunCase: ' + row.case_id + ', Warning!',
                                 duration: 0,
                                 type: 'warning',
                                 position: 'bottom-right',
-                                dangerouslyUseHTMLString: true,
                             })
                         }
 
