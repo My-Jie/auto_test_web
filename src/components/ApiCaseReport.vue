@@ -1,16 +1,68 @@
 <template>
     <el-tabs :tab-position="'top'" type="border-card" v-model="activeNames">
         <el-tab-pane label="统计表" name="1">
-            <el-descriptions border>
-                <el-descriptions-item label="执行次数">{{ reportList.length }}</el-descriptions-item>
-                <el-descriptions-item label="成功次数">{{ successCount }}</el-descriptions-item>
-                <el-descriptions-item label="失败次数">
-                    <font color="#F29492">{{ failCount }}</font>
-                </el-descriptions-item>
-                <el-descriptions-item label="API总数">{{ totalApi }}</el-descriptions-item>
-                <el-descriptions-item label="执行完整率">{{ wholeRate.toFixed(2) }}%</el-descriptions-item>
-                <el-descriptions-item label="执行成功率">{{ successRate.toFixed(2) }}%</el-descriptions-item>
-            </el-descriptions>
+            <el-card>
+                <el-col :span="13" class="centered">
+                    <el-progress type="dashboard" :percentage="wholeRate.toFixed(0)">
+                        <template #default="{ percentage }">
+                            <span class="percentage-value">{{ percentage }}%</span>
+                            <span class="percentage-label">执行完整率</span>
+                        </template>
+                    </el-progress>
+                    <el-statistic :value="whole">
+                        <template #title>
+                            <div style="display: inline-flex; align-items: center">
+                                <div>完整执行/总条数</div>
+                            </div>
+                        </template>
+                        <template #suffix>/ {{ totalApi }}</template>
+                    </el-statistic>
+                    <el-statistic :value="totalTime">
+                        <template #title>
+                            <div style="display: inline-flex; align-items: center">
+                                <div>总耗时</div>
+                            </div>
+                        </template>
+                    </el-statistic>
+                    <el-statistic :value="initiativeStop">
+                        <template #title>
+                            <div style="display: inline-flex; align-items: center">
+                                <div>主动结束</div>
+                            </div>
+                        </template>
+                    </el-statistic>
+                    <el-statistic :value="failStop">
+                        <template #title>
+                            <div style="display: inline-flex; align-items: center">
+                                <div>失败停止</div>
+                            </div>
+                        </template>
+                    </el-statistic>
+                </el-col>
+                <el-col :span="5" class="centered">
+                    <el-progress type="dashboard" :percentage="successRate.toFixed(0)" :color="colors">
+                        <template #default="{ percentage }">
+                            <span class="percentage-value">{{ percentage }}%</span>
+                            <span class="percentage-label">执行成功率</span>
+                        </template>
+                    </el-progress>
+                    <el-statistic :value="successCount">
+                        <template #title>
+                            <div style="display: inline-flex; align-items: center">
+                                <div>成功/总数</div>
+                            </div>
+                        </template>
+                        <template #suffix>/ {{ reportList.length }}</template>
+                    </el-statistic>
+                    <el-statistic :value="failCount">
+                        <template #title>
+                            <div style="display: inline-flex; align-items: center">
+                                <div>失败</div>
+                            </div>
+                        </template>
+                    </el-statistic>
+                </el-col>
+            </el-card>
             <el-divider content-position="left">报告列表</el-divider>
             <el-table :data="reportList" stripe fit max-height="400">
                 <el-table-column label="执行序号" prop="run_number" width="85px" align="center"></el-table-column>
@@ -28,7 +80,7 @@
                 </el-table-column>
                 <el-table-column label="执行状态" align="center">
                     <template #default="scope">
-                        <el-progress :percentage="(scope.row.run_api / scope.row.total_api) * 100" />
+                        <el-progress :percentage="((scope.row.run_api / scope.row.total_api) * 100).toFixed(0)" />
                     </template>
                 </el-table-column>
                 <el-table-column label="主动结束" align="center">
@@ -74,8 +126,9 @@
     <el-dialog class="details" v-model='reportDialog' width="90%" :title="caseName + '-报告详情'">
         <case-report-detail v-if="reportDialog" :detail-list="detailList" :detail-total-api="detailTotalApi"
             :detail-success-count="detailSuccessCount" :detail-fail-count="detailFailCount"
-            :detail-total-time="detailTotalTime" :detail-max-time="detailMaxTime"
-            :detail-avg-time="detailAvgTime"></case-report-detail>
+            :detail-total-time="detailTotalTime" :detail-max-time="detailMaxTime" :detail-avg-time="detailAvgTime"
+            :check-success="checkSuccess" :check-fail="checkFail" :check-skip="checkSkip"
+            :run-time="runTime"></case-report-detail>
     </el-dialog>
 </template>
   
@@ -106,8 +159,20 @@ export default {
             totalApi: 0,
             successCount: 0,
             failCount: 0,
+            whole: 0,
             wholeRate: 0,
             successRate: 0,
+            totalTime: 0,
+            initiativeStop: 0,
+            failStop: 0,
+
+            colors: [
+                // { color: '#F29492', percentage: 20 },
+                { color: '#F29492', percentage: 40 },
+                // { color: '#5cb87a', percentage: 60 },
+                { color: '#FFC857', percentage: 99 },
+                { color: '#6FCF97', percentage: 100 },
+            ],
 
             // 详情的统计数据
             detailTotalApi: 0,
@@ -124,7 +189,12 @@ export default {
             success: [],
             fail: [],
             notRun: [],
-            timeData: []
+            timeData: [],
+
+            checkSuccess: 0,
+            checkFail: 0,
+            checkSkip: 0,
+            runTime: 0
         }
     },
 
@@ -134,7 +204,7 @@ export default {
             return
         }
 
-        var whole = 0
+
         for (var x in this.reportList) {
             this.reportList[x].detailLoading = false
             if (this.reportList[x].is_fail) {
@@ -143,7 +213,19 @@ export default {
                 this.successCount++
             }
 
-            whole += (this.reportList[x].run_api / this.reportList[x].total_api) * 100
+            if (this.reportList[x].run_api == this.reportList[x].total_api) {
+                this.whole++
+            }
+
+            if (this.reportList[x].initiative_stop == 1) {
+                this.initiativeStop++
+            }
+
+            if (this.reportList[x].fail_stop == 1) {
+                this.failStop++
+            }
+
+            this.totalTime += this.reportList[x].total_time
 
             // 统计图的
             this.success.push(this.reportList[x].success)
@@ -152,13 +234,29 @@ export default {
 
             this.timeData.push(new Date(this.reportList[x].created_at).toLocaleString('zh', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }))
         }
-        this.totalApi = this.reportList[0].total_api
-        this.wholeRate = whole / this.reportList.length
+
+        this.totalTime = this.timeToString(this.totalTime)
+        this.totalApi = this.reportList.length
+        this.wholeRate = (this.whole / this.totalApi) * 100
         this.successRate = (this.successCount / this.reportList.length) * 100
     },
 
 
     methods: {
+        // 秒转时间
+
+        timeToString(millisecond) {
+            var seconds = Math.round(millisecond);
+            var result = []
+            var count = 2
+            while (count >= 0) {
+                var current = Math.floor(seconds / (60 ** count));
+                result.push(current);
+                seconds -= current * (60 ** count);
+                --count;
+            }
+            return result.map(item => item <= 9 ? `0${item}` : item).join(":")
+        },
         // 测试报告详情
         async caseReport(row) {
             row.detailLoading = true
@@ -182,12 +280,30 @@ export default {
             )
             this.detailList = detail
 
+            this.checkSuccess = 0
+            this.checkFail = 0
+            this.checkSkip = 0
+            for (var x in this.detailList) {
+                for (var i in this.detailList[x].other_info.assert_info) {
+                    if (this.detailList[x].other_info.assert_info[i].is_fail == 'pass') {
+                        this.checkSuccess++
+                    }
+                    if (this.detailList[x].other_info.assert_info[i].is_fail == 'fail') {
+                        this.checkFail++
+                    }
+                    if (this.detailList[x].other_info.assert_info[i].is_fail == 'skip') {
+                        this.checkSkip++
+                    }
+                }
+            }
+
             this.detailTotalApi = row.total_api
             this.detailSuccessCount = row.success
             this.detailFailCount = row.fail
             this.detailMaxTime = row.max_time * 1000
             this.detailAvgTime = row.avg_time * 1000
             this.detailTotalTime = row.total_time * 1000
+            this.runTime = new Date(row.created_at).toLocaleString('zh', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })
 
             row.detailLoading = false
             this.reportDialog = true
@@ -206,5 +322,30 @@ export default {
     --el-tag-border-color: #F29492;
     --el-tag-hover-color: #F29492;
     --el-tag-text-color: #F29492;
+}
+
+.percentage-value {
+    display: block;
+    margin-top: 10px;
+    font-size: 28px;
+}
+
+.percentage-label {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.centered {
+    display: inline-flex;
+    /* justify-content: left; */
+    width: 100%;
+}
+
+.el-statistic {
+    text-align: center;
+    margin: 0 20px;
+    padding: 35px 0;
+
 }
 </style>

@@ -1,37 +1,113 @@
 <template>
     <el-card>
-        <el-row>
-            <el-col :span="4" class="my-col">
-                <el-statistic title="api总数" :value=detailTotalApi>
-                    <template #suffix>个</template>
-                </el-statistic>
-            </el-col>
-            <el-col :span="4" class="my-col">
-                <el-statistic title="成功api" :value=detailSuccessCount>
-                    <template #suffix>个</template>
-                </el-statistic>
-            </el-col>
-            <el-col :span="4" class="my-col">
-                <el-statistic title="失败api" :value=detailFailCount>
-                    <template #suffix>个</template>
-                </el-statistic>
-            </el-col>
-            <el-col :span="4" class="my-col">
-                <el-statistic title="最大耗时" :value=detailMaxTime>
-                    <template #suffix>ms</template>
-                </el-statistic>
-            </el-col>
-            <el-col :span="4" class="my-col">
-                <el-statistic title="平均耗时" :value=detailAvgTime>
-                    <template #suffix>ms</template>
-                </el-statistic>
-            </el-col>
-            <el-col :span="4" class="my-col">
-                <el-statistic title="总耗时" :value=detailTotalTime>
-                    <template #suffix>ms</template>
-                </el-statistic>
-            </el-col>
-        </el-row>
+        <el-col :span="8" class="centered">
+            <el-progress type="dashboard"
+                :percentage="(((detailSuccessCount + detailFailCount) / detailTotalApi) * 100).toFixed(0)">
+                <template #default="{ percentage }">
+                    <span class="percentage-value">{{ percentage }}%</span>
+                    <span class="percentage-label">执行完整率</span>
+                </template>
+            </el-progress>
+            <el-statistic :value="detailSuccessCount + detailFailCount">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>执行/总数</div>
+                    </div>
+                </template>
+                <template #suffix>/ {{ detailTotalApi }}</template>
+            </el-statistic>
+            <el-statistic :value="detailAvgTime.toFixed(0) + 'ms'">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>平均耗时</div>
+                    </div>
+                </template>
+            </el-statistic>
+            <el-statistic :value="detailTotalTime.toFixed(0) + 'ms'">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>总耗时</div>
+                    </div>
+                </template>
+            </el-statistic>
+        </el-col>
+        <el-col :span="6" class="centered">
+            <el-progress type="dashboard" :color="colors"
+                :percentage="((detailSuccessCount / (detailSuccessCount + detailFailCount)) * 100).toFixed(0)">
+                <template #default="{ percentage }">
+                    <span class="percentage-value">{{ percentage }}%</span>
+                    <span class="percentage-label">执行通过率</span>
+                </template>
+            </el-progress>
+            <el-statistic :value="detailSuccessCount">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>成功/执行</div>
+                    </div>
+                </template>
+                <template #suffix>/ {{ detailSuccessCount + detailFailCount }}</template>
+            </el-statistic>
+            <el-statistic :value="detailFailCount">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>失败</div>
+                    </div>
+                </template>
+            </el-statistic>
+        </el-col>
+        <el-col :span="10" class="centered">
+            <el-progress type="dashboard" :color="colors"
+                :percentage="((checkSuccess / (checkSuccess + checkFail + checkSkip)) * 100).toFixed(0)">
+                <template #default="{ percentage }">
+                    <span class="percentage-value">{{ percentage }}%</span>
+                    <span class="percentage-label">断言</span>
+                </template>
+            </el-progress>
+            <el-statistic :value="checkSuccess">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>成功/总数</div>
+                    </div>
+                </template>
+                <template #suffix>/ {{ checkSuccess + checkFail + checkSkip }}</template>
+            </el-statistic>
+            <el-statistic :value="checkFail">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>失败</div>
+                    </div>
+                </template>
+            </el-statistic>
+            <el-statistic :value="checkSkip">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <div>跳过</div>
+                    </div>
+                </template>
+            </el-statistic>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <el-statistic :value="runTime">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                        <b>执行时间</b>
+                    </div>
+                </template>
+            </el-statistic>
+        </el-col>
     </el-card>
     <el-divider content-position="left">接口详情</el-divider>
     <div class="case-list">
@@ -139,7 +215,7 @@
                                 {{ scope.row.case_value }}
                             </template>
                         </el-table-column>
-                        <el-table-column label="位置">
+                        <el-table-column label="位置" show-overflow-tooltip>
                             <template #default="scope">
                                 {{ scope.row.site }}
                             </template>
@@ -190,6 +266,11 @@ export default {
         'detailAvgTime': Number,
         'detailTotalTime': Number,
         'detailList': Array,
+
+        'checkSuccess': Number,
+        'checkFail': Number,
+        'checkSkip': Number,
+        'runTime': String
     },
 
     data() {
@@ -215,7 +296,15 @@ export default {
             checkList: [],
             config: {},
             description: '',
-            jsonPath: []
+            jsonPath: [],
+
+            colors: [
+                // { color: '#F29492', percentage: 20 },
+                { color: '#F29492', percentage: 40 },
+                // { color: '#5cb87a', percentage: 60 },
+                { color: '#FFC857', percentage: 99 },
+                { color: '#6FCF97', percentage: 100 },
+            ]
         }
     },
     mounted() {
@@ -246,7 +335,7 @@ export default {
             case_detail.style.width = dialogWidth + 'px'
         },
         // 处理接口信息
-        async apiInfo(row) {
+        apiInfo(row) {
             console.log(row);
             this.isJson = row.request_info.data ? true : false
             this.url = row.request_info.url
@@ -260,8 +349,8 @@ export default {
             this.description = row.other_info.description
 
             this.jsonPath = row.jsonpath_info
-            var str = []
             for (var x in this.jsonPath) {
+                var str = []
                 if (this.jsonPath[x].path.length > 0) {
                     str.push('path')
                 }
@@ -277,7 +366,6 @@ export default {
 
                 this.jsonPath[x].site = str.join()
             }
-
         }
     }
 }
@@ -322,5 +410,31 @@ export default {
     --el-tag-border-color: #F29492;
     --el-tag-hover-color: #F29492;
     --el-tag-text-color: #F29492;
+}
+
+
+.percentage-value {
+    display: block;
+    margin-top: 10px;
+    font-size: 28px;
+}
+
+.percentage-label {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.centered {
+    display: inline-flex;
+    /* justify-content: left; */
+    width: 100%;
+}
+
+.el-statistic {
+    text-align: center;
+    margin: 0 20px;
+    padding: 35px 0;
+
 }
 </style>
