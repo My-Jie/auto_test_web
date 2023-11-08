@@ -289,14 +289,14 @@ export default {
                         var case_report = report[report.length - 1]
                         if (!case_report.is_fail) {
                             ElNotification({
-                                title: 'RunCase: ' + row.case_id + ', Success!',
+                                title: 'RunCase: ' + case_id + ', Success!',
                                 duration: 0,
                                 type: 'success',
                                 position: 'bottom-right',
                             })
                         } else {
                             ElNotification({
-                                title: 'RunCase: ' + row.case_id + ', Warning!',
+                                title: 'RunCase: ' + case_id + ', Warning!',
                                 duration: 0,
                                 type: 'warning',
                                 position: 'bottom-right',

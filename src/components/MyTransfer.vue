@@ -1,28 +1,25 @@
 <template>
-    <div class="edit_dev">
-        <el-transfer v-model="value" :data="allTempInfo" filterable filter-placeholder="搜索内容" :titles="['可选接口列表', '已选接口列表']"
-            :button-texts="['取消', '预选']" target-order="push">
-            <template #left-footer>
-                &nbsp;
-                <el-button type="success" size="small" :loading="tempInfoLoading" @click="getTempInfo">查询模板列表</el-button>
-                <el-button type="success" size="small" :loading="tempDataLoading"
-                    @click="getTempData">查询模板详情</el-button>&nbsp;
-                <el-input v-model="tempId" style="width:100px" size="small"
-                    placeholder="tempId"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-button type="success" size="small" :loading="tempInfoAllLoading"
-                    @click="getTempInfoAll">查询所有模板详情</el-button>
-                <el-button type="success" size="small" @click="closeData">清空</el-button>
-            </template>
-            <template #right-footer>
-                &nbsp;
-                <el-button type="primary" size="small" @click="checkTemp" :loading="tempCheckLoading">确认组装</el-button>&nbsp;
-                <el-input v-model="tempName" style="width:200px" size="small" placeholder="tempName"></el-input>
-                <el-select v-model="projectName" placeholder="选择系统" size="small" @visible-change="handleVisibleChange">
-                    <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.id"></el-option>
-                </el-select>
-            </template>
-        </el-transfer>
-    </div>
+    <el-transfer v-model="value" :data="allTempInfo" filterable filter-placeholder="搜索内容" :titles="['可选接口列表', '已选接口列表']"
+        :button-texts="['取消', '预选']" target-order="push">
+        <template #left-footer>
+            &nbsp;
+            <el-button type="success" size="small" :loading="tempInfoLoading" @click="getTempInfo">查询模板列表</el-button>
+            <el-button type="success" size="small" :loading="tempDataLoading" @click="getTempData">查询模板详情</el-button>&nbsp;
+            <el-input v-model="tempId" style="width:100px" size="small"
+                placeholder="tempId"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-button type="success" size="small" :loading="tempInfoAllLoading"
+                @click="getTempInfoAll">查询所有模板详情</el-button>
+            <el-button type="success" size="small" @click="closeData">清空</el-button>
+        </template>
+        <template #right-footer>
+            &nbsp;
+            <el-button type="primary" size="small" @click="checkTemp" :loading="tempCheckLoading">确认组装</el-button>&nbsp;
+            <el-input v-model="tempName" style="width:200px" size="small" placeholder="tempName"></el-input>
+            <el-select v-model="projectName" placeholder="选择系统" size="small" @visible-change="handleVisibleChange">
+                <el-option v-for="item in projects" :key="item.code" :label="item.code" :value="item.id"></el-option>
+            </el-select>
+        </template>
+    </el-transfer>
 </template>
 
 <script>
@@ -48,7 +45,41 @@ export default {
             projects: []
         }
     },
+
+    mounted() {
+        this.width = window.innerWidth
+        window.addEventListener('resize', this.handleResize)
+        var dialogWidth = (this.width * 0.65) / 2
+        var temp_list = document.getElementsByClassName('el-transfer-panel')[0]
+        temp_list.style.width = dialogWidth + 'px'
+        var temp_list_1 = document.getElementsByClassName('el-transfer-panel')[1]
+        temp_list_1.style.width = dialogWidth + 'px'
+        temp_list_1.style.float = 'right'
+
+        var elt_bt = document.getElementsByClassName('el-transfer__buttons')[0]
+        elt_bt.style.padding = '0px 10px'
+        elt_bt.style.marginLeft = (this.width * 0.8 / 2 - 20) - dialogWidth - 89 + 'px'
+
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.handleResize)
+    },
+
     methods: {
+        handleResize() {
+            this.width = window.innerWidth
+            var dialogWidth = (this.width * 0.65) / 2
+
+            var temp_list = document.getElementsByClassName('el-transfer-panel')[0]
+            temp_list.style.width = dialogWidth + 'px'
+            var temp_list_1 = document.getElementsByClassName('el-transfer-panel')[1]
+            temp_list_1.style.width = dialogWidth + 'px'
+            temp_list_1.style.float = 'right'
+
+            var elt_bt = document.getElementsByClassName('el-transfer__buttons')[0]
+            elt_bt.style.marginLeft = (this.width * 0.8 / 2 - 20) - dialogWidth - 89 + 'px'
+        },
+
         // 项目列表
         async handleVisibleChange(val) {
             if (!val) {
@@ -202,15 +233,6 @@ export default {
 </script>
 
 <style scoped>
-.edit_dev>>>.el-transfer-panel {
-    width: 630px;
-    height: 600px;
-}
-
-.edit_dev>>>.el-transfer-panel__body {
-    height: 500px;
-}
-
 .el-dialog__header {
     color: beige;
 }

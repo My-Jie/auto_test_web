@@ -528,7 +528,7 @@ export default {
       <my-echarts-free v-if="freeEcharts" :api-free="apiFree" :ui-free="uiFree"></my-echarts-free>
     </el-main>
     <!-- 参数变更的弹窗 -->
-    <el-dialog class="cg" v-model='dialogParamsCharge' width="70%" title="参数变更" :close-on-click-modal=false
+    <el-dialog class="case-data" v-model='dialogParamsCharge' width="70%" title="参数变更" :close-on-click-modal=false
       @close='dialogParamsCharge = false' draggable>
       <my-change v-if="dialogParamsCharge"></my-change>
     </el-dialog>
@@ -537,7 +537,7 @@ export default {
       <my-upload v-if="dialogUpload" :upload-type_="uploadFileType" :file-type_="fileType"></my-upload>
     </el-dialog>
     <!-- 模板组装的弹窗 -->
-    <el-dialog class="tf" v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
+    <el-dialog class="case-data" v-model="dialogTempSuit" width="80%" title="选择接口组装新模板，或创建空模板" :close-on-click-modal=false
       @close='dialogTempSuit = false' draggable>
       <my-transfer v-if="dialogTempSuit"></my-transfer>
     </el-dialog>

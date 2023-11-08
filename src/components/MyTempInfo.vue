@@ -400,24 +400,18 @@ export default {
                 function (response) {
                     row.runLoading = false
                     if (response.data.code == 0) {
-                        var msg = ''
-                        var allure_report = response.data.data.allure_report
-                        var temp_info = response.data.data.temp_info
-                        for (var x in allure_report) {
-                            msg += '<a href="' + allure_report[x].report + '/index.html" target="_blank">查看用例[' + temp_info[row.id][x] + ']的报告</a><br>'
-                        }
                         ElNotification({
-                            title: '测试报告',
-                            message: msg,
+                            title: 'RunTemp: ' + row.id + ', Success!',
                             duration: 0,
                             type: 'success',
                             position: 'bottom-right',
-                            dangerouslyUseHTMLString: true,
                         })
                     } else {
-                        ElNotification.error({
-                            title: 'Error',
-                            message: '模板\n[ ' + row.id + '-' + row.temp_name + ' ] 执行失败',
+                        ElNotification({
+                            title: 'RunTemp: ' + row.id + ', Warning!',
+                            duration: 0,
+                            type: 'warning',
+                            position: 'bottom-right',
                         })
                     }
                 }
