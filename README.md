@@ -83,6 +83,13 @@
 
 [随便测测-做 UI 测试](https://blog.csdn.net/yangj507/article/details/131579327)
 
+## v2.5.1 改造了 api 用例执行时简要信息的实时查看
+
+![image](img/1700480213600.jpg)
+
+- 优化间要信息：使用 websocket 实时更新，方便查看测试进度
+- 优化进度条：使用 websocket 实时更新进度条
+
 ## v2.5 api 测试取消 allure 测试报告，使用自身页面
 
 ![image](img/1698674615297.jpg)

@@ -1,0 +1,179 @@
+<template>
+    <el-timeline style="padding: 0;">
+        <el-timeline-item placement="top" v-for="(activity, index) in activities" :color="activity.color"
+            :icon="activity.icon" :timestamp="activity.time_str">
+            <el-table :data="[activity]" fit size="small" :show-header="false" highlight-current-row>
+                <el-table-column prop="number" align="center" width="45"></el-table-column>
+                <el-table-column align="center" width="50">
+                    <template #default="scope">
+                        <el-tag size="small" :type="scope.row.is_fail ? 'danger' : 'success'">
+                            {{ scope.row.is_fail == false ? 'PASS' : 'FAIL' }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column align="center" width="85">
+                    <template #default="scope">
+                        {{ scope.row.request_info.method }}
+                    </template>
+                </el-table-column>
+                <el-table-column show-overflow-tooltip>
+                    <template #default="scope">
+                        {{ scope.row.host }}<font :color="'#F29492'">{{ scope.row.path }}</font>
+                    </template>
+                </el-table-column>
+                <el-table-column show-overflow-tooltip width="50">
+                    <template #default="scope">
+                        <font :color="scope.row.status_code < 400 ? '#6FCF97' : '#F29492'">{{
+                            scope.row.status_code }}
+                        </font>
+                    </template>
+                </el-table-column>
+                <el-table-column align="center" width="75" fixed="right">
+                    <template #default="scope">
+                        <font :color="scope.row.run_time <= 3 ? '#6FCF97' : '#FFC857'">{{ scope.row.run_time.toFixed(3) }}s
+                        </font>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-timeline-item>
+    </el-timeline>
+    <el-divider id="moreMerchant" v-show="statusLoading[statusLoading.length - 1]">
+        <el-tag type="success">
+            Loading...
+            <font v-show="sleepTime[sleepTime.length - 1] != 0">{{ sleepTime[sleepTime.length - 1] }}s</font>
+        </el-tag>
+    </el-divider>
+    <el-divider id="moreMerchant2" v-show="!statusLoading[statusLoading.length - 1]">
+        <el-tag type="success">{{ tips[tips.length - 1] }}</el-tag>
+    </el-divider>
+</template>
+
+<script>
+import { connectWebSocket } from '../websocket.js'
+import { ref } from 'vue';
+import { MoreFilled } from '@element-plus/icons-vue'
+export default {
+    name: "CaseStatus",
+
+    props: {
+        caseId: Number,
+        rowKeyId: String
+    },
+
+    data() {
+        return {
+            MoreFilled,
+            message: '',
+            ws: Object,
+            timeInter: null,
+            smoothTimeInter: null,
+            activities: [],
+            statusLoading: [true],
+            oldKeyId: null,
+            oldCaseId: null,
+            oldData: {},
+            tips: ['暂无数据'],
+            sleepTime: [0]
+        }
+    },
+    activated() {
+        if (this.oldData[this.rowKeyId] == undefined) {
+            this.statusLoading = []
+            this.activities = []
+            this.tips = ['暂无数据']
+            this.sleepTime = [0]
+        }
+
+        this.ws = connectWebSocket('ws://127.0.0.1:8000/ws/status/' + new Date().getTime())
+
+        var ws = this.ws
+        var rowKeyId = this.rowKeyId
+
+        var reactiveData = ref(this.activities);
+        var loading_ = ref(this.statusLoading)
+        var tips = ref(this.tips)
+        var oldData = ref(this.oldData)
+        var sleepTime = ref(this.sleepTime)
+
+        if (this.rowKeyId) {
+            if (tips.value[tips.value.length - 1] != '执行完成') {
+                loading_.value.push(true)
+            }
+
+            if (this.activities.length == 0) {
+                tips.value.push('暂无数据')
+                loading_.value.push(false)
+            }
+
+            function timerPromise() {
+                return new Promise(function (resolve, reject) {
+                    var result = ws.sendMessage(rowKeyId);
+                    resolve(result);
+                });
+            }
+
+            this.timeInter = setInterval(function () {
+                timerPromise().then(function (result) {
+                    var newResult = JSON.parse(decodeURIComponent(result))
+                    try {
+                        if (newResult[newResult.length - 1].run == true) {
+                            loading_.value.push(true)
+                        } else {
+                            loading_.value.push(false)
+                            tips.value.push('执行完成')
+                        }
+                    } catch (TypeError) {
+
+                    }
+
+                    if (newResult.length == 0) {
+                        sleepTime.value[sleepTime.value.length - 1]++
+                    } else {
+                        sleepTime.value.push(0)
+                    }
+
+                    for (var x in newResult) {
+                        newResult[x].color = newResult[x].is_fail ? '#F29492' : '#6FCF97'
+                        newResult[x].icon = newResult[x].is_login ? MoreFilled : null
+
+                        var url = newResult[x].request_info.url.split('/')
+                        newResult[x].host = url.slice(0, 3).join('/')
+                        newResult[x].path = '/' + url.slice(3).join('/')
+                        reactiveData.value.push(newResult[x])
+                    }
+                    oldData.value[rowKeyId] = reactiveData
+                });
+            }, 1000)
+
+            if (tips.value[tips.value.length - 1] != '执行完成') {
+                this.smoothTimeInter = setInterval(function () {
+                    document.getElementById("moreMerchant").scrollIntoView({
+                        behavior: "smooth"
+                    })
+
+                    document.getElementById("moreMerchant2").scrollIntoView({
+                        behavior: "smooth"
+                    })
+                }, 300)
+            }
+        }
+    },
+
+    deactivated() {
+        window.clearInterval(
+            this.timeInter
+        )
+        window.clearInterval(
+            this.smoothTimeInter
+        )
+    },
+
+    methods: {
+        closeMessage() {
+            this.ws.closeWebSocket()
+        }
+    },
+}
+</script>
+
+<style  scoped></style>

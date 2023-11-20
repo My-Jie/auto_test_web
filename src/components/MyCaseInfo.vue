@@ -54,16 +54,13 @@
             </el-table-column>
             <el-table-column label="操作" align="center" width="470">
                 <template #default="scope">
-                    <!-- <el-tooltip content="运行用例" placement="top-end" effect="customized"> -->
                     <el-button :icon="CircleCheck" type="success" plain :loading="scope.row.runLoading"
                         @click="setDialogVisible(scope.row)">
                     </el-button>
-                    <!-- </el-tooltip> -->
+
                     <el-button-group class="ml-4">
-                        <!-- <el-tooltip content="用例详情，可编辑数据" placement="top-end" effect="customized"> -->
                         <el-button :icon="Edit" type="primary" plain @click="getCaseData(scope.row)"
                             :loading="scope.row.dataLoading"></el-button>
-                        <!-- </el-tooltip> -->
 
                         <el-popover title="确定复制？" placement="top" trigger="focus">
                             <div style="text-align: right; margin: 0">
@@ -80,8 +77,8 @@
                                 :loading="scope.row.gatherLoading"></el-button>
                         </el-tooltip>
 
-                        <!-- <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
-                            :loading="scope.row.scheduleLoading"></el-button> -->
+                        <el-button :icon="More" type="primary" plain @click="schedule(scope.row)"
+                            :loading="scope.row.scheduleLoading"></el-button>
 
                         <el-popconfirm width="250" confirm-button-text="数据集EXCEL" cancel-button-text="原用例JSON"
                             confirm-button-type="primary" cancel-button-type="primary" @cancel="caseDown(scope.row)"
@@ -101,10 +98,6 @@
                             <el-button :loading="scope.row.delLoading" :icon="Delete" type="danger" plain></el-button>
                         </template>
                     </el-popover>
-
-                    <!-- <el-button type="Info" plain>
-                        <el-link :href="scope.row.allureReport" target="_blank" :underline="false">报告</el-link>
-                    </el-button> -->
 
                     <el-button :icon="DataLine" type="Info" plain @click="report(scope.row)"
                         :loading="scope.row.reportLoading"></el-button>
@@ -148,8 +141,12 @@
             <my-gather :gather-data="gatherData" :case-id="caseId"></my-gather>
         </el-dialog>
         <!-- 用例时序图弹窗 -->
-        <el-dialog v-model='scheduleDialog' width="50%" :title="caseId + ' ' + dataTitle">
-            <my-case-schedule v-if="scheduleDialog" :schedule-data="scheduleData"></my-case-schedule>
+        <el-dialog class="my-Dialog" v-model='scheduleDialog' width="50%" :title="caseId + ' ' + dataTitle"
+            @close="closeDialog">
+            <el-backtop :visibility-height="100" :right="100" :bottom="100" target=".my-Dialog" />
+            <keep-alive>
+                <case-status v-if="scheduleDialog" :case-id="caseId" :row-key-id="rowKeyId" ref="closeStatus"></case-status>
+            </keep-alive>
         </el-dialog>
     </div>
 </template>
@@ -161,6 +158,7 @@ import MyCaseSchedule from './MyCaseSchedule.vue'
 import MyGather from './MyGather.vue'
 import RunApiCase from './runApiCase.vue'
 import ApiCaseReport from './ApiCaseReport.vue'
+import CaseStatus from './CaseStatus.vue'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Edit, Check, Download, Close, Document, DocumentCopy, Postcard, Delete, CircleCheck, More, DataLine } from '@element-plus/icons-vue'
@@ -178,7 +176,8 @@ export default {
         MyGather,
         RunApiCase,
         MyCaseSchedule,
-        ApiCaseReport
+        ApiCaseReport,
+        CaseStatus
     },
 
     data() {
@@ -213,11 +212,16 @@ export default {
             scheduleData: [],
             dialogVisible: false,
             reportDialog: false,
-            reportList: []
+            reportList: [],
+            rowKeyId: null
         }
     },
 
     methods: {
+        // 调用子组件方法，关闭弹窗
+        closeDialog() {
+            this.$refs.closeStatus.closeMessage()
+        },
         // 接口测试报告
         async report(row) {
             this.caseName = row.name
@@ -388,31 +392,12 @@ export default {
             this.get_case()
         },
         // 用例执行时序表
-        async schedule(row) {
-            row.scheduleLoading = true
+        schedule(row) {
             this.caseId = row.case_id
             this.dataTitle = row.name
+            this.rowKeyId = row.key_id
 
-            var res = []
-            await this.$http({
-                url: '/runCase/get/case/schedule',
-                method: "GET",
-                params: {
-                    case_id: row.case_id
-                }
-            }).then(
-                function (response) {
-                    res = response.data
-                }
-            ).catch(
-                function (error) {
-                    ElMessage.error(error.message)
-                    row.gatherLoading = false
-                })
-
-            this.scheduleData = res
             this.scheduleDialog = true
-            row.scheduleLoading = false
         },
         // 获取数据集
         async getGather(row) {
@@ -552,6 +537,7 @@ export default {
         async runCase(row) {
             this.dialogVisible = false
             row.runLoading = true
+            row.scheduleLoading = true
             var flag = false
             var run_order = null
             var success = null

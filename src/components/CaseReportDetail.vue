@@ -121,7 +121,7 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="method" align="center" width="75"></el-table-column>
+            <el-table-column prop="method" align="center" width="85"></el-table-column>
             <el-table-column prop="path" show-overflow-tooltip></el-table-column>
             <el-table-column show-overflow-tooltip width="50">
                 <template #default="scope">

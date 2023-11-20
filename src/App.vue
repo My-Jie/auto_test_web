@@ -14,6 +14,7 @@ import MyStatistic from "./components/MyStatistic.vue"
 import MySettingSet from "./components/MySettingSet.vue"
 import { ElMessage } from 'element-plus'
 import { Check, Close, Histogram, List, UploadFilled, Crop, Grid, HelpFilled, Tools, Edit } from '@element-plus/icons-vue'
+import { connectWebSocket } from './websocket.js'
 // import { useDark, useToggle } from '@vueuse/core'
 export default {
   components: {
@@ -95,7 +96,8 @@ export default {
       uiEcharts: [],
       apiFree: null,
       uiFree: null,
-      ifMain: false
+      ifMain: false,
+      ws: Object,
     }
   },
   provide() {
@@ -111,8 +113,9 @@ export default {
     start(time) {
       if (this.caseInfo.length > 0) {
         if (!this.timer) {
+          this.ws = connectWebSocket('ws://127.0.0.1:8000/ws/percentage/' + new Date().getTime())
           this.timer = setInterval(() => {
-            this.getCaseStatus()
+            this.getCaseStatus(this.ws)
           }, time)
         }
       }
@@ -121,6 +124,7 @@ export default {
     end() {
       clearInterval(this.timer)
       this.timer = null
+      this.ws.closeWebSocket()
     },
 
     //获取计数图
@@ -363,9 +367,7 @@ export default {
         this.caseInfo[x].checkLoading = false
         this.caseInfo[x].percentage = 0
         this.caseInfo[x].percentageStatus = 'success'
-        this.caseInfo[x].key_id = ''
-        // 测试报告地址
-        this.caseInfo[x].allureReport = '/allure/' + this.caseInfo[x].case_id + '/' + this.caseInfo[x].run_order + '/index.html'
+        this.caseInfo[x].key_id = null
         // this.caseInfo[x].repLoading = false
       }
       // 所有的状态都改为false
@@ -379,7 +381,7 @@ export default {
       this.ifMain = true
 
       // 启动定时器
-      this.start(5000)
+      this.start(3000)
 
     },
     async getSettingSet() {
@@ -423,35 +425,31 @@ export default {
       this.ifMain = true
     },
 
+    getCaseStatus(ws) {
+      var result = ws.sendMessage()
+      try {
+        var newResult = JSON.parse(decodeURIComponent(result))
+      } catch (SyntaxError) {
 
-    getCaseStatus(key_id = null) {
-      var caseInfo = this.caseInfo
-      this.$http({
-        url: '/runCase/case/status',
-        method: 'GET',
-        params: {
-          key_id: key_id
-        }
-      }).then(
-        function (response) {
-          for (var x in response.data) {
-            for (var y in caseInfo) {
-              if (response.data[x].case_id == caseInfo[y].case_id) {
-                var scale = Math.round((response.data[x].success + response.data[x].fail) / response.data[x].total * 100)
-                if (scale == 100 && response.data[x].fail == 0) {
-                  caseInfo[y].percentageStatus = 'success'
-                }
-                caseInfo[y].percentage = scale
-                if (response.data[x].fail > 0) {
-                  caseInfo[y].percentageStatus = 'warning'
-                }
-                caseInfo[y].key_id = x
-                break
-              }
+      }
+
+      for (var x in newResult) {
+        for (var y in this.caseInfo) {
+          if (newResult[x].case_id == this.caseInfo[y].case_id) {
+            var scale = Math.round((newResult[x].success + newResult[x].fail) / newResult[x].total * 100)
+            if (scale == 100 && newResult[x].fail == 0) {
+              this.caseInfo[y].percentageStatus = 'success'
             }
+            this.caseInfo[y].percentage = scale
+            this.caseInfo[y].scheduleLoading = false
+            if (newResult[x].fail > 0) {
+              this.caseInfo[y].percentageStatus = 'warning'
+            }
+            this.caseInfo[y].key_id = x
+            break
           }
         }
-      )
+      }
     },
     uploadFile(type_, fileType) {
       this.dialogUpload = true

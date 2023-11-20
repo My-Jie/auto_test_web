@@ -6,7 +6,6 @@ import 'element-plus/dist/index.css';
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'vue-json-pretty/lib/styles.css';
 import JsonViewer from "vue3-json-viewer"
-import dayjs from 'dayjs'
 import axios from 'axios'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
