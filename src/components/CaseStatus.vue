@@ -1,4 +1,10 @@
 <template>
+    <el-affix position="top" :offset="150" class="container">
+        <el-button v-show="statusLoading[statusLoading.length - 1]" :icon="Close" size="small" type="warning"
+            @click="stopCase">
+            停止
+        </el-button>
+    </el-affix>
     <el-timeline style="padding: 0;">
         <el-timeline-item placement="top" v-for="(activity, index) in activities" :color="activity.color"
             :icon="activity.icon" :timestamp="activity.time_str">
@@ -51,7 +57,7 @@
 <script>
 import { connectWebSocket } from '../websocket.js'
 import { ref } from 'vue';
-import { MoreFilled } from '@element-plus/icons-vue'
+import { MoreFilled, Close } from '@element-plus/icons-vue'
 export default {
     name: "CaseStatus",
 
@@ -60,13 +66,16 @@ export default {
         rowKeyId: String
     },
 
+    inject: ["stopCaseRun"],
+
     data() {
         return {
             MoreFilled,
+            Close,
             message: '',
             ws: Object,
             timeInter: null,
-            smoothTimeInter: null,
+            smoothTimeInter: [],
             activities: [],
             statusLoading: [true],
             oldKeyId: null,
@@ -77,7 +86,7 @@ export default {
         }
     },
     activated() {
-        if (this.oldData[this.rowKeyId] == undefined) {
+        if (this.rowKeyId != this.oldKeyId) {
             this.statusLoading = []
             this.activities = []
             this.tips = ['暂无数据']
@@ -94,8 +103,10 @@ export default {
         var tips = ref(this.tips)
         var oldData = ref(this.oldData)
         var sleepTime = ref(this.sleepTime)
+        var smoothTimeInter = ref(this.smoothTimeInter)
 
         if (this.rowKeyId) {
+            this.oldKeyId = this.rowKeyId
             if (tips.value[tips.value.length - 1] != '执行完成') {
                 loading_.value.push(true)
             }
@@ -121,6 +132,9 @@ export default {
                         } else {
                             loading_.value.push(false)
                             tips.value.push('执行完成')
+                            window.clearInterval(
+                                smoothTimeInter.value[smoothTimeInter.value.length - 1]
+                            )
                         }
                     } catch (TypeError) {
 
@@ -146,7 +160,7 @@ export default {
             }, 1000)
 
             if (tips.value[tips.value.length - 1] != '执行完成') {
-                this.smoothTimeInter = setInterval(function () {
+                var timeInter = setInterval(function () {
                     document.getElementById("moreMerchant").scrollIntoView({
                         behavior: "smooth"
                     })
@@ -155,6 +169,7 @@ export default {
                         behavior: "smooth"
                     })
                 }, 300)
+                smoothTimeInter.value.push(timeInter)
             }
         }
     },
@@ -164,16 +179,30 @@ export default {
             this.timeInter
         )
         window.clearInterval(
-            this.smoothTimeInter
+            this.smoothTimeInter[this.smoothTimeInter.length - 1]
         )
     },
 
     methods: {
         closeMessage() {
             this.ws.closeWebSocket()
+        },
+        stopCase() {
+            this.stopCaseRun({ key_id: this.rowKeyId, case_id: this.caseId })
+            this.statusLoading.push(true)
+            this.tips.push('执行完成')
+            window.clearInterval(
+                this.smoothTimeInter[this.smoothTimeInter.length - 1]
+            )
         }
     },
 }
 </script>
 
-<style  scoped></style>
+<style  scoped>
+.container {
+    display: inline;
+    position: absolute;
+    right: 20px;
+}
+</style>

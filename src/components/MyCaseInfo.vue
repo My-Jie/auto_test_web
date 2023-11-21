@@ -142,8 +142,7 @@
         </el-dialog>
         <!-- 用例时序图弹窗 -->
         <el-dialog class="my-Dialog" v-model='scheduleDialog' width="50%" :title="caseId + ' ' + dataTitle"
-            @close="closeDialog">
-            <el-backtop :visibility-height="100" :right="100" :bottom="100" target=".my-Dialog" />
+            @close="closeDialog" >
             <keep-alive>
                 <case-status v-if="scheduleDialog" :case-id="caseId" :row-key-id="rowKeyId" ref="closeStatus"></case-status>
             </keep-alive>
@@ -154,7 +153,6 @@
 <script>
 
 import CaseData from './CaseData.vue'
-import MyCaseSchedule from './MyCaseSchedule.vue'
 import MyGather from './MyGather.vue'
 import RunApiCase from './runApiCase.vue'
 import ApiCaseReport from './ApiCaseReport.vue'
@@ -171,11 +169,16 @@ export default {
 
     inject: ["get_case"],
 
+    provide() {
+        return {
+            'stopCaseRun': this.stopCaseRun
+        };
+    },
+
     components: {
         CaseData,
         MyGather,
         RunApiCase,
-        MyCaseSchedule,
         ApiCaseReport,
         CaseStatus
     },
