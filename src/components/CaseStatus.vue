@@ -77,7 +77,7 @@ export default {
             timeInter: null,
             smoothTimeInter: [],
             activities: [],
-            statusLoading: [true],
+            statusLoading: [],
             oldKeyId: null,
             oldCaseId: null,
             oldData: {},
@@ -135,6 +135,16 @@ export default {
                             window.clearInterval(
                                 smoothTimeInter.value[smoothTimeInter.value.length - 1]
                             )
+
+                            overTime = setTimeout(function () {
+                                document.getElementById("moreMerchant2").scrollIntoView({
+                                    behavior: "smooth"
+                                })
+                            }, 1000)
+
+                            window.clearTimeout(
+                                overTime
+                            )
                         }
                     } catch (TypeError) {
 
@@ -162,10 +172,6 @@ export default {
             if (tips.value[tips.value.length - 1] != '执行完成') {
                 var timeInter = setInterval(function () {
                     document.getElementById("moreMerchant").scrollIntoView({
-                        behavior: "smooth"
-                    })
-
-                    document.getElementById("moreMerchant2").scrollIntoView({
                         behavior: "smooth"
                     })
                 }, 300)
