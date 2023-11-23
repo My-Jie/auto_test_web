@@ -1,20 +1,19 @@
 <template>
     <!-- 增加操作 -->
     <el-button v-if="tempData.length <= 0" :icon="Plus" type="warning" size="small" @click="addOne"></el-button>
-    <el-table v-loading='loading' :data="tempData" stripe fit v-if="tempData.length != 0">
-        <el-table-column label="number" prop="number" type="index" :index="indexMethod" width="80px"
+    <el-table v-loading='loading' :data="tempData" stripe fit v-if="tempData.length != 0" max-height="600">
+        <el-table-column label="序号" prop="number" type="index" :index="indexMethod" width="70px"
             align="center"></el-table-column>
-        <el-table-column label="host" prop="host" width="300px"></el-table-column>
-        <el-table-column label="description" prop="description" width="300px"></el-table-column>
-        <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <el-table-column label="method" prop="method" width="100%" align="center"></el-table-column>
+        <el-table-column label="host" prop="host" width="300px"></el-table-column>
+        <el-table-column label="path" prop="path" width="300px"></el-table-column>
         <el-table-column label="code" prop="code" width="100%" align="center"></el-table-column>
-        <el-table-column label="json_body" prop="json_body" width="100%" align="center"></el-table-column>
         <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="100%">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
             </template>
         </el-table-column>
+        <el-table-column label="json_body" prop="json_body" width="100%" align="center"></el-table-column>
         <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="100%">
             <template #default="scope">
                 <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
@@ -35,6 +34,7 @@
                 <div>{{ JSON.stringify(scope.row.response_headers, null, 1) }}</div>
             </template>
         </el-table-column>
+        <el-table-column label="description" prop="description" width="300px"></el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
             <template #default="scope">
                 <!-- 编辑操作 -->

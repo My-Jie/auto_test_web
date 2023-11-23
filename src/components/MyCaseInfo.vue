@@ -142,7 +142,7 @@
         </el-dialog>
         <!-- 用例时序图弹窗 -->
         <el-dialog class="my-Dialog" v-model='scheduleDialog' width="50%" :title="caseId + ' ' + dataTitle"
-            @close="closeDialog" >
+            @close="closeDialog">
             <keep-alive>
                 <case-status v-if="scheduleDialog" :case-id="caseId" :row-key-id="rowKeyId" ref="closeStatus"></case-status>
             </keep-alive>

@@ -108,6 +108,11 @@ export default {
       'get_setting': this.getSettingSet
     };
   },
+
+  mounted() {
+    this.getCaseInfo()
+  },
+
   methods: {
     // 开启定时器
     start(time) {

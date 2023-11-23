@@ -77,9 +77,7 @@
 
         <!-- 详情弹窗 -->
         <el-dialog class="details" v-model='myDialog' width="90%" :title="tempTitle">
-            <div class="el-dialog-div">
-                <temp-data v-if="myDialog" :temp-data="thisTempData" :temp-id="tempId"></temp-data>
-            </div>
+            <temp-data v-if="myDialog" :temp-data="thisTempData" :temp-id="tempId"></temp-data>
         </el-dialog>
         <!-- 运行用例弹窗 -->
         <el-dialog class="confirm" v-model="dialogVisible" title="Tips" width="50%">
@@ -446,8 +444,8 @@ export default {
 
 
 <style scoped>
-.el-dialog-div {
+/* .el-dialog-div {
     height: 65vh;
     overflow: auto;
-}
+} */
 </style>

@@ -17,104 +17,79 @@
     </el-dialog>
     <br>
     <!-- 表格 -->
-    <el-table :data="caseData" stripe fit>
-        <el-table-column fixed="left" label="config" prop="config" width="250%">
-            <template #default="scope">
-                <el-switch v-model="scope.row.config.stop" active-text="主动结束" inactive-text="主动结束"
-                    :loading="scope.row.stopLoading" class="ml-2" style="--el-switch-on-color: #FFC857;"
-                    @click="setConfigStatus(scope.row, 'stop')" inline-prompt></el-switch>&nbsp;
-                <el-switch v-model="scope.row.config.fail_stop" active-text="失败停止" inactive-text="失败停止"
-                    :loading="scope.row.failStopLoading" class="ml-2" style="--el-switch-on-color: #F29492;"
-                    @click="setConfigStatus(scope.row, 'fail_stop')" inline-prompt></el-switch>&nbsp;
-                <el-switch v-model="scope.row.config.is_login" active-text="登录" inactive-text="登录"
-                    :loading="scope.row.isLoginLoading" class="ml-2" style="--el-switch-on-color: #6FCF97;"
-                    @click="setConfigStatus(scope.row, 'is_login')" inline-prompt></el-switch>
-                <el-col :span="22">
-                    <el-input v-model="scope.row.config.sleep" size="small"
-                        @keyup.enter.native="setConfigStatus(scope.row, 'sleep')">
-                        <template #prepend>轮询</template>
-                        <template #append>
-                            <el-button :icon="Check" size="small"
-                                @click="setConfigStatus(scope.row, 'sleep')">轮询失败</el-button>
-                        </template>
-                    </el-input>
-                </el-col>
-            </template>
-        </el-table-column>
-        <el-table-column fixed="left" label="num" prop="number" type="index" :index="indexMethod" width="70px"
+    <el-table :data="caseData" stripe fit @cell-click="goClick" max-height="600" border>
+        <el-table-column fixed="left" label="序号" prop="number" type="index" :index="indexMethod" width="70px"
             align="center"></el-table-column>
-        <el-table-column label="host" prop="host" width="280px"></el-table-column>
-        <el-table-column label="method" prop="method" width="80px"></el-table-column>
-        <el-table-column label="path" prop="path" width="300px"></el-table-column>
-
-        <!-- params的按钮和内容框 -->
-        <el-table-column label="" width="55" align="center">
+        <el-table-column label="方法" prop="method" width="80px"></el-table-column>
+        <el-table-column label="域名[host]" prop="host" width="280px"></el-table-column>
+        <el-table-column label="路径[path]" prop="path" width="400px" show-overflow-tooltip='true'>
+            <!-- <template #default="scope">
+                <font :color="scope.row.pathColor">{{ scope.row.path }}</font>
+            </template> -->
+        </el-table-column>
+        <el-table-column label="查询参数[params]" prop="params" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <el-button :icon="Edit" size="small" @click="setData(scope.row, 'Params')"></el-button>
+                <div style="cursor: pointer;">{{ JSON.stringify(scope.row.params, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="params" prop="params" show-overflow-tooltip='true' width="400px">
+        <el-table-column label="请求参数[data]" prop="data" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <div>{{ JSON.stringify(scope.row.params, null, 1) }}</div>
+                <div style="cursor: pointer;">{{ JSON.stringify(scope.row.data, null, 1) }}</div>
             </template>
         </el-table-column>
-        <!-- data的按钮和内容框 -->
-        <el-table-column label="" width="55" align="center">
+        <el-table-column label="请求头[headers]" prop="headers" show-overflow-tooltip='true' width="400px">
             <template #default="scope">
-                <el-button :icon="Edit" size="small" @click="setData(scope.row, 'Data')"></el-button>
+                <div style="cursor: pointer;">{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
             </template>
         </el-table-column>
-        <el-table-column label="data" prop="data" show-overflow-tooltip='true' width="400px">
+        <el-table-column label="校验[check]" prop="check" show-overflow-tooltip='true' width="230px">
             <template #default="scope">
-                <div>{{ JSON.stringify(scope.row.data, null, 1) }}</div>
+                <div style="cursor: pointer;">{{ JSON.stringify(scope.row.check, null, 1) }}</div>
             </template>
         </el-table-column>
-        <!-- 校验的按钮和内容框 -->
-        <el-table-column label="" width="55" align="center">
+        <el-table-column label="主动结束" align="center" width="90px">
             <template #default="scope">
-                <el-button :icon="Edit" size="small" @click=setCheck(scope.row)></el-button>
+                <el-switch v-model="scope.row.config.stop" :loading="scope.row.stopLoading" size="small"
+                    style="--el-switch-on-color: #FFC857;" @click="setConfigStatus(scope.row, 'stop')"
+                    inline-prompt></el-switch>
             </template>
         </el-table-column>
-        <el-table-column label="check" prop="check" show-overflow-tooltip='true' width="250px">
+        <el-table-column label="失败停止" align="center" width="90px">
             <template #default="scope">
-                <div>{{ JSON.stringify(scope.row.check, null, 1) }}</div>
+                <el-switch v-model="scope.row.config.fail_stop" :loading="scope.row.failStopLoading" size="small"
+                    style="--el-switch-on-color: #F29492;" @click="setConfigStatus(scope.row, 'fail_stop')"
+                    inline-prompt></el-switch>
             </template>
         </el-table-column>
-        <!-- headers的按钮和内容框 -->
-        <el-table-column label="" width="55" align="center">
+        <el-table-column label="登录" align="center" width="90px">
             <template #default="scope">
-                <el-button :icon="Edit" size="small" @click=setHeader(scope.row)></el-button>
+                <el-switch v-model="scope.row.config.is_login" :loading="scope.row.isLoginLoading" size="small"
+                    style="--el-switch-on-color: #6FCF97;" @click="setConfigStatus(scope.row, 'is_login')"
+                    inline-prompt></el-switch>
             </template>
         </el-table-column>
-        <el-table-column label="headers" prop="headers" show-overflow-tooltip='true' width="400px">
+        <el-table-column label="轮询(s)" align="center">
             <template #default="scope">
-                <div>{{ JSON.stringify(scope.row.headers, null, 1) }}</div>
+                <el-input v-model="scope.row.config.sleep" size="small" type="number"
+                    @keyup.enter.native="setConfigStatus(scope.row, 'sleep')">
+                </el-input>
             </template>
         </el-table-column>
-        <!-- 描述的按钮和内容框 -->
-        <el-table-column label="" width="55" align="center" fixed="right">
+        <el-table-column label="接口描述[description]" prop="description" width="200px" fixed="right">
             <template #default="scope">
-                <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
-                <el-button :icon="Check" size="small" v-if="!scope.row.edit"
-                    @click="checkDescription(scope.row)"></el-button>
-            </template>
-        </el-table-column>
-        <el-table-column label="description" prop="description" width="150px" fixed="right">
-            <template #default="scope">
-                <div v-if="scope.row.description && scope.row.edit">{{ scope.row.description }}</div>
-                <el-input v-model="scope.row.description" placeholder="可输入" v-if="scope.row.edit == false"
+                <el-input v-model="scope.row.description" size="small"
                     @keyup.enter.native="checkDescription(scope.row)"></el-input>
             </template>
         </el-table-column>
     </el-table>
     <!-- check的弹窗 -->
     <el-dialog class="case-data" v-if="checkDialog" v-model='checkDialog' width="50%" draggable height="550px"
-        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'" :close-on-click-modal=false
+        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 响应校验-断言'"
         @close="closeCheckDialog('Check')">
         <!-- 增加操作 -->
-        <el-button v-if="checkInfo.length <= 0" :icon="Plus" type="warning" size="small"
+        <el-button v-if="checkInfo.length <= 0" :icon="Plus" type="warning" size="small" style="width: 100%"
             @click="addRow('check')"></el-button>
-        <el-table :data="checkInfo" stripe fit empty-text="空">
+        <el-table :data="checkInfo" stripe fit empty-text="空" v-if="checkInfo.length > 0">
             <el-table-column type="index"></el-table-column>
             <el-table-column label="key" align="center" width="120px">
                 <template #default="scope">
@@ -204,7 +179,7 @@
     <!-- params\data的弹窗 -->
     <el-dialog class="case-data" v-if="dataDialog" v-model="dataDialog" width="50%" draggable height="550px"
         :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , ' + this.dataTitle + ' 数据'"
-        :close-on-click-modal=false @close="closeCheckDialog(this.dataTitle)">
+        @close="closeCheckDialog(this.dataTitle)">
         <el-button type="info" @click="initData()">初始化</el-button>
         <el-button type="success" @click="formatData()">格式化</el-button>
         <el-button type="warning" @click="emptyData()">清空数据</el-button>
@@ -240,12 +215,11 @@
     </el-dialog>
     <!-- header的弹窗 -->
     <el-dialog class="case-data" v-if="headerDialog" v-model='headerDialog' width="50%" draggable height="550px"
-        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 请求头'" :close-on-click-modal=false
-        @close="closeCheckDialog('Header')">
+        :title="'CaseId-' + this.caseId + ' , Number-' + this.checkNumber + ' , 请求头'" @close="closeCheckDialog('Header')">
         <!-- 增加操作 -->
-        <el-button v-if="headerInfo.length <= 0" :icon="Plus" type="warning" size="small"
+        <el-button v-if="headerInfo.length <= 0" :icon="Plus" type="warning" size="small" style="width: 100%"
             @click="addRow('header')"></el-button>
-        <el-table :data="headerInfo" stripe fit empty-text="空">
+        <el-table v-if="headerInfo.length > 0" :data="headerInfo" stripe fit empty-text="空">
             <el-table-column type="index"></el-table-column>
             <el-table-column label="key" align="center" width="120px">
                 <template #default="scope">
@@ -361,6 +335,25 @@ export default {
         }
     },
     methods: {
+        // 点击表格
+        goClick(row, column, event, cell) {
+            if (column.property == "params") {
+                this.setData(row, 'Params')
+            }
+
+            if (column.property == "data") {
+                this.setData(row, 'Data')
+            }
+
+            if (column.property == "check") {
+                this.setCheck(row)
+            }
+
+            if (column.property == "headers") {
+                this.setHeader(row)
+            }
+
+        },
         // 获取单接口的response
         async handleTabClick(tab) {
             this.tabName.props.name = tab.props.name
@@ -1062,6 +1055,9 @@ export default {
                 newConfig.is_login = row.config.is_login
                 row.isLoginLoading = true
             } else if (config == 'sleep') {
+                if (row.config.sleep < 0) {
+                    return
+                }
                 newConfig.sleep = row.config.sleep
                 row.sleepLoading = true
             }
