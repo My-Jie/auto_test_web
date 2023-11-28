@@ -10,23 +10,21 @@
         <br>
         <!-- 模板列表 -->
         <el-table v-loading='loading' :data="tempInfo" stripe fit>
-            <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="100%"
+            <el-table-column label="TempId" prop="id" type="index" :index="indexMethod" width="80"
                 align="center"></el-table-column>
-            <el-table-column label="系统名称" prop="project_name" align="center" width="100"></el-table-column>
-            <el-table-column label="" width="55" align="center">
-                <template #default="scope">
-                    <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
-                    <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
-                </template>
-            </el-table-column>
             <el-table-column label="模板名称" prop="temp_name" width="400px">
                 <template #default="scope">
-                    <div v-if="scope.row.temp_name && scope.row.edit">{{ scope.row.temp_name }}</div>
-                    <el-input v-model="scope.row.temp_name" placeholder="可输入" v-if="scope.row.edit == false"
-                        @keyup.enter.native="updateName(scope.row)"></el-input>
+                    <!-- <Edit style="width: 1em; height: 1em; margin-right: 5px;" /> -->
+                    <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
+                    <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
+                    <div style="display: inline;" v-if="scope.row.temp_name && scope.row.edit">{{ scope.row.temp_name }}
+                    </div>
+                    <el-input style="display: inline;" v-model="scope.row.temp_name" placeholder="可输入"
+                        v-if="scope.row.edit == false" size="small" @keyup.enter.native="updateName(scope.row)">
+                    </el-input>
                 </template>
             </el-table-column>
-
+            <el-table-column label="系统名称" prop="project_name" align="center" width="100"></el-table-column>
             <el-table-column label="API数量" prop="api_count" align="center"></el-table-column>
             <el-table-column label="关联用例-Id" prop="case_info" :formatter="formatterData" align="center"></el-table-column>
             <el-table-column label="创建时间" align="center">

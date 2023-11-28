@@ -6,11 +6,12 @@
         </el-button>
     </el-affix>
     <el-timeline style="padding: 0;">
-        <el-timeline-item placement="top" v-for="(activity, index) in activities" :color="activity.color"
-            :icon="activity.icon" :timestamp="activity.time_str">
-            <el-table :data="[activity]" fit size="small" :show-header="false" highlight-current-row>
+        <el-timeline-item placement="top" v-for="(activity, index) in activities"
+            :color="activity[activity.length - 1].color" :icon="activity[activity.length - 1].icon"
+            :timestamp="activity[activity.length - 1].time_str">
+            <el-table :data="activity" fit size="small" :show-header="false" highlight-current-row>
                 <el-table-column prop="number" align="center" width="45"></el-table-column>
-                <el-table-column align="center" width="50">
+                <el-table-column align="center" width="65">
                     <template #default="scope">
                         <el-tag size="small" :type="scope.row.is_fail ? 'danger' : 'success'">
                             {{ scope.row.is_fail == false ? 'PASS' : 'FAIL' }}
@@ -27,6 +28,7 @@
                         {{ scope.row.host }}<font :color="'#F29492'">{{ scope.row.path }}</font>
                     </template>
                 </el-table-column>
+                <el-table-column v-if="activity.length > 1" type="index" width="35" align="center"></el-table-column>
                 <el-table-column show-overflow-tooltip width="50">
                     <template #default="scope">
                         <font :color="scope.row.status_code < 400 ? '#6FCF97' : '#F29492'">{{
@@ -98,7 +100,7 @@ export default {
         var ws = this.ws
         var rowKeyId = this.rowKeyId
 
-        var reactiveData = ref(this.activities);
+        var activities = ref(this.activities);
         var loading_ = ref(this.statusLoading)
         var tips = ref(this.tips)
         var oldData = ref(this.oldData)
@@ -163,9 +165,13 @@ export default {
                         var url = newResult[x].request_info.url.split('/')
                         newResult[x].host = url.slice(0, 3).join('/')
                         newResult[x].path = '/' + url.slice(3).join('/')
-                        reactiveData.value.push(newResult[x])
+                        if (newResult[x].continued) {
+                            activities.value[activities.value.length - 1].push(newResult[x])
+                        } else {
+                            activities.value.push([newResult[x]])
+                        }
                     }
-                    oldData.value[rowKeyId] = reactiveData
+                    oldData.value[rowKeyId] = activities
                 });
             }, 1000)
 

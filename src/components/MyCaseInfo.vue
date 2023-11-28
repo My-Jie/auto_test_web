@@ -10,21 +10,17 @@
         <br>
 
         <el-table v-loading='loading' :data="caseInfo" row-key="case_id" stripe fit>
-            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="100%"
+            <el-table-column label="CaseId" prop="case_id" type="index" :index="indexMethod" width="75"
                 align="center"></el-table-column>
-            <el-table-column label="" width="55px" align="center">
+            <el-table-column label="用例名称" prop="name" width="420px" show-overflow-tooltip='true'>
                 <template #default="scope">
                     <el-button :icon="Edit" size="small" v-if="scope.row.edit" @click="scope.row.edit = false"></el-button>
                     <el-button :icon="Check" size="small" v-if="!scope.row.edit" @click="updateName(scope.row)"></el-button>
-                </template>
-            </el-table-column>
-            <el-table-column label="用例名称" prop="name" width="420px">
-                <template #default="scope">
-                    <div v-if="scope.row.name && scope.row.edit">{{ scope.row.temp_name }}-<font color="#F29492">{{
-                        scope.row.case_name }}</font>
+                    <div style="display: inline;" v-if="scope.row.name && scope.row.edit">
+                        {{ scope.row.temp_name }}-<font color="#F29492">{{ scope.row.case_name }}</font>
                     </div>
-                    <el-input v-model="scope.row.case_name" placeholder="可输入" v-if="scope.row.edit == false"
-                        @keyup.enter.native="updateName(scope.row)"></el-input>
+                    <el-input style="display: inline;" v-model="scope.row.case_name" placeholder="可输入" size="small"
+                        v-if="scope.row.edit == false" @keyup.enter.native="updateName(scope.row)"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="API数量" prop="api_count" width="80px" align="center"></el-table-column>
