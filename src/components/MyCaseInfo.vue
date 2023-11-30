@@ -558,6 +558,7 @@ export default {
             }).then(
                 function (response) {
                     row.runLoading = false
+                    row.scheduleLoading = false
                     if (response.data.code == 0) {
                         var report = response.data.data.report
                         var case_report = report[report.length - 1]
@@ -595,6 +596,7 @@ export default {
                     message: '执行失败 用例ID: ' + row.case_id,
                 })
                 row.runLoading = false
+                row.scheduleLoading = false
             })
             // 跟新用例数据
             if (flag && run_order) {

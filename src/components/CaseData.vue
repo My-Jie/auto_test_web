@@ -2,7 +2,7 @@
     <el-affix :offset="10">
         <el-button type="primary" @click="repData = true">关联数据</el-button>
         <el-button type="primary" :loading="dataLoading" @click="getCaseData">刷新</el-button>
-        <el-button type="primary" :loading="chartLoading" @click="getJsonpath">统计</el-button>
+        <el-button type="primary" :loading="chartLoading" @click="getJsonpath">引用追踪</el-button>
     </el-affix>
     <!-- jsonpath统计 -->
     <el-dialog class="case-data" v-model='jsonpath' v-if="jsonpath" width="80%" :close-on-click-modal=false draggable
@@ -17,7 +17,7 @@
     </el-dialog>
     <br>
     <!-- 表格 -->
-    <el-table :data="caseData" stripe fit @cell-click="goClick" max-height="600" border>
+    <el-table :data="caseData" stripe fit @cell-click="goClick" max-height="550" border>
         <el-table-column fixed="left" label="序号" prop="number" type="index" :index="indexMethod" width="70px"
             align="center"></el-table-column>
         <el-table-column label="方法" prop="method" width="80px"></el-table-column>

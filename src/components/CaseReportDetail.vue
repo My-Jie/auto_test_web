@@ -202,10 +202,10 @@
                     <vue-json-pretty :data="JSON.parse(JSON.stringify(responseHeaders))"></vue-json-pretty>
                 </el-scrollbar>
             </el-tab-pane>
-            <el-tab-pane label="表达式值" name="4">
+            <el-tab-pane label="表达式追踪" name="4">
                 <el-scrollbar max-height="400px">
                     <el-table :data="jsonPath" fit size="small" highlight-current-row>
-                        <el-table-column label="表达式" show-overflow-tooltip>
+                        <el-table-column label="引用表达式" show-overflow-tooltip>
                             <template #default="scope">
                                 {{ scope.row.jsonpath }}
                             </template>
@@ -215,7 +215,7 @@
                                 {{ scope.row.case_value }}
                             </template>
                         </el-table-column>
-                        <el-table-column label="位置" show-overflow-tooltip>
+                        <el-table-column label="本接口应用位置" show-overflow-tooltip>
                             <template #default="scope">
                                 {{ scope.row.site }}
                             </template>

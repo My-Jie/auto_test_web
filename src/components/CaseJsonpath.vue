@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="jsonpathData" stripe fit border>
+    <el-table :data="jsonpathData" stripe fit border max-height="600">
         <el-table-column type="index" width="50px" align="center" show-overflow-tooltip />
         <el-table-column label="jsonpath" prop="jsonpath" width="300" show-overflow-tooltip></el-table-column>
         <el-table-column label="count" prop="count" align="center" width="70" show-overflow-tooltip></el-table-column>

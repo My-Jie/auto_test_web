@@ -162,8 +162,8 @@ export default {
     methods: {
         // 获取jsonpath接口
         async getResponseJsonPath() {
-            if (this.responseValueInput.length < 3) {
-                ElMessage.warning('最小长度: 3')
+            if (this.responseValueInput.length < 1) {
+                ElMessage.warning('最小长度: 1')
                 return
             }
             this.responseValueJsonpath = []
@@ -268,8 +268,8 @@ export default {
 
         // 测试数据预览查询
         async getTestDataJsonpath() {
-            if (this.responseValueInput.length < 3) {
-                ElMessage.warning('最小长度: 3')
+            if (this.responseValueInput.length < 1) {
+                ElMessage.warning('最小长度: 1')
                 return
             }
             this.urlJsonpath = []

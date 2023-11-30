@@ -25,7 +25,8 @@
                 </el-table-column>
                 <el-table-column show-overflow-tooltip>
                     <template #default="scope">
-                        {{ scope.row.host }}<font :color="'#F29492'">{{ scope.row.path }}</font>
+                        <!-- {{ scope.row.host }} -->
+                        <font :color="'#F29492'">{{ scope.row.path }}</font>
                     </template>
                 </el-table-column>
                 <el-table-column v-if="activity.length > 1" type="index" width="35" align="center"></el-table-column>
